@@ -31,7 +31,6 @@ const HomeNavbar = () => {
 
       <div className={`nav-links ${isMenuOpen ? 'active' : ''}`}>
         <Link to="/" className="nav-link" onClick={() => setIsMenuOpen(false)}>Home</Link>
-        <Link to="/my-flights" className="nav-link" onClick={() => setIsMenuOpen(false)}>My Flights</Link>
         <Link to="/about" className="nav-link" onClick={() => setIsMenuOpen(false)}>About</Link>
         <Link to="/contactus" className="nav-link" onClick={() => setIsMenuOpen(false)}>Contact us</Link>
       </div>

@@ -14,6 +14,10 @@ import FlightManagement from "./pages/admin/FlightManagement";
 import ScheduleFight from "./pages/admin/ScheduleFight";
 import PassengersList from "./pages/admin/PassengersList";
 import CustomerFeedback from './pages/feedback/CustomerFeedback';
+import PassengerDetails from './pages/customer/PassengerDetails';
+import BookingPreview from './pages/customer/BookingPreview';
+import Payment from './pages/customer/Payment';
+import TicketPage from './pages/customer/TicketPage';
 
 function App() {
   return (
@@ -29,7 +33,7 @@ function App() {
 
 
         //check the validation with the user is login or not
-        <Route path="/my-flights" element={<FlightList />} />
+        <Route path="/flightlist" element={<FlightList />} />
 
 
 
@@ -39,9 +43,14 @@ function App() {
         <Route path="/scheduleflight" element={<ScheduleFight/>}/>
         <Route path="/passengerslist" element={<PassengersList/>}/>
         <Route path="/feedback" element={<CustomerFeedback/>}/>
+        
+        
+        <Route path="/passengerdetails" element={<PassengerDetails/>}/>
+        <Route path="/bookingpreview" element={<BookingPreview/>}/>
+        <Route path="/payment" element={<Payment/>}/>
+        <Route path="/ticketpage" element={<TicketPage/>}/>
 
-
-
+        
 
       </Routes>
     </>

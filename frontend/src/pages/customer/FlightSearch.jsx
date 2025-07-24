@@ -10,7 +10,7 @@ const FlightSearch = () => {
 
   const customerSearchFlight = () =>{
     // make the customer dashboard to have the customer all info about flight
-    navigate("")
+    navigate("/flightlist")
   }
 
 
