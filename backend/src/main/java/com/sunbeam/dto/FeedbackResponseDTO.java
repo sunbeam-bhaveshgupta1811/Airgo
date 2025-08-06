@@ -14,11 +14,10 @@ import lombok.Setter;
 public class FeedbackResponseDTO {
     private String userName;
     private long bookingId;
-    private String flightname;
+    private String flightName;
     private Integer rating;
     private String comments;
     private LocalDateTime submittedAt;
-    
 
 }
 

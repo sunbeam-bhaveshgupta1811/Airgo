@@ -11,10 +11,12 @@ import com.sunbeam.dto.AirlineDTO;
 import com.sunbeam.entities.AirlineDetail;
 import com.sunbeam.entities.User;
 
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 
 @Service
 @AllArgsConstructor
+@Transactional
 public class FlightServiceImpl implements FlightService {
 
 	public ModelMapper modelMapper;
@@ -39,6 +41,15 @@ public class FlightServiceImpl implements FlightService {
 
 		return responseDTO;
 
+	}
+
+	public Boolean airlineDelete(Long id) {
+	    if (addAirlineDao.existsById(id)) {
+	        addAirlineDao.deleteById(id);
+	        return true;
+	    } else {
+	        return false;
+	    }
 	}
 
 }

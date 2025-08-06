@@ -4,22 +4,26 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import AdminNavbar from "./../../components/AdminNavbar";
 import { data, useNavigate } from "react-router-dom";
 import { fetchAirline } from "../../services/AdminServices/airlineManagementServies";
+import { deleteAirline } from './../../services/AdminServices/airlineManagementServies';
+import { toast } from "react-toastify";
 
 const AirlineManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [airlines, setAirlines] = useState([]);
   const [loading, setLoading] = useState(true);
-
-  const handleEdit = (id) => {
-    console.log("Edit airline with id:", id);
-    // Edit logic would go here
-  };
-
   const navigate = useNavigate();
 
-  const handleDelete = (id) => {
-    console.log("Delete airline with id:", id);
-    setAirlines(airlines.filter((airline) => airline.airlineId !== id));
+  const handleEdit = (id) => {
+    navigate(`/admin/addscheduleflight`);
+  };
+
+  const handleDelete = async(id) => {
+    const result = await deleteAirline(id);
+    if(result){
+      toast.success("successful delete")
+    }else{
+      toast.error("failed delete")
+    }
   };
 
   const handleAddNew = () => {
@@ -45,7 +49,7 @@ const AirlineManagement = () => {
       setAirlines(data);
     } catch (error) {
       console.error("Error fetching airlines:", error);
-    }finally {
+    } finally {
       setLoading(false);
     }
   };

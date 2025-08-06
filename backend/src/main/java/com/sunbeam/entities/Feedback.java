@@ -2,6 +2,7 @@ package com.sunbeam.entities;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "feedback")
@@ -14,7 +15,7 @@ public class Feedback {
 
     @Column(length = 500)
     private String comments;
-
+    
     @Column(nullable = false)
     private Integer rating;
 

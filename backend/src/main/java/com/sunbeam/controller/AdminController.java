@@ -60,8 +60,8 @@ public class AdminController {
     }
 	
 	@GetMapping("/feedback")
-	public ResponseEntity<List<Feedback>> getAllFeedback(){
-		List<Feedback> feedback = adminService.getAllFeedback();
+	public ResponseEntity<List<FeedbackResponseDTO>> getAllFeedback(){
+		List<FeedbackResponseDTO> feedback = adminService.getAllFeedback();
 		return ResponseEntity.ok(feedback);
 	}
 	

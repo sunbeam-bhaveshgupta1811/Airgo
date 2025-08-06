@@ -8,6 +8,10 @@ import com.sunbeam.entities.Booking;
 
 @Repository
 public interface AdminBookingDao extends JpaRepository<Booking, Long>{
+<<<<<<< Updated upstream
 	@Query("select sum(totalAmount) from Booking")
+=======
+	@Query("SELECT SUM(b.totalFare) FROM Booking b")
+>>>>>>> Stashed changes
 	long getTotalAmountBookingPassenger();
 }

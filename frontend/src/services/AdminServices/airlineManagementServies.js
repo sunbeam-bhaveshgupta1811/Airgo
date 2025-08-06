@@ -1,5 +1,6 @@
 import axios from 'axios'
 import { config } from '../../../config';
+import { toast } from 'react-toastify';
 
 export const fetchAirline = async () => {
   try {
@@ -16,7 +17,7 @@ export const addAirline = async (airlineName, airlineNoOfFlights) => {
   const airlineData = {
     name: airlineName,
     noOfFlights: airlineNoOfFlights,
-    admin_id: localStorage.getItem("adminId")
+    admin_id: 1
   };
 
   try {
@@ -27,3 +28,15 @@ export const addAirline = async (airlineName, airlineNoOfFlights) => {
     throw error;
   }
 }
+
+export const deleteAirline = async (airlineId) => {
+  try {
+    const response = await axios.delete(`${config.serverURL}/admin/deleteairline/${airlineId}`);
+    toast.success("Airline deleted successfully");
+    return response.data;
+  } catch (error) {
+    toast.error("Failed to delete airline");
+    console.error(error);
+  }
+};
+
