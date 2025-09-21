@@ -5,7 +5,9 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +21,7 @@ import com.sunbeam.entities.User;
 import com.sunbeam.response.AirlineResponseDto;
 import com.sunbeam.response.ApiResponse;
 import com.sunbeam.service.AdminServiceImpl;
+import com.sunbeam.service.FlightServiceImpl;
 
 
 @RestController
@@ -26,6 +29,9 @@ import com.sunbeam.service.AdminServiceImpl;
 
 @CrossOrigin(origins = "http://localhost:3000")
 public class AdminController {
+	
+	@Autowired
+	public FlightServiceImpl flightServiceImpl;
 	
 	@Autowired
 	private AdminServiceImpl adminService;
@@ -51,7 +57,7 @@ public class AdminController {
 		return ResponseEntity.ok(adminService.getTotalAmountBooking());
 	}
 	
-	@GetMapping("/allairline")
+	@GetMapping("/airlineManagement")
     public ResponseEntity<List<AirlineResponseDto>> getAllAirlines() {
         List<AirlineResponseDto> airlines = adminService.getAllAirlines();
         return ResponseEntity.ok(airlines);
@@ -62,6 +68,12 @@ public class AdminController {
 		ApiResponse<List<FeedbackDto>> feedback = adminService.getAllFeedback();
 		return ResponseEntity.ok(feedback);
 	}
+	
+	@DeleteMapping("/deleteairline/{id}")
+    public ResponseEntity<ApiResponse<?>> deleteAirline(@PathVariable Long id) {
+		flightServiceImpl.deleteAirlineManagement(id);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Delete Success..",id));
+    }
 	
 
 	

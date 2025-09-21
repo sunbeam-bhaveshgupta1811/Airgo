@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import "../../css/AirlineManagement.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AdminNavbar from "./../../components/AdminNavbar";
-import { data, useNavigate } from "react-router-dom";
-import { fetchAirline } from "../../services/AdminServices/airlineManagementServies";
+import { useNavigate } from "react-router-dom";
+import { deleteAirline, fetchAirline } from "../../services/AdminServices/airlineManagementServies";
+import { toast } from "react-toastify";
 
 const AirlineManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -17,9 +18,19 @@ const AirlineManagement = () => {
 
   const navigate = useNavigate();
 
-  const handleDelete = (id) => {
-    console.log("Delete airline with id:", id);
-    setAirlines(airlines.filter((airline) => airline.airlineId !== id));
+  const handleDelete = async(id) => {
+
+    const data = await deleteAirline(id);
+    // using delete operation here not working properly beause we delete the parent record but still the child record is present in the database
+    if(data.error){
+      toast.error(data.error);
+      return;
+    }else{
+      toast.success("Airline deleted successfully");
+    }
+
+    setAirlines(data.filter((airline) => airline.airlineId !== id));
+    setLoading(false);
   };
 
   const handleAddNew = () => {

@@ -27,5 +27,5 @@ public interface FlightService {
 	
 	void deleteScheduleFlight(Long id);
 	FlightResponseDto getFlightById(Long id);
-	
+	void deleteAirlineManagement(Long id);
 }
