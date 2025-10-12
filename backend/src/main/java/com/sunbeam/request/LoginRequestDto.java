@@ -27,4 +27,6 @@ public class LoginRequestDto {
 	 @Length(min = 3,max=20,message = "Invalid password length")
 	 private String password;
 	 
+	 private String loginType = "USER";
+	 
 }

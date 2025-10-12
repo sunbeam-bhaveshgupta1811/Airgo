@@ -12,5 +12,7 @@ import com.sunbeam.entities.User;
 @Repository
 public interface UserDao extends JpaRepository<User, Long>{
 	Optional<User> findByEmail(String email);
+	boolean existsByEmail(String email);
+	Optional<User> findByVerificationToken(String token);
 //	Optional<ScheduleFlight> findBySourceAndDestinationAndDeparture(String source,String destination,String departure);
 }

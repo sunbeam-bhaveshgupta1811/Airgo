@@ -1,8 +1,8 @@
-import React from 'react';
-import { Outlet } from 'react-router-dom';
-import HomeNavbar from '../components/HomeNavbar';
-import '../CSS/Home.css';
-import FlightSearch from './customer/FlightSearch';
+import React from "react";
+import { Outlet } from "react-router-dom";
+import HomeNavbar from "../components/HomeNavbar";
+import "../CSS/Home.css";
+import FlightSearch from "./customer/FlightSearch";
 
 function Home() {
   return (
@@ -11,7 +11,7 @@ function Home() {
         <HomeNavbar />
         <div className="main-content">
           <div className="center-content">
-            <FlightSearch /> {/* Your existing component remains untouched */}
+            <FlightSearch />
           </div>
         </div>
         <main className="main-content">

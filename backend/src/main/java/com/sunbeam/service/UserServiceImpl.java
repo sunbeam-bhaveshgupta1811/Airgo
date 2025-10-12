@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.sunbeam.dao.BookingDao;
-import com.sunbeam.dao.ProfileDao;
 import com.sunbeam.dao.ScheduleFlightDao;
 import com.sunbeam.dao.UserDao;
 import com.sunbeam.entities.Booking;
@@ -20,7 +19,7 @@ import com.sunbeam.request.BookingRequestDto;
 import com.sunbeam.response.ApiResponse;
 import com.sunbeam.response.BookingResponseDto;
 import com.sunbeam.response.FlightSearchResponseDto;
-import com.sunbeam.response.ProfileResponseDto;
+import com.sunbeam.response.UserProfileDto;
 
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -41,9 +40,6 @@ public class UserServiceImpl implements UserService{
 
     @Autowired
     private UserDao userDao;
-    
-    @Autowired
-    private ProfileDao profileDao;
     
     @Override
     public List<FlightSearchResponseDto> flightSearch(String source, String destination, LocalDate departure) {
@@ -109,13 +105,13 @@ public class UserServiceImpl implements UserService{
     }
 
     @Override
-    public ApiResponse<ProfileResponseDto> getUserProfile(Long id) {
-        Optional<User> optionalUser = profileDao.findById(id);
+    public ApiResponse<UserProfileDto> getUserProfile(String name) {
+        Optional<User> optionalUser = userDao.findByEmail(name);
         if (optionalUser.isEmpty()) {
             return new ApiResponse<>(true, "User not found",null);
         }
 
-        ProfileResponseDto dto = modelMapper.map(optionalUser.get(), ProfileResponseDto.class);
+        UserProfileDto dto = modelMapper.map(optionalUser.get(), UserProfileDto.class);
         return new ApiResponse<>(true, "Profile fetched successfully",dto);
     }
 

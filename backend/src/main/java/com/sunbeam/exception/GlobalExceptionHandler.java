@@ -13,7 +13,7 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(UserAlreadyExistsException.class)
     public ResponseEntity<ApiResponse<?>> handleUserAlreadyExists(UserAlreadyExistsException ex) {
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(HttpStatus.CONFLICT)
                 .body(new ApiResponse<>(false, ex.getMessage(), null));
     }
 	

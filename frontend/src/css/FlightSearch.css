@@ -15,15 +15,23 @@
 }
 
 .booking-card {
-  background-color: rgba(255, 255, 255, 0.95);
+  background: linear-gradient(
+    to bottom,
+    rgba(222, 209, 198, 0.9), /* #DED1C6 */
+    rgba(167, 118, 147, 0.85), /* #A77693 */
+    rgba(23, 72, 113, 0.85),   /* #174871 */
+    rgba(15, 45, 77, 0.9)      /* #0F2D4D */
+  );
   border-radius: 15px;
   padding: 3rem;
   width: 100%;
   max-width: 900px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(5px);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(6px);
   border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #fff; /* make text readable */
 }
+
 
 .booking-header {
   display: flex;

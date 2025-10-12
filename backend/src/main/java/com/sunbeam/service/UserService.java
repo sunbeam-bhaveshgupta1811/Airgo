@@ -8,7 +8,7 @@ import com.sunbeam.request.BookingRequestDto;
 import com.sunbeam.response.ApiResponse;
 import com.sunbeam.response.BookingResponseDto;
 import com.sunbeam.response.FlightSearchResponseDto;
-import com.sunbeam.response.ProfileResponseDto;
+import com.sunbeam.response.UserProfileDto;
 
 public interface UserService {
 	List<FlightSearchResponseDto> flightSearch(String source, String destination, LocalDate departure);
@@ -19,6 +19,6 @@ public interface UserService {
 //    void cancelBooking(Long bookingId);
     List<Booking> getAllBookings();
     
-    ApiResponse<ProfileResponseDto> getUserProfile(Long id);
+    ApiResponse<UserProfileDto> getUserProfile(String name);
     
 }
