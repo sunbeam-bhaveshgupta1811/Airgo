@@ -159,8 +159,6 @@ public class Booking {
 		@JsonManagedReference
 		private List<Passenger> passengers = new ArrayList<>();
 
-		@OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
-		private Payment payment;
 
 		@OneToOne(mappedBy = "booking", cascade = CascadeType.ALL)
 		private Feedback feedback;

@@ -13,6 +13,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 public class RegistrationRequestDto {
+	private Long id;
 	private Title title;
     private String firstName;
     private String lastName;
