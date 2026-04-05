@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Outlet } from "react-router-dom";
-import "../../CSS/AdminNavbar.css";
-import "../../CSS/AdminDashboard.css";
+import "../../css/AdminNavbar.css";
+import "../../css/AdminDashboard.css";
 import {
   FaPlane,
   FaMoneyBillWave,

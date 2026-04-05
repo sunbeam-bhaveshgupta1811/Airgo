@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaCreditCard, FaLock, FaCheckCircle, FaRupeeSign } from 'react-icons/fa';
 import { processPayment } from '../../services/customerService/bookingService';
-import '../../CSS/Payment.css';
+import '../../css/Payment.css';
 
 const Payment = () => {
   const navigate = useNavigate();

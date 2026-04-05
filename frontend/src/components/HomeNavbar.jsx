@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../CSS/HomeNavbar.css';
+import '../css/HomeNavbar.css';
 import { FaBars, FaTimes } from 'react-icons/fa';
 import "bootstrap/dist/css/bootstrap.min.css";
 

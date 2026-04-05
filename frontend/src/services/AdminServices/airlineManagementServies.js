@@ -11,6 +11,18 @@ export const fetchAirline = async () => {
   }
 };
 
+
+export const deleteAirline = async (id) => {
+  try {
+    const response = await axios.get(`${config.serverURL}/admin/deleteairline/${id}`);
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching airline count:', error);
+    return 0;
+  }
+};
+
+
 export const addAirline = async (airlineName, airlineNoOfFlights) => {
 
   const airlineData = {

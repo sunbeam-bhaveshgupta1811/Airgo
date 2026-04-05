@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { FaPlane, FaSearch } from 'react-icons/fa';
-import '../../CSS/FlightSearch.css';
+import '../../css/FlightSearch.css';
 import { useNavigate } from 'react-router-dom';
 import { searchFlights } from '../../services/customerService/flightSearchService';
 

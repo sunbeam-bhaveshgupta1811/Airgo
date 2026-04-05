@@ -167,7 +167,6 @@ public class FlightServiceImpl implements FlightService {
             throw new RuntimeException("Passenger list cannot be empty!");
         }
 
-        // ✅ All passengers must belong to same booking
         Long bookingId = list.get(0).getBookingId();
 
         Booking booking = bookingDao.findById(bookingId)
@@ -234,6 +233,16 @@ public class FlightServiceImpl implements FlightService {
 		scheduleFlightDao.deleteById(id);
 	}
 
+	
+	@Override
+	public void deleteAirlineManagement(Long id) {
+		if (!addAirlineDao.existsById(id)) {
+            throw new ResourceNotFoundException("Airline with id " + id + " not found");
+        }
+		addAirlineDao.deleteById(id);
+	}
+
+	
 	@Override
 	public FlightResponseDto getFlightById(Long id) {
 		
