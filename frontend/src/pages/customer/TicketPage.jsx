@@ -13,7 +13,7 @@ import {
   sendBookingConfirmationEmail, 
   //generateTicketPDF 
 } from '../../services/customerService/ticketService';
-import '../../CSS/TicketPage.css';
+import '../../css/TicketPage.css';
 
 const TicketPage = () => {
   const location = useLocation();
@@ -574,7 +574,6 @@ const TicketPage = () => {
   if (loading) {
     return (
       <div className="ticket-page">
-        <HomeNavbar />
         <div className="ticket-container">
           <div className="loading-spinner">
             <FaSpinner className="spinner-icon" />

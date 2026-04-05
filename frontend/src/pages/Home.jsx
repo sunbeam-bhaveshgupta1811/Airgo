@@ -1,19 +1,30 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useLocation } from 'react-router-dom';
 import HomeNavbar from '../components/HomeNavbar';
-import '../CSS/Home.css';
+import '../css/Home.css';
 import FlightSearch from './customer/FlightSearch';
 
 function Home() {
+  const location = useLocation();
+  
+  // Check if we're on the home page (root path)
+  const isHomePage = location.pathname === '/';
+
   return (
     <div className="airline-home-background">
       <div className="content-overlay">
         <HomeNavbar />
-        <div className="main-content">
-          <div className="center-content">
-            <FlightSearch /> {/* Your existing component remains untouched */}
+        
+        {/* Show FlightSearch only on the home page */}
+        {isHomePage && (
+          <div className="main-content">
+            <div className="center-content">
+              <FlightSearch />
+            </div>
           </div>
-        </div>
+        )}
+        
+        {/* Outlet for nested routes */}
         <main className="main-content">
           <Outlet />
         </main>
