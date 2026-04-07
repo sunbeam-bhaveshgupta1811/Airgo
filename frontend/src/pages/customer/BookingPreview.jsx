@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaPlane, FaClock, FaUserFriends, FaMoneyBillWave } from 'react-icons/fa';
-import '../../CSS/BookingPreview.css';
+import '../../css/BookingPreview.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const BookingPreview = () => {
