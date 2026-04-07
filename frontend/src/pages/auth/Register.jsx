@@ -13,7 +13,7 @@ function Register() {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("Applicant");
+  const [role, setRole] = useState("USER");
 
   const navigate = useNavigate();
 
@@ -42,13 +42,15 @@ function Register() {
         password,
         role
       );
-      if (!result) {
-        toast.error("Error while registering the user");
+      console.log(result);
+      if (result.success) {
+        setRole("USER");
+        toast.success("Successfully registered");
+        toast.info("Please verify your email before logging in.");
+        navigate("/");
       } else {
-        if (result.status === "success") {
-          setRole("USER");
-          toast.success("Successfully registered");
-          navigate("/");
+        if (result.status === 409) {
+          toast.error("Email already exists. Please login..");
         } else {
           toast.error(result.message || "Error while registering the user");
         }
@@ -60,7 +62,7 @@ function Register() {
     <div className="register-page">
       <div className="register-container">
         <h1 className="register-header">Signup</h1>
-        
+
         <div className="register-form">
           <div className="form-group">
             <label>Title</label>
@@ -140,7 +142,13 @@ function Register() {
           </button>
 
           <div className="login-link">
-            Already have an account? <Link to="/">Login</Link>
+            Already have an account?{" "}
+            <span
+              style={{ color: "blue", cursor: "pointer" }}
+              onClick={() => navigate("/login", { replace: true })}
+            >
+              Login
+            </span>
           </div>
         </div>
       </div>
@@ -149,5 +157,3 @@ function Register() {
 }
 
 export default Register;
-
-

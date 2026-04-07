@@ -2,9 +2,17 @@ package com.sunbeam.entities;
 
 import java.time.LocalDateTime;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(name = "feedback")
+@Setter
+@Getter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Feedback {
 
     @Id
@@ -21,32 +29,13 @@ public class Feedback {
     @Column(name = "submitted_at", nullable = false)
     private LocalDateTime submittedAt;
 
-    // Relationship with Booking
     @ManyToOne
     @JoinColumn(name = "booking_id", nullable = false)
     private Booking booking;
 
-    // Relationship with User
     @ManyToOne
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    // Getters and Setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
 
-    public String getComments() { return comments; }
-    public void setComments(String comments) { this.comments = comments; }
-
-    public Integer getRating() { return rating; }
-    public void setRating(Integer rating) { this.rating = rating; }
-
-    public LocalDateTime getSubmittedAt() { return submittedAt; }
-    public void setSubmittedAt(LocalDateTime submittedAt) { this.submittedAt = submittedAt; }
-
-    public Booking getBooking() { return booking; }
-    public void setBooking(Booking booking) { this.booking = booking; }
-
-    public User getUser() { return user; }
-    public void setUser(User user) { this.user = user; }
 }

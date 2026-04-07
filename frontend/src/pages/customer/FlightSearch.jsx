@@ -30,6 +30,7 @@ const FlightSearch = () => {
       navigate('/flightlist', { state: { flights } });
 
       const apiFlights = await searchFlights(from, to, departureDate);
+      console.log('API Flights:', apiFlights);
       if (!apiFlights || apiFlights.length === 0) {
         alert('No flights found for your search criteria.');
         return;
@@ -80,7 +81,7 @@ const FlightSearch = () => {
                   <label>From</label>
                   <input
                     type="text"
-                    placeholder="Enter departure city"
+                    placeholder="Source"
                     value={from}
                     onChange={(e) => setFrom(e.target.value)}
                     className="booking-input"
@@ -94,7 +95,7 @@ const FlightSearch = () => {
                   <label>To</label>
                   <input
                     type="text"
-                    placeholder="Enter destination city"
+                    placeholder="Destination"
                     value={to}
                     onChange={(e) => setTo(e.target.value)}
                     className="booking-input"
@@ -105,7 +106,7 @@ const FlightSearch = () => {
 
               <div className="form-group">
                 <div className="input-container">
-                  <label>Departure Date</label>
+                  <label>From Date</label>
                   <input
                     type="date"
                     value={departureDate}

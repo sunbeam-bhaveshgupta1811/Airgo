@@ -17,6 +17,6 @@ public class RegistrationResponseDto {
     private String firstName;
     private String lastName;
     private String email;
-    private String mobileNo;
+    private String phone;
     private Role role;
 }

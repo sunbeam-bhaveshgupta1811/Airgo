@@ -154,7 +154,7 @@ public class FlightServiceImpl implements FlightService {
 		for (Passenger add : passg) {
 			PassengerResponseDto flightResponseDto = modelMapper.map(add, PassengerResponseDto.class);
 			flightResponseDto.setBookingId(add.getBooking().getBookingId());
-			flightResponseDto.setPhoneNumber(add.getBooking().getUser().getMobileNo());
+			flightResponseDto.setPhoneNumber(add.getBooking().getUser().getMobile_no());
 			list.add(flightResponseDto);
 		}
 		return list;
@@ -245,15 +245,22 @@ public class FlightServiceImpl implements FlightService {
 	
 	@Override
 	public FlightResponseDto getFlightById(Long id) {
-		
-		if (!scheduleFlightDao.existsById(id)) {
-            throw new ResourceNotFoundException("ScheduleFlight with id " + id + " not found");
-        }
-		
-		Optional<ScheduleFlight> scheduleFlight = scheduleFlightDao.findById(id);
-		
-		return modelMapper.map(scheduleFlight,FlightResponseDto.class);
+	    ScheduleFlight scheduleFlight = scheduleFlightDao.findById(id)
+	        .orElseThrow(() -> new ResourceNotFoundException("ScheduleFlight with id " + id + " not found"));
+	    return modelMapper.map(scheduleFlight, FlightResponseDto.class);
 	}
+
+	@Override
+	public void deleteFlight(String flightName) {
+	    Optional<AddFlights> optionalFlight = addFlightdao.findByFlightNo(flightName);
+	    
+	    if (optionalFlight.isEmpty()) {
+	        throw new ResourceNotFoundException("Flight with name " + flightName + " not found");
+	    }
+	    
+	    addFlightdao.delete(optionalFlight.get());
+	}
+
 		
 	
 	

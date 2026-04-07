@@ -29,7 +29,6 @@ const Profile = () => {
     setIsLoading(true);
     
     try {
-      // Simulate API call
       await new Promise(resolve => setTimeout(resolve, 1500));
       setIsEditMode(false);
       toast.success('Profile updated successfully!');
@@ -43,7 +42,6 @@ const Profile = () => {
 
   const handleCancel = () => {
     setIsEditMode(false);
-    // Reset form data if needed
   };
 
   const profileFetch = async() =>{
@@ -66,7 +64,6 @@ const Profile = () => {
       <div className="row justify-content-center">
         <div className="col-12 col-lg-10 col-xl-8">
           <div className="card border-0 shadow-sm overflow-hidden" style={{ borderRadius: '20px' }}>
-            {/* Enhanced Header */}
             <div className="position-relative">
               <div 
                 className="card-header py-4 px-4" 
@@ -106,7 +103,6 @@ const Profile = () => {
                 </div>
               </div>
               
-              {/* Decorative wave */}
               <div 
                 className="position-absolute bottom-0 start-0 w-100" 
                 style={{ 
@@ -118,9 +114,7 @@ const Profile = () => {
             </div>
 
             <div className="card-body p-5">
-              {/* Profile Section */}
               <div className="row align-items-start">
-                {/* Profile Image */}
                 <div className="col-12 col-md-4 text-center mb-4 mb-md-0">
                   <div className="position-relative d-inline-block">
                     <div 
@@ -143,8 +137,6 @@ const Profile = () => {
                           borderColor: '#fff'
                         }}
                       />
-                      
-                      {/* Status indicator */}
                       <div 
                         className="position-absolute bg-success border border-white rounded-circle"
                         style={{ 
@@ -199,12 +191,9 @@ const Profile = () => {
                     </div>
                   )}
                 </div>
-
-                {/* Profile Details */}
                 <div className="col-12 col-md-8">
                   <form onSubmit={handleSubmit}>
                     <div className="row g-4">
-                      {/* Title & First Name Row */}
                       <div className="col-12">
                         <div className="row g-3">
                           <div className="col-auto">
@@ -246,7 +235,6 @@ const Profile = () => {
                         </div>
                       </div>
 
-                      {/* Personal Information Grid */}
                       <div className="col-md-6">
                         <label className="form-label fw-medium text-muted small">LAST NAME</label>
                         {isEditMode ? (
@@ -267,9 +255,6 @@ const Profile = () => {
                       <div className="col-md-6">
                         <label className="form-label fw-medium text-muted small">EMAIL ADDRESS</label>
                         <div className="input-group">
-                          {/* <span className="input-group-text bg-light border-end-0" style={{ borderRadius: '12px 0 0 12px' }}>
-                            <i className="bi bi-envelope text-muted"></i>
-                          </span> */}
                           <div className="form-control-plaintext fw-medium border border bg-light" style={{ borderRadius: '12px 12px 12px 12px' }}>
                             {user.email}
                           </div>
@@ -324,7 +309,6 @@ const Profile = () => {
                       </div>
                     </div>
 
-                    {/* Action Buttons */}
                     {isEditMode && (
                       <div className="d-flex flex-column flex-sm-row gap-3 justify-content-end mt-5 pt-4 border-top">
                         <button 
@@ -365,7 +349,6 @@ const Profile = () => {
         </div>
       </div>
 
-      {/* Enhanced Custom CSS */}
       <style jsx>{`
         .shadow-lg {
           box-shadow: 0 0.5rem 2rem rgba(0,0,0,.1) !important;

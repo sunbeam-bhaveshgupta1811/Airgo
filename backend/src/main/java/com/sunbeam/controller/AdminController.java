@@ -26,7 +26,6 @@ import com.sunbeam.service.FlightServiceImpl;
 
 @RestController
 @RequestMapping("/admin")
-
 @CrossOrigin(origins = "http://localhost:3000")
 public class AdminController {
 	

@@ -47,7 +47,7 @@ public class AdminServiceImpl implements AdminService{
 	
 	@Override
 	public long getTotalAirlinesCount() {
-		return adminDao.count();
+		return airlineDetailsDao.count();
 	}
 
 	@Override
@@ -86,6 +86,7 @@ public class AdminServiceImpl implements AdminService{
 			dto.setUserId(f.getUser().getId());
 			feedbackDtos.add(dto);
 		}
+		
 		
 		return new ApiResponse<>(true, "Fetched all feedback successfully", feedbackDtos);
 	}

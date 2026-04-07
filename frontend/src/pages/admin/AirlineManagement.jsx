@@ -21,7 +21,6 @@ const AirlineManagement = () => {
   const handleDelete = async(id) => {
 
     const data = await deleteAirline(id);
-    // using delete operation here not working properly beause we delete the parent record but still the child record is present in the database
     if(data.error){
       toast.error(data.error);
       return;

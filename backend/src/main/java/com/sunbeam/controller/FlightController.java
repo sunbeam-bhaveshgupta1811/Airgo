@@ -85,5 +85,11 @@ public class FlightController {
         return ResponseEntity.ok(flightServiceImpl.getFlightById(id));
     }
 	
+	@DeleteMapping("/deleteflight/{flightName}")
+    public ResponseEntity<ApiResponse<?>> deleteFlight(@PathVariable String flightName) {
+		flightServiceImpl.deleteFlight(flightName);
+        return ResponseEntity.ok(new ApiResponse<>(true,"Delete Success..",flightName));
+    }
+	
 	
 }
