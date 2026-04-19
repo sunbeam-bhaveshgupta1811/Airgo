@@ -1,697 +1,499 @@
-// import React from "react";
-// import { Outlet } from "react-router-dom";
-// import HomeNavbar from "../components/HomeNavbar";
-// import { Container, Row, Col, Card, Carousel, Accordion, Badge, Button } from "react-bootstrap";
-
-// function About() {
-  
-//   const airlines = [
-//     {
-//       name: "Chhatrapati Shivaji Maharaj Airport",
-//       description: "Mumbai's premier airport with 30% cargo growth in FY22",
-//       imageUrl: "https://www.itln.in/h-upload/2022/04/18/24764-chhatrapati-shivaji-maharaj-intl-airport-cargo-handled-up-30-in-fy22.jpg",
-//       features: ["Award-winning architecture", "30% cargo growth", "Premium lounges"],
-//       rating: 4.8
-//     },
-//     {
-//       name: "Indian Airlines",
-//       description: "Historic carrier now merged with Air India",
-//       imageUrl: "https://www.airline-suppliers.com/wp-content/uploads/2017/10/vt-esd-indian-airlines-airbus-a320-231_PlanespottersNet_324245.jpg",
-//       features: ["Legacy carrier", "Extensive network", "Comfortable cabins"],
-//       rating: 4.2
-//     },
-//     {
-//       name: "Air India Express",
-//       description: "Low-cost international specialist",
-//       imageUrl: "https://pbs.twimg.com/media/DAbdHlRW0AAxgxq.jpg",
-//       features: ["Budget fares", "Reliable service", "Growing fleet"],
-//       rating: 4.0
-//     },
-//     {
-//       name: "Air India",
-//       description: "Revitalized national carrier under Tata",
-//       imageUrl: "https://www.tata.com/content/dam/tata/images/verticals/desktop/airindia_newlivery_card_hz_desktop_390x362.jpg",
-//       features: ["New aircraft", "Premium service", "Global routes"],
-//       rating: 4.5
-//     },
-//     {
-//       name: "IndiGo",
-//       description: "India's largest domestic airline",
-//       imageUrl: "https://static1.simpleflyingimages.com/wordpress/wp-content/uploads/2024/04/indigo-a350-900-april-2024.png",
-//       features: ["On-time leader", "Young fleet", "Extensive network"],
-//       rating: 4.7
-//     },
-
-    
-
-//     {
-//       name: "Vistara",
-//       description: "Full-service airline joint venture of Tata and Singapore Airlines",
-//       imageUrl: "https://tse2.mm.bing.net/th/id/OIP.m6V4MhNjm18_ox5pzRhuMwHaEK?pid=Api&P=0&h=180",
-//       features: ["Premium economy class", "Business class service", "Excellent hospitality"],
-//       rating: 4.6,
-//       url: "https://www.airvistara.com/in/en/contact-us"
-//     }
-//   ];
-
-  
-
-//   const testimonials = [
-//     {
-//       quote: "The premium lounge experience transformed my layover into a relaxing retreat.",
-//       author: "Rahul Sharma",
-//       role: "Frequent Flyer"
-//     },
-//     {
-//       quote: "Our family always feels welcome in the dedicated family zones.",
-//       author: "Priya Patel",
-//       role: "Family Traveler"
-//     },
-//     {
-//       quote: "As a business traveler, the private workspaces are a game-changer.",
-//       author: "Amit Joshi",
-//       role: "Business Executive"
-//     }
-//   ];
-
-//   return (
-//     <>
-//       <HomeNavbar />
-//       <main className="main-content">
-//         <Outlet />
-        
-//         {/* Hero Carousel */}
-//         <Carousel fade controls={false} indicators={false} className="mb-5">
-//           <Carousel.Item className="position-relative">
-//             <div className="carousel-image-overlay"></div>
-//             <img
-//               className="d-block w-100"
-//               src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-//               alt="First slide"
-//               style={{ height: "500px", objectFit: "cover" }}
-//             />
-//             <Carousel.Caption className="text-start d-flex flex-column justify-content-center h-100">
-//               <div className="container">
-//                 <h1 className="display-3 fw-bold mb-4">Elevate Your Journey</h1>
-//                 <p className="lead mb-4">Discover unparalleled comfort with our premium travel partners</p>
-//                 <Button variant="primary" size="lg" className="px-4">Explore Services</Button>
-//               </div>
-//             </Carousel.Caption>
-//           </Carousel.Item>
-//         </Carousel>
-
-//         <Container className="py-5">
-//           {/* Features Section */}
-//           <Row className="mb-5">
-//             <Col className="text-center">
-//               <Badge bg="primary" pill className="mb-3 px-3 py-2">WHY CHOOSE US</Badge>
-//               <h2 className="display-5 fw-bold mb-4">Premium Travel Experiences</h2>
-//               <p className="lead text-muted mx-auto" style={{ maxWidth: "700px" }}>
-//                 We partner with India's finest airlines to deliver exceptional service at every stage of your journey
-//               </p>
-//             </Col>
-//           </Row>
-
-//           <Row className="g-4 mb-5">
-//             <Col md={6} lg={3}>
-//               <Card className="h-100 border-0 shadow-hover">
-//                 <Card.Body className="p-4 text-center">
-//                   <div className="icon-circle bg-primary bg-opacity-10 text-primary mb-4 mx-auto">
-//                     <i className="bi bi-headset fs-3"></i>
-//                   </div>
-//                   <Card.Title as="h3" className="h4 mb-3">24/7 Support</Card.Title>
-//                   <Card.Text className="text-muted">
-//                     Round-the-clock assistance for all your travel needs
-//                   </Card.Text>
-//                 </Card.Body>
-//               </Card>
-//             </Col>
-
-//             <Col md={6} lg={3}>
-//               <Card className="h-100 border-0 shadow-hover">
-//                 <Card.Body className="p-4 text-center">
-//                   <div className="icon-circle bg-primary bg-opacity-10 text-primary mb-4 mx-auto">
-//                     <i className="bi bi-emoji-smile fs-3"></i>
-//                   </div>
-//                   <Card.Title as="h3" className="h4 mb-3">Happy Customers</Card.Title>
-//                   <Card.Text className="text-muted">
-//                     98% satisfaction rate from our valued travelers
-//                   </Card.Text>
-//                 </Card.Body>
-//               </Card>
-//             </Col>
-
-//             <Col md={6} lg={3}>
-//               <Card className="h-100 border-0 shadow-hover">
-//                 <Card.Body className="p-4 text-center">
-//                   <div className="icon-circle bg-primary bg-opacity-10 text-primary mb-4 mx-auto">
-//                     <i className="bi bi-airplane fs-3"></i>
-//                   </div>
-//                   <Card.Title as="h3" className="h4 mb-3">Extensive Network</Card.Title>
-//                   <Card.Text className="text-muted">
-//                     Connecting you to 100+ destinations worldwide
-//                   </Card.Text>
-//                 </Card.Body>
-//               </Card>
-//             </Col>
-
-//             <Col md={6} lg={3}>
-//               <Card className="h-100 border-0 shadow-hover">
-//                 <Card.Body className="p-4 text-center">
-//                   <div className="icon-circle bg-primary bg-opacity-10 text-primary mb-4 mx-auto">
-//                     <i className="bi bi-award fs-3"></i>
-//                   </div>
-//                   <Card.Title as="h3" className="h4 mb-3">Award Winning</Card.Title>
-//                   <Card.Text className="text-muted">
-//                     Recognized for excellence in travel services
-//                   </Card.Text>
-//                 </Card.Body>
-//               </Card>
-//             </Col>
-//           </Row>
-
-//           {/* Airlines Section */}
-//           <Row className="mb-5">
-//             <Col className="text-center">
-//               <Badge bg="primary" pill className="mb-3 px-3 py-2">OUR PARTNERS</Badge>
-//               <h2 className="display-5 fw-bold mb-4">Airline Partners</h2>
-//               <p className="lead text-muted mx-auto" style={{ maxWidth: "700px" }}>
-//                 Fly with confidence using our trusted airline partners
-//               </p>
-//             </Col>
-//           </Row>
-
-//           <Row className="g-4 mb-5">
-//             {airlines.map((airline, index) => (
-//               <Col key={index} md={6} lg={4}>
-//                 <Card className="h-100 border-0 shadow-sm hover-scale">
-//                   <div className="position-relative">
-//                     <Card.Img 
-//                       variant="top" 
-//                       src={airline.imageUrl} 
-//                       alt={airline.name}
-//                       style={{ height: "200px", objectFit: "cover" }}
-//                     />
-//                     <Badge bg="warning" className="position-absolute top-0 end-0 m-2">
-//                       <i className="bi bi-star-fill me-1"></i> {airline.rating}
-//                     </Badge>
-//                   </div>
-//                   <Card.Body>
-//                     <Card.Title>{airline.name}</Card.Title>
-//                     <Card.Text className="text-muted mb-3">{airline.description}</Card.Text>
-//                     <ul className="list-unstyled">
-//                       {airline.features.map((feature, i) => (
-//                         <li key={i} className="mb-2">
-//                           <i className="bi bi-check-circle-fill text-success me-2"></i>
-//                           {feature}
-//                         </li>
-//                       ))}
-//                     </ul>
-//                   </Card.Body>
-//                   <Card.Footer className="bg-transparent border-top-0">
-//                     <Button variant="outline-primary" className="w-100">View Details</Button>
-//                   </Card.Footer>
-//                 </Card>
-//               </Col>
-//             ))}
-//           </Row>
-
-//           {/* Testimonial Carousel */}
-//           <Row className="mb-5">
-//             <Col className="text-center">
-//               <Badge bg="primary" pill className="mb-3 px-3 py-2">TESTIMONIALS</Badge>
-//               <h2 className="display-5 fw-bold mb-4">What Our Travelers Say</h2>
-//             </Col>
-//           </Row>
-
-//           <Carousel indicators={false} className="mb-5">
-//             {testimonials.map((testimonial, index) => (
-//               <Carousel.Item key={index}>
-//                 <Card className="border-0 bg-light">
-//                   <Card.Body className="p-5 text-center">
-//                     <i className="bi bi-quote fs-1 text-primary opacity-25 mb-4"></i>
-//                     <p className="fs-4 fst-italic mb-4">"{testimonial.quote}"</p>
-//                     <div className="d-flex justify-content-center align-items-center">
-//                       <div className="ms-3 text-start">
-//                         <h5 className="mb-1">{testimonial.author}</h5>
-//                         <p className="text-muted mb-0">{testimonial.role}</p>
-//                       </div>
-//                     </div>
-//                   </Card.Body>
-//                 </Card>
-//               </Carousel.Item>
-//             ))}
-//           </Carousel>
-
-//           {/* FAQ Accordion */}
-//           <Row className="mb-5">
-//             <Col lg={6} className="mb-4 mb-lg-0">
-//               <h2 className="display-5 fw-bold mb-4">Frequently Asked Questions</h2>
-//               <Accordion defaultActiveKey="0" flush>
-//                 <Accordion.Item eventKey="0">
-//                   <Accordion.Header>How do I access premium lounges?</Accordion.Header>
-//                   <Accordion.Body>
-//                     Our premium lounges are accessible to business class travelers or through our lounge membership program. Some credit cards also offer complimentary access.
-//                   </Accordion.Body>
-//                 </Accordion.Item>
-//                 <Accordion.Item eventKey="1">
-//                   <Accordion.Header>Which airlines do you partner with?</Accordion.Header>
-//                   <Accordion.Body>
-//                     We partner with all major Indian carriers including Air India, IndiGo, Vistara, and international partners through codeshare agreements.
-//                   </Accordion.Body>
-//                 </Accordion.Item>
-//                 <Accordion.Item eventKey="2">
-//                   <Accordion.Header>Can I book flights directly through your service?</Accordion.Header>
-//                   <Accordion.Body>
-//                     Yes, we offer full-service flight booking with exclusive benefits not available when booking directly with airlines.
-//                   </Accordion.Body>
-//                 </Accordion.Item>
-//               </Accordion>
-//             </Col>
-//             <Col lg={6}>
-//               <div className="bg-primary text-white p-5 rounded-3 h-100">
-//                 <h3 className="fw-bold mb-4">Need Personalized Assistance?</h3>
-//                 <p className="mb-4">Our travel experts are available 24/7 to help plan your perfect journey.</p>
-//                 <Button variant="light" size="lg" className="px-4">
-//                   <i className="bi bi-telephone-outbound me-2"></i> Contact Us
-//                 </Button>
-//               </div>
-//             </Col>
-//           </Row>
-//         </Container>
-//       </main>
-
-//       {/* Footer */}
-//       <footer className="bg-dark text-white pt-5 pb-4">
-//         <Container>
-//           <Row>
-//             <Col lg={4} className="mb-4 mb-lg-0">
-//               <h5 className="text-uppercase mb-4">Sunbeam Travel</h5>
-//               <p>Elevating your travel experience with premium services and exclusive partnerships.</p>
-//               <div className="social-icons">
-//                 <a href="#" className="text-white me-3"><i className="bi bi-facebook fs-5"></i></a>
-//                 <a href="#" className="text-white me-3"><i className="bi bi-twitter fs-5"></i></a>
-//                 <a href="#" className="text-white me-3"><i className="bi bi-instagram fs-5"></i></a>
-//                 <a href="#" className="text-white"><i className="bi bi-linkedin fs-5"></i></a>
-//               </div>
-//             </Col>
-//             <Col lg={2} md={4} className="mb-4 mb-md-0">
-//               <h5 className="text-uppercase mb-4">Services</h5>
-//               <ul className="list-unstyled">
-//                 <li className="mb-2"><a href="#" className="text-white text-decoration-none">Flight Booking</a></li>
-//                 <li className="mb-2"><a href="#" className="text-white text-decoration-none">Lounge Access</a></li>
-//                 <li className="mb-2"><a href="#" className="text-white text-decoration-none">VIP Services</a></li>
-//                 <li className="mb-2"><a href="#" className="text-white text-decoration-none">Travel Insurance</a></li>
-//               </ul>
-//             </Col>
-//             <Col lg={2} md={4} className="mb-4 mb-md-0">
-//               <h5 className="text-uppercase mb-4">Airlines</h5>
-//               <ul className="list-unstyled">
-//                 <li className="mb-2"><a href="#" className="text-white text-decoration-none">Air India</a></li>
-//                 <li className="mb-2"><a href="#" className="text-white text-decoration-none">IndiGo</a></li>
-//                 <li className="mb-2"><a href="#" className="text-white text-decoration-none">Vistara</a></li>
-//                 <li className="mb-2"><a href="#" className="text-white text-decoration-none">International</a></li>
-//               </ul>
-//             </Col>
-//             <Col lg={4} md={4}>
-//               <h5 className="text-uppercase mb-4">Newsletter</h5>
-//               <p>Subscribe for exclusive travel deals and updates</p>
-//               <div className="input-group mb-3">
-//                 <input type="email" className="form-control" placeholder="Your Email" />
-//                 <button className="btn btn-primary" type="button">Subscribe</button>
-//               </div>
-//             </Col>
-//           </Row>
-//           <hr className="my-4" />
-//           <Row>
-//             <Col md={6} className="text-center text-md-start">
-//               <p className="mb-0">© 2025 Sunbeam Travel. All rights reserved.</p>
-//             </Col>
-//             <Col md={6} className="text-center text-md-end">
-//               <p className="mb-0">
-//                 <a href="#" className="text-white text-decoration-none me-3">Privacy Policy</a>
-//                 <a href="#" className="text-white text-decoration-none">Terms of Service</a>
-//               </p>
-//             </Col>
-//           </Row>
-//         </Container>
-//       </footer>
-//     </>
-//   );
-// }
-
-// export default About;
-
-
-import React from "react";
-import { Outlet } from "react-router-dom";
-import HomeNavbar from "../components/HomeNavbar";
-import { Container, Row, Col, Card, Carousel, Accordion, Badge, Button } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Container, Row, Col, Card, Accordion, Button, Badge, ProgressBar } from "react-bootstrap";
+import { FaPlane, FaUsers, FaHeadset, FaGlobe, FaAward, FaShieldAlt, FaClock, FaHeart, FaRocket, FaHandshake, FaStar, FaMapMarkerAlt } from "react-icons/fa";
+import { motion, useInView } from "framer-motion";
+import "../css/About.css";
 
 function About() {
+  const [counters, setCounters] = useState({
+    destinations: 0,
+    travelers: 0,
+    support: 24
+  });
+
   const airlines = [
-    {
-      name: "Chhatrapati Shivaji Maharaj Airport",
-      description: "Mumbai's premier airport with 30% cargo growth in FY22",
-      imageUrl: "https://www.itln.in/h-upload/2022/04/18/24764-chhatrapati-shivaji-maharaj-intl-airport-cargo-handled-up-30-in-fy22.jpg",
-      features: ["Award-winning architecture", "30% cargo growth", "Premium lounges"],
-      rating: 4.8,
-      url: "https://www.csia.in/"
+    { 
+      name: "Chhatrapati Shivaji Airport", 
+      rating: 4.8, 
+      description: "Mumbai's premier international hub connecting Asia", 
+      img: "https://www.itln.in/h-upload/2022/04/18/24764-chhatrapati-shivaji-maharaj-intl-airport-cargo-handled-up-30-in-fy22.jpg",
+      passengers: "45M+ annually",
+      routes: "95+ destinations"
     },
-    {
-      name: "Indian Airlines",
-      description: "Historic carrier now merged with Air India",
-      imageUrl: "https://www.airline-suppliers.com/wp-content/uploads/2017/10/vt-esd-indian-airlines-airbus-a320-231_PlanespottersNet_324245.jpg",
-      features: ["Legacy carrier", "Extensive network", "Comfortable cabins"],
-      rating: 4.2,
-      url: "https://www.airindia.in/"
+    { 
+      name: "Air India", 
+      rating: 4.5, 
+      description: "India's flag carrier with global connectivity", 
+      img: "https://www.tata.com/content/dam/tata/images/verticals/desktop/airindia_newlivery_card_hz_desktop_390x362.jpg",
+      passengers: "20M+ annually",
+      routes: "102 destinations"
     },
-    {
-      name: "Air India Express",
-      description: "Low-cost international specialist",
-      //imageUrl: "https://pbs.twimg.com/media/DAbdHlRW0AAxgxq.jpg",
-      imageUrl: "https://aviationa2z.com/wp-content/uploads/2023/12/ga114et3-1024x576.png",
-      features: ["Budget fares", "Reliable service", "Growing fleet"],
-      rating: 4.0,
-      url: "https://www.airindiaexpress.in/"
+    { 
+      name: "IndiGo", 
+      rating: 4.7, 
+      description: "India's largest airline focused on punctuality", 
+      img: "https://static1.simpleflyingimages.com/wordpress/wp-content/uploads/2024/04/indigo-a350-900-april-2024.png",
+      passengers: "70M+ annually",
+      routes: "87 destinations"
     },
-    {
-      name: "Air India",
-      description: "Revitalized national carrier under Tata",
-      imageUrl: "https://www.tata.com/content/dam/tata/images/verticals/desktop/airindia_newlivery_card_hz_desktop_390x362.jpg",
-      features: ["New aircraft", "Premium service", "Global routes"],
-      rating: 4.5,
-      url: "https://www.airindia.in/"
-    },
-    {
-      name: "IndiGo",
-      description: "India's largest domestic airline",
-      imageUrl: "https://static1.simpleflyingimages.com/wordpress/wp-content/uploads/2024/04/indigo-a350-900-april-2024.png",
-      features: ["On-time leader", "Young fleet", "Extensive network"],
-      rating: 4.7,
-      url: "https://www.goindigo.in/"
-    },
-    {
-      name: "Vistara",
-      description: "Full-service airline joint venture of Tata and Singapore Airlines",
-      imageUrl: "https://tse2.mm.bing.net/th/id/OIP.m6V4MhNjm18_ox5pzRhuMwHaEK?pid=Api&P=0&h=180",
-      features: ["Premium economy class", "Business class service", "Excellent hospitality"],
-      rating: 4.6,
-      url: "https://www.airvistara.com/in/en/contact-us"
+    { 
+      name: "Vistara", 
+      rating: 4.6, 
+      description: "Premium full-service carrier with world-class hospitality", 
+      img: "https://tse2.mm.bing.net/th/id/OIP.m6V4MhNjm18_ox5pzRhuMwHaEK?pid=Api&P=0&h=180",
+      passengers: "15M+ annually",
+      routes: "52 destinations"
     }
   ];
 
-  const testimonials = [
+  const achievements = [
+    { icon: FaAward, title: "Best Travel Platform 2024", description: "Recognized by Travel Excellence Awards" },
+    { icon: FaShieldAlt, title: "100% Secure Bookings", description: "SSL encrypted transactions" },
+    { icon: FaClock, title: "24/7 Customer Support", description: "Round-the-clock assistance" },
+    { icon: FaHeart, title: "98% Customer Satisfaction", description: "Based on 50,000+ reviews" }
+  ];
+
+  const milestones = [
+    { year: "2018", event: "Company Founded", description: "Started with a vision to simplify travel" },
+    { year: "2019", event: "First Million Users", description: "Reached 1M+ registered travelers" },
+    { year: "2021", event: "Global Expansion", description: "Expanded to 25+ countries" },
+    { year: "2023", event: "AI Integration", description: "Launched smart booking assistant" },
+    { year: "2024", event: "50+ Destinations", description: "Now serving 50+ global destinations" }
+  ];
+
+  const values = [
     {
-      quote: "The premium lounge experience transformed my layover into a relaxing retreat.",
-      author: "Rahul Sharma",
-      role: "Frequent Flyer"
+      icon: FaRocket,
+      title: "Innovation",
+      description: "Constantly evolving to provide cutting-edge travel solutions"
     },
     {
-      quote: "Our family always feels welcome in the dedicated family zones.",
-      author: "Priya Patel",
-      role: "Family Traveler"
+      icon: FaHandshake,
+      title: "Trust",
+      description: "Building lasting relationships through transparency and reliability"
     },
     {
-      quote: "As a business traveler, the private workspaces are a game-changer.",
-      author: "Amit Joshi",
-      role: "Business Executive"
+      icon: FaGlobe,
+      title: "Global Reach",
+      description: "Connecting travelers to destinations worldwide"
+    },
+    {
+      icon: FaUsers,
+      title: "Customer First",
+      description: "Every decision is made with our travelers in mind"
     }
   ];
+
+  // Counter animation
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setCounters({
+        destinations: 50,
+        travelers: 10000000,
+        support: 24
+      });
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  const CounterCard = ({ value, label, suffix = "" }) => {
+    const [count, setCount] = useState(0);
+    
+    useEffect(() => {
+      const duration = 2000;
+      const steps = 60;
+      const increment = value / steps;
+      let current = 0;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= value) {
+          setCount(value);
+          clearInterval(timer);
+        } else {
+          setCount(Math.floor(current));
+        }
+      }, duration / steps);
+
+      return () => clearInterval(timer);
+    }, [value]);
+
+    const formatNumber = (num) => {
+      if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+      if (num >= 1000) return (num / 1000).toFixed(0) + 'K';
+      return num.toString();
+    };
+
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6 }}
+        className="text-center"
+      >
+        <h2 className="display-4 fw-bold text-primary counter-number">
+          {formatNumber(count)}{suffix}
+        </h2>
+        <p className="text-uppercase text-muted fw-bold counter-label">{label}</p>
+      </motion.div>
+    );
+  };
 
   return (
-    <>
-      <HomeNavbar />
-      <main className="main-content">
-        <Outlet />
+    <div className="about-page">
+      {/* Enhanced Hero Section */}
+      <section className="hero-section">
+        <div className="hero-background"></div>
+        <div className="hero-overlay"></div>
+        <Container className="hero-content">
+          <motion.div
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+            className="text-center"
+          >
+            <motion.div
+              initial={{ scale: 0 }}
+              animate={{ scale: 1 }}
+              transition={{ delay: 0.5, type: "spring" }}
+              className="hero-icon mb-4"
+            >
+              <FaPlane size={80} className="text-white" />
+            </motion.div>
+            <h1 className="display-2 fw-bold text-white mb-4">Redefining Travel</h1>
+            <p className="lead text-white mb-5 mx-auto hero-subtitle">
+              Experience seamless connectivity with our trusted global partners. 
+              Your journey begins with a single click.
+            </p>
+            <motion.div
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              <Button variant="primary" size="lg" className="cta-button px-5 py-3 shadow-lg">
+                <FaRocket className="me-2" />
+                Start Your Journey
+              </Button>
+            </motion.div>
+          </motion.div>
+        </Container>
+        
+        {/* Floating Elements */}
+        <div className="floating-elements">
+          <motion.div 
+            className="floating-plane"
+            animate={{ 
+              x: [0, 100, 0],
+              y: [0, -20, 0]
+            }}
+            transition={{ 
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          >
+            ✈️
+          </motion.div>
+        </div>
+      </section>
 
-        {/* Hero Carousel */}
-        <Carousel fade controls={false} indicators={false} className="mb-5">
-          <Carousel.Item className="position-relative">
-            <div className="carousel-image-overlay"></div>
-            <img
-              className="d-block w-100"
-              src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-              alt="First slide"
-              style={{ height: "500px", objectFit: "cover" }}
-            />
-            <Carousel.Caption className="text-start d-flex flex-column justify-content-center h-100">
-              <div className="container">
-                <h1 className="display-3 fw-bold mb-4">Elevate Your Travel Experience</h1>
-                <p className="lead mb-4">Book flights with India's leading airlines & exclusive travel benefits</p>
-                <Button variant="primary" size="lg" className="px-4" href="/flights/search">
-                  Book Flights Now
-                </Button>
-              </div>
-            </Carousel.Caption>
-          </Carousel.Item>
-        </Carousel>
+      {/* Enhanced Stats Section */}
+      <section className="stats-section py-5">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <Row className="text-center g-4">
+              <Col md={4}>
+                <CounterCard value={50} label="Destinations" suffix="+" />
+              </Col>
+              <Col md={4}>
+                <CounterCard value={10000000} label="Happy Travelers" />
+              </Col>
+              <Col md={4}>
+                <CounterCard value={24} label="Support Hours" suffix="/7" />
+              </Col>
+            </Row>
+          </motion.div>
+        </Container>
+      </section>
 
-        <Container className="py-5">
-          {/* Features Section */}
-          <Row className="mb-5">
-            <Col className="text-center">
-              <Badge bg="primary" pill className="mb-3 px-3 py-2">WHY CHOOSE US</Badge>
-              <h2 className="display-5 fw-bold mb-4">Top Travel Services</h2>
-              <p className="lead text-muted mx-auto" style={{ maxWidth: "700px" }}>
-                Partnering with India's finest airlines to offer superior booking, support, and travel comfort
-              </p>
+      {/* Mission & Vision Section */}
+      <section className="mission-section py-5 bg-light">
+        <Container>
+          <Row className="align-items-center g-5">
+            <Col lg={6}>
+              <motion.div
+                initial={{ opacity: 0, x: -50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                <h2 className="display-5 fw-bold text-primary mb-4">Our Mission</h2>
+                <p className="lead mb-4">
+                  To democratize travel by making it accessible, affordable, and enjoyable for everyone. 
+                  We believe that exploring the world should be a right, not a privilege.
+                </p>
+                <div className="mission-features">
+                  <div className="feature-item mb-3">
+                    <FaGlobe className="text-primary me-3" />
+                    <span>Global connectivity at your fingertips</span>
+                  </div>
+                  <div className="feature-item mb-3">
+                    <FaShieldAlt className="text-primary me-3" />
+                    <span>Secure and transparent booking process</span>
+                  </div>
+                  <div className="feature-item">
+                    <FaHeart className="text-primary me-3" />
+                    <span>Personalized travel experiences</span>
+                  </div>
+                </div>
+              </motion.div>
+            </Col>
+            <Col lg={6}>
+              <motion.div
+                initial={{ opacity: 0, x: 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+                className="mission-visual"
+              >
+                <div className="vision-card p-4 bg-white rounded-4 shadow-lg">
+                  <h3 className="fw-bold text-primary mb-3">Our Vision</h3>
+                  <p className="mb-0">
+                    To become the world's most trusted travel platform, 
+                    connecting cultures and creating memories that last a lifetime.
+                  </p>
+                </div>
+              </motion.div>
             </Col>
           </Row>
+        </Container>
+      </section>
 
-          <Row className="g-4 mb-5">
-            <Col md={6} lg={3}>
-              <Card className="h-100 border-0 shadow-hover">
-                <Card.Body className="p-4 text-center">
-                  <div className="icon-circle bg-primary bg-opacity-10 text-primary mb-4 mx-auto">
-                    <i className="bi bi-headset fs-3"></i>
-                  </div>
-                  <Card.Title as="h3" className="h4 mb-3">24/7 Customer Support</Card.Title>
-                  <Card.Text className="text-muted">
-                    Dedicated help desk available around the clock for bookings and travel queries
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} lg={3}>
-              <Card className="h-100 border-0 shadow-hover">
-                <Card.Body className="p-4 text-center">
-                  <div className="icon-circle bg-primary bg-opacity-10 text-primary mb-4 mx-auto">
-                    <i className="bi bi-emoji-smile fs-3"></i>
-                  </div>
-                  <Card.Title as="h3" className="h4 mb-3">Happy Flyers</Card.Title>
-                  <Card.Text className="text-muted">
-                    98% satisfaction rate from passengers who booked through us
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} lg={3}>
-              <Card className="h-100 border-0 shadow-hover">
-                <Card.Body className="p-4 text-center">
-                  <div className="icon-circle bg-primary bg-opacity-10 text-primary mb-4 mx-auto">
-                    <i className="bi bi-airplane fs-3"></i>
-                  </div>
-                  <Card.Title as="h3" className="h4 mb-3">Extensive Route Network</Card.Title>
-                  <Card.Text className="text-muted">
-                    Access 100+ domestic and international destinations worldwide
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-
-            <Col md={6} lg={3}>
-              <Card className="h-100 border-0 shadow-hover">
-                <Card.Body className="p-4 text-center">
-                  <div className="icon-circle bg-primary bg-opacity-10 text-primary mb-4 mx-auto">
-                    <i className="bi bi-award fs-3"></i>
-                  </div>
-                  <Card.Title as="h3" className="h4 mb-3">Award-Winning Service</Card.Title>
-                  <Card.Text className="text-muted">
-                    Recognized for excellence in airline booking and customer experience
-                  </Card.Text>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-
-          {/* Airlines Partner Section */}
-          <Row className="mb-5">
-            <Col className="text-center">
-              <Badge bg="primary" pill className="mb-3 px-3 py-2">OUR AIRLINE PARTNERS</Badge>
-              <h2 className="display-5 fw-bold mb-4">Trusted Carriers We Work With</h2>
-              <p className="lead text-muted mx-auto" style={{ maxWidth: "700px" }}>
-                Book with confidence using our reliable partners for a smooth journey
-              </p>
-            </Col>
-          </Row>
-
-          <Row className="g-4 mb-5">
-            {airlines.map((airline, index) => (
-              <Col key={index} md={6} lg={4}>
-                <Card className="h-100 border-0 shadow-sm hover-scale">
-                  <div className="position-relative">
-                    <Card.Img
-                      variant="top"
-                      src={airline.imageUrl}
-                      alt={airline.name}
-                      style={{ height: "200px", objectFit: "cover" }}
-                    />
-                    <Badge bg="warning" className="position-absolute top-0 end-0 m-2">
-                      <i className="bi bi-star-fill me-1"></i> {airline.rating}
-                    </Badge>
-                  </div>
-                  <Card.Body>
-                    <Card.Title>{airline.name}</Card.Title>
-                    <Card.Text className="text-muted mb-3">{airline.description}</Card.Text>
-                    <ul className="list-unstyled">
-                      {airline.features.map((feature, i) => (
-                        <li key={i} className="mb-2">
-                          <i className="bi bi-check-circle-fill text-success me-2"></i>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                  </Card.Body>
-                  <Card.Footer className="bg-transparent border-top-0">
-                    <Button
-                      variant="outline-primary"
-                      className="w-100"
-                      href={airline.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      Visit Website
-                    </Button>
-                  </Card.Footer>
-                </Card>
+      {/* Values Section */}
+      <section className="values-section py-5">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-5"
+          >
+            <h2 className="display-5 fw-bold text-primary mb-3">Our Core Values</h2>
+            <p className="lead text-muted">The principles that guide everything we do</p>
+          </motion.div>
+          
+          <Row className="g-4">
+            {values.map((value, index) => (
+              <Col md={6} lg={3} key={index}>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ y: -10 }}
+                >
+                  <Card className="h-100 border-0 shadow-sm value-card text-center">
+                    <Card.Body className="p-4">
+                      <div className="value-icon mb-3">
+                        <value.icon size={40} className="text-primary" />
+                      </div>
+                      <h5 className="fw-bold mb-3">{value.title}</h5>
+                      <p className="text-muted small">{value.description}</p>
+                    </Card.Body>
+                  </Card>
+                </motion.div>
               </Col>
             ))}
           </Row>
+        </Container>
+      </section>
 
-          {/* Testimonials Section */}
-          <Row className="mb-5">
-            <Col className="text-center">
-              <Badge bg="primary" pill className="mb-3 px-3 py-2">TRAVELER TESTIMONIALS</Badge>
-              <h2 className="display-5 fw-bold mb-4">What Our Customers Say</h2>
-            </Col>
-          </Row>
-
-          <Carousel indicators={false} className="mb-5">
-            {testimonials.map((testimonial, index) => (
-              <Carousel.Item key={index}>
-                <Card className="border-0 bg-light">
-                  <Card.Body className="p-5 text-center">
-                    <i className="bi bi-quote fs-1 text-primary opacity-25 mb-4"></i>
-                    <p className="fs-4 fst-italic mb-4">"{testimonial.quote}"</p>
-                    <div className="d-flex justify-content-center align-items-center">
-                      <div className="ms-3 text-start">
-                        <h5 className="mb-1">{testimonial.author}</h5>
-                        <p className="text-muted mb-0">{testimonial.role}</p>
+      {/* Enhanced Partners Grid */}
+      <section className="partners-section py-5 bg-light">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-5"
+          >
+            <h2 className="display-5 fw-bold text-primary mb-3">Our Trusted Partners</h2>
+            <p className="lead text-muted">World-class airlines and airports we work with</p>
+          </motion.div>
+          
+          <Row className="g-4">
+            {airlines.map((airline, index) => (
+              <Col md={6} lg={3} key={index}>
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ y: -10, scale: 1.02 }}
+                >
+                  <Card className="h-100 border-0 shadow-sm partner-card">
+                    <div className="img-wrapper">
+                      <Card.Img variant="top" src={airline.img} alt={airline.name} />
+                      <div className="img-overlay">
+                        <Button variant="primary" size="sm" className="view-details-btn">
+                          View Details
+                        </Button>
                       </div>
                     </div>
-                  </Card.Body>
-                </Card>
-              </Carousel.Item>
+                    <Card.Body className="p-4">
+                      <div className="d-flex justify-content-between align-items-start mb-2">
+                        <h5 className="fw-bold mb-0">{airline.name}</h5>
+                        <Badge bg="warning" text="dark" className="rating-badge">
+                          <FaStar className="me-1" />{airline.rating}
+                        </Badge>
+                      </div>
+                      <p className="text-muted small mb-3">{airline.description}</p>
+                      <div className="partner-stats">
+                        <div className="stat-row mb-2">
+                          <FaUsers className="text-primary me-2" />
+                          <small className="text-muted">{airline.passengers}</small>
+                        </div>
+                        <div className="stat-row">
+                          <FaMapMarkerAlt className="text-primary me-2" />
+                          <small className="text-muted">{airline.routes}</small>
+                        </div>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </motion.div>
+              </Col>
             ))}
-          </Carousel>
-
-          {/* FAQ Section */}
-          <Row className="mb-5">
-            <Col lg={6} className="mb-4 mb-lg-0">
-              <h2 className="display-5 fw-bold mb-4">Frequently Asked Questions</h2>
-              <Accordion defaultActiveKey="0" flush>
-                <Accordion.Item eventKey="0">
-                  <Accordion.Header>How do I access premium lounges?</Accordion.Header>
-                  <Accordion.Body>
-                    Premium lounges are accessible for business class travelers, lounge memberships, or select credit card holders.
-                  </Accordion.Body>
-                </Accordion.Item>
-                <Accordion.Item eventKey="1">
-                  <Accordion.Header>Which airlines do you partner with?</Accordion.Header>
-                  <Accordion.Body>
-                    We partner with all major Indian and international carriers through codeshare agreements.
-                  </Accordion.Body>
-                </Accordion.Item>
-                <Accordion.Item eventKey="2">
-                  <Accordion.Header>Can I book flights directly through your service?</Accordion.Header>
-                  <Accordion.Body>
-                    Yes, book flights directly with us to enjoy exclusive discounts and priority support.
-                  </Accordion.Body>
-                </Accordion.Item>
-              </Accordion>
-            </Col>
-            <Col lg={6}>
-              <div className="bg-primary text-white p-5 rounded-3 h-100">
-                <h3 className="fw-bold mb-4">Need Personalized Assistance?</h3>
-                <p className="mb-4">Our travel experts are available 24/7 to help you plan your perfect journey.</p>
-                <Button variant="light" size="lg" className="px-4" href="/contactus">
-                  <i className="bi bi-telephone-outbound me-2"></i> Contact Us
-                </Button>
-              </div>
-            </Col>
           </Row>
         </Container>
-      </main>
+      </section>
 
-      {/* Footer */}
-      <footer className="bg-dark text-white pt-5 pb-4">
+      {/* Timeline Section */}
+      <section className="timeline-section py-5">
         <Container>
-          <Row>
-            <Col lg={4} className="mb-4 mb-lg-0">
-              <h5 className="text-uppercase mb-4">Sunbeam Travel</h5>
-              <p>Elevating your travel experience with premium airline services and exclusive partnerships.</p>
-              <div className="social-icons">
-                <a href="#" className="text-white me-3"><i className="bi bi-facebook fs-5"></i></a>
-                <a href="#" className="text-white me-3"><i className="bi bi-twitter fs-5"></i></a>
-                <a href="#" className="text-white me-3"><i className="bi bi-instagram fs-5"></i></a>
-                <a href="#" className="text-white"><i className="bi bi-linkedin fs-5"></i></a>
-              </div>
-            </Col>
-            <Col lg={2} md={4} className="mb-4 mb-md-0">
-              <h5 className="text-uppercase mb-4">Services</h5>
-              <ul className="list-unstyled">
-                <li className="mb-2"><a href="/flights/search" className="text-white text-decoration-none">Flight Booking</a></li>
-                <li className="mb-2"><a href="/lounges" className="text-white text-decoration-none">Lounge Access</a></li>
-                <li className="mb-2"><a href="/vip-services" className="text-white text-decoration-none">VIP Services</a></li>
-                <li className="mb-2"><a href="/insurance" className="text-white text-decoration-none">Travel Insurance</a></li>
-              </ul>
-            </Col>
-            <Col lg={2} md={4} className="mb-4 mb-md-0">
-              <h5 className="text-uppercase mb-4">Airlines</h5>
-              <ul className="list-unstyled">
-                <li className="mb-2"><a href="https://www.airindia.in/" className="text-white text-decoration-none" target="_blank" rel="noopener noreferrer">Air India</a></li>
-                <li className="mb-2"><a href="https://www.goindigo.in/" className="text-white text-decoration-none" target="_blank" rel="noopener noreferrer">IndiGo</a></li>
-                <li className="mb-2"><a href="https://www.airvistara.com/" className="text-white text-decoration-none" target="_blank" rel="noopener noreferrer">Vistara</a></li>
-                <li className="mb-2"><a href="#" className="text-white text-decoration-none">International Partners</a></li>
-              </ul>
-            </Col>
-            <Col lg={4} md={4}>
-              <h5 className="text-uppercase mb-4">Newsletter</h5>
-              <p>Subscribe for exclusive flight deals and important travel updates</p>
-              <div className="input-group mb-3">
-                <input type="email" className="form-control" placeholder="Your Email" aria-label="Email for newsletter subscription" />
-                <button className="btn btn-primary" type="button">Subscribe</button>
-              </div>
-            </Col>
-          </Row>
-          <hr className="my-4" />
-          <Row>
-            <Col md={6} className="text-center text-md-start">
-              <p className="mb-0">© 2025 Sunbeam Travel. All rights reserved.</p>
-            </Col>
-            <Col md={6} className="text-center text-md-end">
-              <p className="mb-0">
-                <a href="#" className="text-white text-decoration-none me-3">Privacy Policy</a>
-                <a href="#" className="text-white text-decoration-none">Terms of Service</a>
-              </p>
-            </Col>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-5"
+          >
+            <h2 className="display-5 fw-bold text-primary mb-3">Our Journey</h2>
+            <p className="lead text-muted">Milestones that shaped our story</p>
+          </motion.div>
+          
+          <div className="timeline">
+            {milestones.map((milestone, index) => (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                className={`timeline-item ${index % 2 === 0 ? 'left' : 'right'}`}
+              >
+                <div className="timeline-content">
+                  <div className="timeline-year">{milestone.year}</div>
+                  <h4 className="fw-bold text-primary">{milestone.event}</h4>
+                  <p className="text-muted">{milestone.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </Container>
+      </section>
+
+      {/* Achievements Section */}
+      <section className="achievements-section py-5 bg-light">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="text-center mb-5"
+          >
+            <h2 className="display-5 fw-bold text-primary mb-3">Our Achievements</h2>
+            <p className="lead text-muted">Recognition that drives us forward</p>
+          </motion.div>
+          
+          <Row className="g-4">
+            {achievements.map((achievement, index) => (
+              <Col md={6} lg={3} key={index}>
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: index * 0.1 }}
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <Card className="h-100 border-0 shadow-sm achievement-card text-center">
+                    <Card.Body className="p-4">
+                      <div className="achievement-icon mb-3">
+                        <achievement.icon size={50} className="text-primary" />
+                      </div>
+                      <h5 className="fw-bold mb-3">{achievement.title}</h5>
+                      <p className="text-muted small">{achievement.description}</p>
+                    </Card.Body>
+                  </Card>
+                </motion.div>
+              </Col>
+            ))}
           </Row>
         </Container>
-      </footer>
-    </>
+      </section>
+
+      {/* Enhanced Contact CTA */}
+      <section className="cta-section py-5">
+        <Container>
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+          >
+            <div className="cta-card bg-primary text-white rounded-5 p-5 text-center shadow-lg position-relative overflow-hidden">
+              <div className="cta-background"></div>
+              <div className="cta-content position-relative">
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                  className="cta-icon mb-4"
+                >
+                  <FaPlane size={60} className="text-white" />
+                </motion.div>
+                <h2 className="display-5 fw-bold mb-3">Ready to Take Off?</h2>
+                <p className="lead mb-4">
+                  Our travel experts are available 24/7 to help you plan your perfect itinerary. 
+                  Let's make your travel dreams come true.
+                </p>
+                <div className="d-flex gap-3 justify-content-center flex-wrap">
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="outline-light" size="lg" className="px-4">
+                      <FaHeadset className="me-2" />
+                      Contact Concierge
+                    </Button>
+                  </motion.div>
+                  <motion.div whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+                    <Button variant="light" size="lg" className="px-4">
+                      <FaRocket className="me-2" />
+                      Book Now
+                    </Button>
+                  </motion.div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </Container>
+      </section>
+    </div>
   );
 }
 
