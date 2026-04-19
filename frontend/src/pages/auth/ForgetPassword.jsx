@@ -1,43 +1,97 @@
 import React, { useState } from "react";
-import "./ForgotPassword.css"; // Optional for extra styling
+import { useNavigate } from "react-router-dom";
+import { forgotPasswordApi } from "../../services/auth/user";
+import { toast } from "react-toastify";
+import "../../css/Login.css";
+import "../../css/ForgetPassword.css";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // TODO: Add reset link logic here
-    alert(`Reset link sent to ${email}`);
+    
+    if (!email) {
+      toast.warn("Please enter your registered email");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const result = await forgotPasswordApi(email);
+
+      if (result.success) {
+        toast.success("Reset link sent to your email");
+        setEmail("");
+        console.log("Navigating to reset-password with email:", email);
+        navigate("/reset-password", { state: { email } });
+      } else {
+        toast.error(result.message || "Error sending reset link");
+      }
+    } catch (error) {
+      toast.error("An error occurred. Please try again.");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
-    <div className="d-flex justify-content-center align-items-center min-vh-100 bg-light">
-      <div className="card shadow-lg p-4" style={{ maxWidth: "400px", borderRadius: "12px" }}>
-        <h3 className="text-center fw-bold text-warning mb-3">Forgot Your Password?</h3>
-
-        <form onSubmit={handleSubmit}>
-          <div className="mb-3">
-            <label htmlFor="email" className="form-label">Email address</label>
-            <input
-              type="email"
-              id="email"
-              className="form-control"
-              placeholder="Enter your registered email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-            <small className="text-muted">Enter your registered email address.</small>
+    <div className="forgot-password-container">
+      <div className="forgot-password-card">
+        <div className="card-header">
+          <div className="password-icon">
+            <i className="fas fa-key"></i>
           </div>
-
-          <button type="submit" className="btn btn-warning w-100 fw-bold">
-            Send Reset Link
-          </button>
-        </form>
-
-        <div className="text-center mt-3">
-          <span>Remember your password? </span>
-          <a href="/login" className="fw-bold text-primary">Login here</a>
+          <h3>Forgot Your Password?</h3>
+          <p>Enter your email to reset your password</p>
+        </div>
+        
+        <div className="card-body">
+          <form onSubmit={handleSubmit}>
+            <div className="form-group">
+              <input
+                type="email"
+                id="email"
+                className="form-control"
+                placeholder="Enter your registered email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+                disabled={isLoading}
+              />
+              <span className="input-icon">
+                <i className="fas fa-envelope"></i>
+              </span>
+            </div>
+            
+            <button 
+              type="submit" 
+              className="btn btn-warning w-100"
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <>
+                  <i className="fas fa-spinner fa-spin me-2"></i>
+                  Sending...
+                </>
+              ) : (
+                <>
+                  <i className="fas fa-paper-plane me-2"></i>
+                  Send Reset Link
+                </>
+              )}
+            </button>
+          </form>
+          
+          <div className="back-to-login">
+            <span>Remember your password? </span>
+            <a href="/login" className="login-link">
+              Login here
+            </a>
+          </div>
         </div>
       </div>
     </div>

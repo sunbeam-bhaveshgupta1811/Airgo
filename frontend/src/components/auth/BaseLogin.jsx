@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import "../../css/Login.css";
 import { toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -8,10 +8,18 @@ function BaseLogin({ loginType, authService, redirectPath }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const [isLoading, setIsLoading] = useState(false);
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    if (params.get("verified")) {
+      toast.success("Your account has been verified! Please login.");
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location, navigate]);
 
   const onLogin = async (e) => {
     e.preventDefault();
@@ -26,31 +34,37 @@ function BaseLogin({ loginType, authService, redirectPath }) {
       return;
     }
 
-    if (email.length === 0) {
-      toast.warn("Please enter your email");
-    } else if (password.length === 0) {
+    if (password.length === 0) {
       toast.warn("Please enter your password");
-    } else {
-      try {
-        setIsLoading(true);
-        const result = await authService(email, password);
-        if (result) {
-          toast.success("Login successful!");
-          sessionStorage.setItem("isLoggedIn", "true");
-          sessionStorage.setItem("userEmail", email);
-          sessionStorage.setItem("userType", loginType);
-          sessionStorage.setItem("Name", result.name || "User");
-          sessionStorage.setItem("userId", result.admin_id || "0");
-          navigate(redirectPath);
-        } else {
-          toast.error("Invalid credentials. Please try again.");
-        }
-      } catch (error) {
-        console.error("Login error:", error);
-        toast.error("An error occurred during login");
-      } finally {
-        setIsLoading(false);
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const result = await authService(email, password, loginType);
+      console.log("Login result:", result);
+      if (result.success == true) {
+        sessionStorage.setItem("isLoggedIn", "true");
+        sessionStorage.setItem("userEmail", email);
+        sessionStorage.setItem("userType", result.data.role || "");
+        sessionStorage.setItem("jwt", result.data.jwt || "");
+        sessionStorage.setItem("userId", result.data.customerId || "0");
+        sessionStorage.setItem("name", result.data.firstName || "");
+        toast.success("Login successful!");
+        navigate(redirectPath);
+      } else if (
+        result.success == false &&
+        result.message == "Access denied: You are not allowed to log in as USER"
+      ) {
+        toast.error(result.message);
+      } else {
+        toast.error(result.message || "Login failed. Please try again.");
       }
+    } catch (error) {
+      console.error("Login error:", error);
+      toast.error("An error occurred during login");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -100,10 +114,11 @@ function BaseLogin({ loginType, authService, redirectPath }) {
         </form>
 
         <div className="login_signup">
-          Don't have an account?{" "}
-          <Link to={`/${loginType}/register`}>
-            {loginType === "admin" ? "Register as Admin" : "Signup"}
-          </Link>
+          {loginType !== "admin" && (
+            <>
+              Don't have an account? <Link to="/register">Signup</Link>
+            </>
+          )}
         </div>
       </div>
     </div>
@@ -111,4 +126,3 @@ function BaseLogin({ loginType, authService, redirectPath }) {
 }
 
 export default BaseLogin;
-
