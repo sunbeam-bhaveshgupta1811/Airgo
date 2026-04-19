@@ -1,100 +1,35 @@
-/* /* Contact Page Styles
+/* Contact Us Page Styles */
 .contact-page {
-    background-color: #f8f9fa;
-  }
-  
-  .contact-card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border-radius: 10px;
-  }
-  
-  .contact-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1) !important;
-  }
-  
-  .contact-icon {
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: rgba(13, 110, 253, 0.1);
-    border-radius: 50%;
-    margin-right: 15px;
-  }
-  
-  /* Responsive adjustments */
-  @media (max-width: 768px) {
-    .contact-info {
-      margin-top: 30px;
-    }
-    
-    .contact-card {
-      margin-bottom: 20px;
-    }
-  }
-  
-  /* Form styling */
-  .form-control, .form-select {
-    padding: 12px;
-    border-radius: 8px;
-    border: 1px solid #dee2e6;
-  }
-  
-  .form-control:focus, .form-select:focus {
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
-  }
-  
-  /* Social buttons */
-  .btn-social {
-    width: 40px;
-    height: 40px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Airline logo styling */
-.airline-logo-container {
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 15px;
-    background-color: white;
-  }
-  
-  .airline-logo-container img {
-    max-height: 100%;
-    max-width: 100%;
-    object-fit: contain;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-  }
-  
-  /* Card hover effect */
-  .card {
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-  }
-  
-  .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 20px rgba(0,0,0,0.1) !important;
-  }  */
-  /* Enhanced ContactUs Styles */
-.contact-page {
-  background-color: #f8f9fa;
   min-height: 100vh;
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
 }
 
 /* Hero Section */
 .contact-hero {
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
   position: relative;
-  min-height: 400px;
-  display: flex;
-  align-items: center;
   overflow: hidden;
+  min-height: 60vh;
+}
+
+.contact-hero::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><path d="M20,50 Q50,20 80,50 T140,50" stroke="rgba(255,255,255,0.1)" stroke-width="2" fill="none"/><path d="M10,70 Q40,40 70,70 T130,70" stroke="rgba(255,255,255,0.05)" stroke-width="1" fill="none"/></svg>') repeat;
+  animation: float 20s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { 
+    transform: translateX(0px) translateY(0px); 
+  }
+  50% { 
+    transform: translateX(-20px) translateY(-10px); 
+  }
 }
 
 .hero-background {
@@ -103,8 +38,8 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  z-index: 1;
+  background: radial-gradient(circle at 30% 20%, rgba(255,255,255,0.1) 0%, transparent 50%),
+              radial-gradient(circle at 70% 80%, rgba(255,255,255,0.05) 0%, transparent 50%);
 }
 
 .hero-overlay {
@@ -113,22 +48,24 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.3);
-  z-index: 2;
+  background: rgba(0,0,0,0.1);
 }
 
 .hero-content {
   position: relative;
-  z-index: 3;
+  z-index: 2;
 }
 
 .hero-icon {
-  animation: float 3s ease-in-out infinite;
+  display: inline-block;
+  padding: 20px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-10px); }
+.text-white-75 {
+  color: rgba(255,255,255,0.85) !important;
 }
 
 .hero-stats {
@@ -137,115 +74,196 @@
 
 .stat-item {
   text-align: center;
-  color: white;
-  padding: 0 1rem;
+  padding: 1rem;
+  background: rgba(255,255,255,0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+  min-width: 120px;
+  transition: all 0.3s ease;
+}
+
+.stat-item:hover {
+  background: rgba(255,255,255,0.15);
+  transform: translateY(-2px);
 }
 
 .stat-number {
   font-size: 2rem;
   font-weight: bold;
+  color: white;
   line-height: 1;
 }
 
 .stat-label {
   font-size: 0.9rem;
-  opacity: 0.9;
-}
-
-/* Card Styles */
-.contact-form-card,
-.contact-info-card {
-  border-radius: 20px;
-  backdrop-filter: blur(10px);
-  transition: all 0.3s ease;
-}
-
-.contact-form-card:hover,
-.contact-info-card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1) !important;
+  color: rgba(255,255,255,0.8);
+  margin-top: 0.25rem;
 }
 
 /* Form Styles */
+.contact-form-card {
+  border-radius: 20px;
+  background: white;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,0.2);
+}
+
+.form-header {
+  border-bottom: 1px solid #e9ecef;
+  padding-bottom: 1rem;
+}
+
+.form-progress .progress {
+  border-radius: 10px;
+  background-color: #e9ecef;
+}
+
+.form-progress .progress-bar {
+  background: linear-gradient(90deg, #2a5298 0%, #1e3c72 100%);
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
 .modern-input {
   border: 2px solid #e9ecef;
-  border-radius: 15px;
-  padding: 1rem 1.25rem;
-  font-size: 1rem;
+  border-radius: 12px;
+  padding: 12px 16px;
   transition: all 0.3s ease;
-  background-color: #fff;
+  background: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
 }
 
 .modern-input:focus {
-  border-color: #667eea;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
-  transform: translateY(-2px);
+  border-color: #2a5298;
+  box-shadow: 0 0 0 0.2rem rgba(42, 82, 152, 0.25);
+  background: white;
+  outline: none;
 }
 
-.form-floating > .form-control:focus ~ label,
-.form-floating > .form-control:not(:placeholder-shown) ~ label {
-  color: #667eea;
-  font-weight: 600;
+.modern-input.is-valid {
+  border-color: #28a745;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 8 8'%3e%3cpath fill='%2328a745' d='m2.3 6.73.94-.94 2.94 2.94L8.5 6.4l.94.94L6.5 10.27z'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right calc(0.375em + 0.1875rem) center;
+  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
 }
 
-/* Submit Button */
+.modern-input.is-invalid {
+  border-color: #dc3545;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12' width='12' height='12' fill='none' stroke='%23dc3545'%3e%3ccircle cx='6' cy='6' r='4.5'/%3e%3cpath d='m5.8 4.6 1.4 1.4M7.2 7.4 5.8 6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right calc(0.375em + 0.1875rem) center;
+  background-size: calc(0.75em + 0.375rem) calc(0.75em + 0.375rem);
+}
+
+.invalid-feedback {
+  display: block;
+  width: 100%;
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: #dc3545;
+}
+
 .submit-btn {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
   border: none;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 1px;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+.submit-btn::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+  transition: left 0.5s;
+}
+
+.submit-btn:hover::before {
+  left: 100%;
 }
 
 .submit-btn:hover {
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
-  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  box-shadow: 0 8px 25px rgba(42, 82, 152, 0.3);
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
 }
 
-/* Contact Information */
+.submit-btn:disabled {
+  opacity: 0.6;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Contact Info Card */
+.contact-info-card {
+  border-radius: 20px;
+  background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+  border: 1px solid rgba(42, 82, 152, 0.1);
+}
+
 .contact-item {
   display: flex;
   align-items: flex-start;
-  padding: 1.5rem 0;
-  border-bottom: 1px solid #f0f0f0;
+  padding: 1.5rem;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  margin-bottom: 1rem;
+  background: rgba(255,255,255,0.5);
+  border: 1px solid rgba(42, 82, 152, 0.05);
 }
 
-.contact-item:last-child {
-  border-bottom: none;
+.contact-item:hover {
+  background: rgba(42, 82, 152, 0.05);
+  transform: translateX(5px);
+  box-shadow: 0 4px 15px rgba(42, 82, 152, 0.1);
 }
 
 .contact-icon-wrapper {
-  margin-right: 1.5rem;
+  margin-right: 1rem;
 }
 
 .contact-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 1.5rem;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  font-size: 1.2rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
 .contact-details h5 {
-  color: #333;
+  color: #2a5298;
   margin-bottom: 0.5rem;
 }
 
 .contact-link {
-  color: #667eea;
+  color: #2a5298;
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease;
 }
 
 .contact-link:hover {
-  color: #5a6fd8;
+  color: #1e3c72;
   text-decoration: underline;
+}
+
+.emergency-alert {
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #fff3cd 0%, #ffeaa7 100%);
+  border-left: 4px solid #ffc107;
+  margin-bottom: 2rem;
 }
 
 /* Social Icons */
@@ -256,47 +274,35 @@
 }
 
 .social-icon {
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
   text-decoration: none;
-  font-size: 1.25rem;
+  color: white;
+  font-size: 1.2rem;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
 }
 
-.social-icon.facebook {
-  background: linear-gradient(135deg, #3b5998, #2d4373);
-  color: white;
-}
-
-.social-icon.twitter {
-  background: linear-gradient(135deg, #1da1f2, #0d8bd9);
-  color: white;
-}
-
-.social-icon.instagram {
-  background: linear-gradient(135deg, #e4405f, #c13584);
-  color: white;
-}
-
-.social-icon.linkedin {
-  background: linear-gradient(135deg, #0077b5, #005885);
-  color: white;
-}
+.social-icon.facebook { background: linear-gradient(135deg, #3b5998 0%, #2d4373 100%); }
+.social-icon.twitter { background: linear-gradient(135deg, #1da1f2 0%, #0d8bd9 100%); }
+.social-icon.instagram { background: linear-gradient(135deg, #e1306c 0%, #c13584 100%); }
+.social-icon.linkedin { background: linear-gradient(135deg, #0077b5 0%, #005885 100%); }
 
 .social-icon:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+  color: white;
 }
 
 /* Success Card */
 .success-card {
   border-radius: 20px;
   background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border: 1px solid rgba(40, 167, 69, 0.2);
 }
 
 .success-animation {
@@ -304,102 +310,250 @@
 }
 
 .success-icon {
+  display: inline-block;
+  animation: successPulse 2s ease-in-out infinite;
+}
+
+@keyframes successPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+/* Timeline */
+.timeline {
   position: relative;
-  z-index: 2;
+  padding-left: 2rem;
 }
 
-/* Airline Partners */
-.airline-card-wrapper {
-  height: 100%;
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 15px;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: linear-gradient(to bottom, #2a5298, #1e3c72);
 }
 
-.airline-card {
-  border-radius: 15px;
-  transition: all 0.3s ease;
-  overflow: hidden;
-  height: 100%;
+.timeline-item {
+  position: relative;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+  padding-left: 2rem;
 }
 
-.airline-card:hover {
-  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1) !important;
-}
-
-.airline-logo-container {
-  height: 120px;
+.timeline-number {
+  position: absolute;
+  left: -2rem;
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+  color: white;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  font-weight: bold;
+  font-size: 0.8rem;
+  box-shadow: 0 2px 10px rgba(42, 82, 152, 0.3);
+}
+
+/* Airline Partners */
+.airline-partners {
+  background: white;
+  border-radius: 20px;
+  padding: 3rem 2rem;
+  margin-top: 3rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+}
+
+.airline-card {
+  transition: all 0.3s ease;
+  border-radius: 16px;
+  overflow: hidden;
+  background: white;
+  border: 1px solid rgba(42, 82, 152, 0.1);
+}
+
+.airline-card:hover {
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  transform: translateY(-5px);
+  border-color: rgba(42, 82, 152, 0.2);
+}
+
+.airline-logo-container {
+  background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+  height: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .airline-logo {
-  max-height: 80px;
+  height: 60px;
   max-width: 100%;
   object-fit: contain;
-  transition: all 0.3s ease;
+  filter: grayscale(20%);
+  transition: filter 0.3s ease;
 }
 
 .airline-card:hover .airline-logo {
-  transform: scale(1.05);
+  filter: grayscale(0%);
 }
 
 /* FAQ CTA */
 .faq-cta-card {
-  background: linear-gradient(135deg, #fff 0%, #f8f9fa 100%);
+  background: linear-gradient(135deg, #fff5f5 0%, #fff 100%);
   border-radius: 20px;
+  border-left: 5px solid #2a5298;
+  margin-top: 3rem;
 }
 
 .faq-icon {
+  padding: 1rem;
+  background: rgba(42, 82, 152, 0.1);
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Floating Chat Button */
+.floating-chat-btn {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  z-index: 1000;
+}
+
+.chat-btn {
+  background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+  border: none;
+  box-shadow: 0 8px 25px rgba(42, 82, 152, 0.3);
+  position: relative;
+}
+
+.chat-btn::before {
+  content: '';
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  width: 15px;
+  height: 15px;
+  background: #28a745;
+  border-radius: 50%;
+  border: 2px solid white;
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.05); }
-  100% { transform: scale(1); }
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.2); opacity: 0.7; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+.chat-tooltip {
+  position: absolute;
+  bottom: 70px;
+  right: 0;
+  background: #2a5298;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 10px;
+  font-size: 0.8rem;
+  white-space: nowrap;
+  box-shadow: 0 4px 15px rgba(42, 82, 152, 0.3);
+}
+
+.chat-tooltip::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  right: 20px;
+  border: 5px solid transparent;
+  border-top-color: #2a5298;
 }
 
 /* Responsive Design */
 @media (max-width: 768px) {
-  .hero-content {
-    padding: 2rem 0;
+  .contact-hero {
+    min-height: 50vh;
+  }
+  
+  .hero-stats {
+    flex-direction: column;
+    gap: 1rem !important;
   }
   
   .stat-item {
-    margin-bottom: 1rem;
+    min-width: auto;
+    width: 100%;
+    max-width: 200px;
+    margin: 0 auto;
   }
   
   .contact-item {
     flex-direction: column;
     text-align: center;
+    padding: 1rem;
   }
   
   .contact-icon-wrapper {
-    margin-right: 0;
-    margin-bottom: 1rem;
+    margin: 0 auto 1rem auto;
+  }
+  
+  .timeline {
+    padding-left: 1rem;
+  }
+  
+  .timeline-item {
+    padding-left: 1.5rem;
+  }
+  
+  .timeline-number {
+    left: -1.5rem;
+  }
+  
+  .airline-partners {
+    padding: 2rem 1rem;
+  }
+  
+  .floating-chat-btn {
+    bottom: 20px;
+    right: 20px;
+  }
+  
+  .chat-btn {
+    width: 50px !important;
+    height: 50px !important;
   }
   
   .social-icons-grid {
     justify-content: center;
   }
-  
-  .airline-logo-container {
-    height: 100px;
-  }
-  
-  .airline-logo {
-    max-height: 60px;
-  }
 }
 
 @media (max-width: 576px) {
-  .hero-content h1 {
-    font-size: 2rem;
-  }
-  
   .contact-form-card,
   .contact-info-card {
     margin-bottom: 2rem;
+  }
+  
+  .hero-content {
+    padding: 2rem 0 !important;
+  }
+  
+  .display-4 {
+    font-size: 2rem;
+  }
+  
+  .lead {
+    font-size: 1rem;
+  }
+  
+  .stat-number {
+    font-size: 1.5rem;
   }
 }
 
@@ -409,12 +563,17 @@
   height: 1rem;
 }
 
-/* Focus and Accessibility */
-.btn:focus,
-.form-control:focus,
-.form-select:focus {
-  outline: none;
-  box-shadow: 0 0 0 0.2rem rgba(102, 126, 234, 0.25);
+/* Form Floating Labels */
+.form-floating > .form-control:focus ~ label,
+.form-floating > .form-control:not(:placeholder-shown) ~ label,
+.form-floating > .form-select ~ label {
+  opacity: 0.65;
+  transform: scale(0.85) translateY(-0.5rem) translateX(0.15rem);
+  color: #2a5298;
+}
+
+.form-floating > .form-control:focus ~ label {
+  color: #2a5298;
 }
 
 /* Custom Scrollbar */
@@ -424,13 +583,43 @@
 
 ::-webkit-scrollbar-track {
   background: #f1f1f1;
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  border-radius: 4px;
+  background: linear-gradient(135deg, #2a5298 0%, #1e3c72 100%);
+  border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #5a6fd8 0%, #6a4190 100%);
+  background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+}
+
+/* Accessibility */
+.contact-item:focus-within,
+.airline-card:focus-within {
+  outline: 2px solid #2a5298;
+  outline-offset: 2px;
+}
+
+.submit-btn:focus {
+  box-shadow: 0 0 0 0.2rem rgba(42, 82, 152, 0.5);
+}
+
+/* Print Styles */
+@media print {
+  .floating-chat-btn,
+  .hero-background,
+  .hero-overlay {
+    display: none !important;
+  }
+  
+  .contact-hero {
+    background: #2a5298 !important;
+    color: white !important;
+  }
+  
+  .contact-page {
+    background: white !important;
+  }
 }

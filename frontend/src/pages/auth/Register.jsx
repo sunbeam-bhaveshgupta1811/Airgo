@@ -1,23 +1,27 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaPlane, FaEye, FaEyeSlash } from "react-icons/fa";
 import { registerUser } from "../../services/auth/user";
 import { toast } from "react-toastify";
-import "bootstrap/dist/css/bootstrap.min.css";
 import "../../css/Register.css";
 
+const DEFAULT_TITLE = "Mr";
+
 function Register() {
-  const [title, setTitle] = useState("Mr");
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [role, setRole] = useState("USER");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const navigate = useNavigate();
 
-  const onRegister = async () => {
+  const onRegister = async (e) => {
+    e?.preventDefault();
     if (firstName.length === 0) {
       toast.warn("Please enter first name");
     } else if (lastName.length === 0) {
@@ -32,19 +36,19 @@ function Register() {
       toast.warn("Please confirm password");
     } else if (password !== confirmPassword) {
       toast.warn("Password does not match");
+    } else if (!agreedToTerms) {
+      toast.warn("Please agree to the Terms of Service and Privacy Policy");
     } else {
       const result = await registerUser(
-        title,
+        DEFAULT_TITLE,
         firstName,
         lastName,
         email,
         phone,
-        password,
-        role
+        password
       );
       console.log(result);
       if (result.success) {
-        setRole("USER");
         toast.success("Successfully registered");
         toast.info("Please verify your email before logging in.");
         navigate("/");
@@ -60,97 +64,179 @@ function Register() {
 
   return (
     <div className="register-page">
-      <div className="register-container">
-        <h1 className="register-header">Signup</h1>
+      <div className="register-split">
+        <div className="register-panel-shell">
+          <div className="register-card">
+            <div className="register-card-top">
+              <Link to="/contactus" className="register-help-link">
+                Need help?
+              </Link>
+            </div>
 
-        <div className="register-form">
-          <div className="form-group">
-            <label>Title</label>
-            <select
-              className="form-control"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+            <form
+              className="register-form register-form--horizontal"
+              onSubmit={onRegister}
+              noValidate
             >
-              <option value="Mr">Mr</option>
-              <option value="Ms">Ms</option>
-              <option value="Dr">Dr</option>
-            </select>
-          </div>
+              <div className="register-field-group register-area-first">
+                <label htmlFor="register-firstname"></label>
+                <input
+                  id="register-firstname"
+                  type="text"
+                  className="register-field"
+                  placeholder="First name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  autoComplete="given-name"
+                />
+              </div>
 
-          <div className="form-group">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter your first name"
-              value={firstName}
-              onChange={(e) => setFirstName(e.target.value)}
-            />
-          </div>
+              <div className="register-field-group register-area-last">
+                <label htmlFor="register-lastname"></label>
+                <input
+                  id="register-lastname"
+                  type="text"
+                  className="register-field"
+                  placeholder="Last name"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value)}
+                  autoComplete="family-name"
+                />
+              </div>
 
-          <div className="form-group">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Enter your last name"
-              value={lastName}
-              onChange={(e) => setLastName(e.target.value)}
-            />
-          </div>
+              <div className="register-field-group register-area-email">
+                <label htmlFor="register-email"></label>
+                <input
+                  id="register-email"
+                  type="email"
+                  className="register-field"
+                  placeholder="@example.com"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                />
+              </div>
 
-          <div className="form-group">
-            <input
-              type="email"
-              className="form-control"
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
+              <div className="register-field-group register-area-phone">
+                <label htmlFor="register-phone"></label>
+                <input
+                  id="register-phone"
+                  type="tel"
+                  className="register-field"
+                  placeholder="Mobile number"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  autoComplete="tel"
+                />
+              </div>
 
-          <div className="form-group">
-            <input
-              type="tel"
-              className="form-control"
-              placeholder="Enter mobile number"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-            />
-          </div>
+              <div className="register-field-group register-area-password">
+                <label htmlFor="register-password"></label>
+                <div className="register-password-wrap">
+                  <input
+                    id="register-password"
+                    type={showPassword ? "text" : "password"}
+                    className="register-field register-field-password"
+                    placeholder="Create password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    className="register-password-toggle"
+                    onClick={() => setShowPassword((s) => !s)}
+                    aria-label={
+                      showPassword ? "Hide password" : "Show password"
+                    }
+                  >
+                    {showPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
 
-          <div className="form-group">
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Create password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
+              <div className="register-field-group register-area-confirm">
+                <label htmlFor="register-confirm"></label>
+                <div className="register-password-wrap">
+                  <input
+                    id="register-confirm"
+                    type={showConfirmPassword ? "text" : "password"}
+                    className="register-field register-field-password"
+                    placeholder="Confirm password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    className="register-password-toggle"
+                    onClick={() => setShowConfirmPassword((s) => !s)}
+                    aria-label={
+                      showConfirmPassword
+                        ? "Hide confirm password"
+                        : "Show confirm password"
+                    }
+                  >
+                    {showConfirmPassword ? <FaEyeSlash /> : <FaEye />}
+                  </button>
+                </div>
+              </div>
 
-          <div className="form-group">
-            <input
-              type="password"
-              className="form-control"
-              placeholder="Confirm password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </div>
+              <label className="register-terms register-area-span">
+                <input
+                  type="checkbox"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                />
+                <span>
+                  I accept the terms of the{" "}
+                  <Link to="/contactus" className="register-inline-link">
+                    agreement
+                  </Link>
+                  .
+                </span>
+              </label>
 
-          <button onClick={onRegister} className="signup-button">
-            Signup Now
-          </button>
+              <button
+                type="submit"
+                className="register-submit register-area-span"
+              >
+                Sign up
+              </button>
 
-          <div className="login-link">
-            Already have an account?{" "}
-            <span
-              style={{ color: "blue", cursor: "pointer" }}
-              onClick={() => navigate("/login", { replace: true })}
-            >
-              Login
-            </span>
+              <p className="register-footer-text register-area-span">
+                Already have an account?{" "}
+                <Link className="register-login-link" to="/login">
+                  Log in
+                </Link>
+              </p>
+            </form>
           </div>
         </div>
+        <aside className="register-hero">
+          <div className="register-hero-inner">
+            <Link to="/" className="register-brand">
+              <span className="register-brand-mark" aria-hidden>
+                <FaPlane />
+              </span>
+              <span className="register-brand-name">Airgo</span>
+            </Link>
+
+            <div className="register-hero-copy">
+              <div className="register-status-badge" role="status">
+                <span className="register-status-dot" aria-hidden />
+                <span>System Online • 99.9% Uptime</span>
+              </div>
+              <h2 className="register-hero-headline">
+                Powering smarter airline operations.
+              </h2>
+              <p className="register-hero-subtext">
+                Manage flights, crews, and schedules seamlessly with real-time
+                insights and control.
+              </p>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );
