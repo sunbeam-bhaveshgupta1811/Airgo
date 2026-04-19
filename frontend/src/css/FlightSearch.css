@@ -1,179 +1,476 @@
-/* New container to center everything */
-.flight-search-container {
+/* Modern Flight Search Styles */
+.modern-flight-search {
+  width: 100%;
+  max-width: 100%;
+  background: transparent;
+}
+
+.search-container {
+  background: rgba(255, 255, 255, 0.98);
+  backdrop-filter: blur(20px);
+  border-radius: 20px;
+  padding: 0;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  overflow: visible;
+  width: 100%;
+}
+
+/* Header Section */
+.search-header {
+  background: #f8f9fa;
+  padding: 1.5rem 2rem;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  min-height: 80vh;
+  border-bottom: 1px solid #e9ecef;
+}
+
+.trip-type-selector {
+  display: flex;
+  gap: 2rem;
+}
+
+.trip-option {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  font-weight: 500;
+  color: #6c757d;
+  transition: color 0.3s ease;
+}
+
+.trip-option input[type="radio"] {
+  display: none;
+}
+
+.radio-custom {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #dee2e6;
+  border-radius: 50%;
+  margin-right: 0.5rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.trip-option.active .radio-custom {
+  border-color: #007bff;
+  background: #007bff;
+}
+
+.trip-option.active .radio-custom::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 8px;
+  height: 8px;
+  background: white;
+  border-radius: 50%;
+}
+
+.trip-option.active {
+  color: #007bff;
+  font-weight: 600;
+}
+
+.booking-type {
+  color: #6c757d;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* Search Form */
+.search-form {
   padding: 2rem;
 }
 
-.hero-section {
-  width: 100%;
-  max-width: 1200px;
-  display: flex;
-  justify-content: center;
-}
-
-.booking-card {
-  background: linear-gradient(
-    to bottom,
-    rgba(222, 209, 198, 0.9), /* #DED1C6 */
-    rgba(167, 118, 147, 0.85), /* #A77693 */
-    rgba(23, 72, 113, 0.85),   /* #174871 */
-    rgba(15, 45, 77, 0.9)      /* #0F2D4D */
-  );
-  border-radius: 15px;
-  padding: 3rem;
-  width: 100%;
-  max-width: 900px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(6px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  color: #fff; /* make text readable */
-}
-
-
-.booking-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 2.5rem;
-  text-align: center;
-}
-
-.booking-icon {
-  font-size: 2rem;
-  color: #3498db;
-  margin-right: 1rem;
-  animation: float 3s ease-in-out infinite;
-}
-
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-.booking-header h2 {
-  margin: 0;
-  color: #2c3e50;
-  font-size: 2rem;
-  font-weight: 700;
-}
-
-.booking-form {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.form-row {
-  display: flex;
-  gap: 2rem;
+.search-fields-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
   margin-bottom: 2rem;
+  align-items: end;
   width: 100%;
-  justify-content: center;
+  overflow: visible;
 }
 
-.form-group {
-  flex: 1;
-  max-width: 300px;
+.search-field {
+  position: relative;
 }
 
-.input-container {
+.search-field label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #495057;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.dropdown-icon {
+  font-size: 0.7rem;
+  margin-left: 0.25rem;
+  color: #6c757d;
+}
+
+/* City Input Fields */
+.city-input {
+  position: relative;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 80px;
+}
+
+.city-input:hover {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+}
+
+.city-input input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.city-details {
   display: flex;
   flex-direction: column;
 }
 
-.input-container label {
-  margin-bottom: 0.75rem;
-  font-weight: 600;
-  color: #444;
-  font-size: 0.95rem;
+.city-name {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
+  line-height: 1.2;
 }
 
-.booking-input {
-  padding: 1rem;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  font-size: 1rem;
-  width: 100%;
-  transition: all 0.3s ease;
-  background-color: rgba(255, 255, 255, 0.9);
+.airport-name {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 0.25rem;
 }
 
-.booking-input:focus {
-  outline: none;
-  border-color: #3498db;
-  box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-}
-
-.search-btn {
-  padding: 1rem 2.5rem;
-  background: linear-gradient(135deg, #3498db 0%, #2c3e50 100%);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
+/* Swap Button */
+.swap-button-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all 0.3s ease;
-  margin-top: 1rem;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-  width: auto;
+  margin-top: 1.5rem;
 }
 
-.search-btn:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 7px 14px rgba(0, 0, 0, 0.2);
-}
-
-.search-icon {
-  margin-right: 0.75rem;
-  font-size: 1.2rem;
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .flight-search-container {
-    padding: 1.5rem;
-    min-height: 70vh;
-  }
-  
-  .booking-card {
-    padding: 2rem;
-  }
-  
-  .form-row {
-    flex-direction: column;
-    gap: 1.5rem;
-    align-items: center;
-  }
-  
-  .form-group {
-    max-width: 100%;
-    width: 100%;
-  }
-  
-  .booking-header h2 {
-    font-size: 1.75rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .booking-card {
-    padding: 1.5rem;
-  }
-  
-  .search-btn {
-    padding: 0.9rem 1.8rem;
-    font-size: 1rem;
-    width: 100%;
-  }
-}
-*{
+.swap-btn {
+  width: 40px;
+  height: 40px;
+  border: 2px solid #007bff;
+  background: white;
+  border-radius: 50%;
+  display: flex;
   align-items: center;
-  align-content: center;
+  justify-content: center;
+  color: #007bff;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  font-size: 1rem;
+}
+
+.swap-btn:hover {
+  background: #007bff;
+  color: white;
+  transform: rotate(180deg);
+}
+
+/* Date Fields */
+.date-input {
+  position: relative;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 80px;
+}
+
+.date-input:hover {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+}
+
+.date-input input[type="date"] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.date-display {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-number {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
+  line-height: 1;
+}
+
+.date-month {
+  font-size: 1rem;
+  color: #212529;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.date-day {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 0.25rem;
+}
+
+.add-return {
+  display: flex;
+  flex-direction: column;
+  color: #6c757d;
+  font-size: 0.85rem;
+}
+
+/* Travelers Field */
+.travelers-input {
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 1rem;
+  background: white;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-height: 80px;
+}
+
+.travelers-input:hover {
+  border-color: #007bff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.1);
+}
+
+.travelers-display {
+  display: flex;
+  flex-direction: column;
+}
+
+.travelers-count {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #212529;
+  line-height: 1;
+}
+
+.travelers-text {
+  font-size: 1rem;
+  color: #212529;
+  font-weight: 600;
+  margin-top: 0.25rem;
+}
+
+.class-text {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin-top: 0.25rem;
+}
+
+/* Special Fares Section */
+.special-fares-section {
+  margin-bottom: 2rem;
+}
+
+.special-fares-label {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #495057;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+}
+
+.special-fares-options {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.fare-option {
+  display: flex;
+  align-items: flex-start;
+  padding: 1rem;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: white;
+}
+
+.fare-option:hover {
+  border-color: #007bff;
+  box-shadow: 0 2px 8px rgba(0, 123, 255, 0.1);
+}
+
+.fare-option.active {
+  border-color: #007bff;
+  background: rgba(0, 123, 255, 0.05);
+}
+
+.fare-option input[type="radio"] {
+  display: none;
+}
+
+.fare-content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.fare-label {
+  font-weight: 600;
+  color: #212529;
+  margin-bottom: 0.25rem;
+  display: flex;
+  align-items: center;
+}
+
+.fare-description {
+  font-size: 0.85rem;
+  color: #6c757d;
+}
+
+/* Search Button */
+.search-button-container {
+  display: flex;
+  justify-content: center;
+}
+
+.search-button {
+  background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  border: none;
+  border-radius: 50px;
+  padding: 1rem 3rem;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(255, 107, 53, 0.4);
+  min-width: 200px;
+}
+
+.search-button:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(255, 107, 53, 0.6);
+}
+
+.search-button:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .search-fields-row {
+    grid-template-columns: 1fr auto 1fr;
+    grid-template-rows: auto auto;
+  }
+  
+  .date-field,
+  .travelers-field {
+    grid-column: 1 / -1;
+  }
+  
+  .special-fares-options {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 768px) {
+  .search-header {
+    flex-direction: column;
+    gap: 1rem;
+    text-align: center;
+  }
+  
+  .trip-type-selector {
+    gap: 1rem;
+  }
+  
+  .search-fields-row {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .swap-button-container {
+    order: 3;
+    margin: 0;
+  }
+  
+  .special-fares-options {
+    grid-template-columns: 1fr;
+  }
+  
+  .search-container {
+    border-radius: 15px;
+  }
+  
+  .search-form {
+    padding: 1.5rem;
+  }
+}
+
+@media (max-width: 576px) {
+  .search-header {
+    padding: 1rem;
+  }
+  
+  .search-form {
+    padding: 1rem;
+  }
+  
+  .city-input,
+  .date-input,
+  .travelers-input {
+    min-height: 60px;
+    padding: 0.75rem;
+  }
+  
+  .city-name,
+  .date-number,
+  .travelers-count {
+    font-size: 1.25rem;
+  }
+  
+  .search-button {
+    padding: 0.875rem 2rem;
+    font-size: 1rem;
+  }
+}
+
+/* Legacy compatibility */
+.flight-search-container {
+  width: 100%;
+}
+
+.flight-search-glass-card {
+  background: transparent;
+}
+
+.flight-search-header {
+  display: none;
+}
+
+.flight-search-form {
+  background: transparent;
 }

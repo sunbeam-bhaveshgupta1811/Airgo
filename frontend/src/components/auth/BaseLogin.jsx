@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import "../../css/Login.css";
+import { FaPlane } from "react-icons/fa";
 import { toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -69,57 +70,93 @@ function BaseLogin({ loginType, authService, redirectPath }) {
   };
 
   return (
-    <div className="login-page">
-      <div className="form_container">
-        <h2>{loginType === "admin" ? "Admin Login" : "Login"}</h2>
-
-        <form onSubmit={onLogin}>
-          <div className="input_box">
-            <i className="email">📧</i>
-            <input
-              onChange={(e) => setEmail(e.target.value)}
-              type="email"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-
-          <div className="input_box">
-            <i className="password">🔒</i>
-            <input
-              onChange={(e) => setPassword(e.target.value)}
-              type="password"
-              placeholder="Enter your password"
-              required
-            />
-            <i className="pw_hide"></i>
-          </div>
-
-          <div className="option_field">
-            <div className="checkbox">
-              <input
-                type="checkbox"
-                id="rememberMe"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-              />
-              <label htmlFor="rememberMe">Remember me</label>
+    <div className="register-page login-page">
+      <div className="register-split">
+        {/* Login Card */}
+        <div className="register-panel-shell">
+          <div className="register-card">
+            <div className="register-card-top">
+              <Link to="/contactus" className="register-help-link">
+                Need help?
+              </Link>
             </div>
-            <Link to="/forgot-password">Forgot password?</Link>
+            <form className="register-form" onSubmit={onLogin}>
+              <h2 style={{textAlign: 'center', marginBottom: '1.5rem'}}>{loginType === "admin" ? "Admin Login" : "Login"}</h2>
+              <div className="register-field-group">
+                <label htmlFor="login-email">Email</label>
+                <input
+                  id="login-email"
+                  type="email"
+                  className="register-field"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  autoComplete="email"
+                  required
+                />
+              </div>
+              <div className="register-field-group">
+                <label htmlFor="login-password">Password</label>
+                <input
+                  id="login-password"
+                  type="password"
+                  className="register-field"
+                  placeholder="Enter your password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  autoComplete="current-password"
+                  required
+                />
+              </div>
+              <div className="register-terms" style={{marginTop: '0.5rem', marginBottom: '0.5rem'}}>
+                <input
+                  type="checkbox"
+                  id="rememberMe"
+                  checked={rememberMe}
+                  onChange={(e) => setRememberMe(e.target.checked)}
+                />
+                <label htmlFor="rememberMe" style={{fontWeight: 400}}>Remember me</label>
+                <span style={{marginLeft: 'auto'}}>
+                  <Link to="/forgot-password" className="register-inline-link">Forgot password?</Link>
+                </span>
+              </div>
+              <button className="register-submit" type="submit" disabled={isLoading}>
+                {isLoading ? "Logging in..." : "Login Now"}
+              </button>
+              <div className="register-footer-text" style={{marginTop: '1.2rem'}}>
+                {loginType !== "admin" && (
+                  <>
+                    Don't have an account? <Link className="register-login-link" to="/register">Signup</Link>
+                  </>
+                )}
+              </div>
+            </form>
           </div>
-
-          <button className="button" type="submit" disabled={isLoading}>
-            {isLoading ? "Logging in..." : "Login Now"}
-          </button>
-        </form>
-
-        <div className="login_signup">
-          {loginType !== "admin" && (
-            <>
-              Don't have an account? <Link to="/register">Signup</Link>
-            </>
-          )}
         </div>
+        {/* Hero Section */}
+        <aside className="register-hero">
+          <div className="register-hero-inner">
+            <Link to="/" className="register-brand">
+              <span className="register-brand-mark" aria-hidden>
+                <FaPlane />
+              </span>
+              <span className="register-brand-name">Airgo</span>
+            </Link>
+            <div className="register-hero-copy">
+              <div className="register-status-badge" role="status">
+                <span className="register-status-dot" aria-hidden />
+                <span>System Online • 99.9% Uptime</span>
+              </div>
+              <h2 className="register-hero-headline">
+                Powering smarter airline operations.
+              </h2>
+              <p className="register-hero-subtext">
+                Manage flights, crews, and schedules seamlessly with real-time
+                insights and control.
+              </p>
+            </div>
+          </div>
+        </aside>
       </div>
     </div>
   );
