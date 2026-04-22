@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/user")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 @CrossOrigin(origins = "http://localhost:3000")
