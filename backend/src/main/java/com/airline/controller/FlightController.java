@@ -17,7 +17,7 @@
 //import com.airline.request.AirlineRequestDto;
 //import com.airline.request.FlightRequestDto;
 //import com.airline.request.PassengerRequestDto;
-//import com.airline.request.ScheduleFlightRequestDto;
+//import com.airline.request.FlightScheduleRequestDto;
 //import com.airline.response.AirlineResponseDto;
 //import com.airline.dto.ApiResponse;
 //import com.airline.response.FlightResponseDto;
@@ -55,12 +55,12 @@
 //
 //
 //	@PostMapping("/addscheduleflight")
-//	public ResponseEntity<ApiResponse<ScheduleFlightResponseDto>> addNewFlight(@RequestBody ScheduleFlightRequestDto dto) {
+//	public ResponseEntity<ApiResponse<ScheduleFlightResponseDto>> addNewFlight(@RequestBody FlightScheduleRequestDto dto) {
 //        return ResponseEntity.ok(flightServiceImpl.addScheduleFlight(dto));
 //    }
 //
 //	@PutMapping("/scheduleflight/{id}")
-//	public ResponseEntity<ApiResponse<ScheduleFlightResponseDto>> UpdateFlight(@PathVariable Long id,@RequestBody ScheduleFlightRequestDto dto) {
+//	public ResponseEntity<ApiResponse<ScheduleFlightResponseDto>> UpdateFlight(@PathVariable Long id,@RequestBody FlightScheduleRequestDto dto) {
 //        return ResponseEntity.ok(flightServiceImpl.updateScheduleFlight(id,dto));
 //    }
 //
