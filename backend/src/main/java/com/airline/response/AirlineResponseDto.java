@@ -2,17 +2,21 @@ package com.airline.response;
 
 import java.time.LocalDateTime;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-@Getter
-@Setter
+@Data
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class AirlineResponseDto {
-    private String airlineName;
-    private int noOfFlights;
-    private LocalDateTime date;
+
+    private Long id;
+    private String name;
+    private String code;
+    private String country;
+    private String contactEmail;
+    private String contactPhone;
+    private String status;
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }

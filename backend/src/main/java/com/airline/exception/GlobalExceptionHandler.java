@@ -74,8 +74,8 @@ public class GlobalExceptionHandler {
                 .body(new ApiResponse<>(false, ex.getMessage(), null));
     }
 	
-	@ExceptionHandler(AirlineAlreadyExistsException.class)
-    public ResponseEntity<ApiResponse<String>> handleAirlineAlreadyExists(AirlineAlreadyExistsException ex) {
+	@ExceptionHandler(DuplicateResourceException.class)
+    public ResponseEntity<ApiResponse<String>> handleAirlineAlreadyExists(DuplicateResourceException ex) {
         return ResponseEntity
                 .badRequest()
                 .body(new ApiResponse<>(false, ex.getMessage(), null));
