@@ -1,25 +1,26 @@
 package com.airline.request;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.*;
+import lombok.Data;
 
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@Data
 public class FlightRequestDto {
-	
-	private String flightNo;
-    private Long airlineId; 
-    private Long adminId;
 
-    private boolean hasEconomy;
-    private boolean hasBusiness;
-    private boolean hasFirst;
+    @NotBlank(message = "Flight number is required")
+    @Pattern(regexp = "^[A-Z0-9]{2,3}-\\d{1,4}$",
+            message = "Flight number format must be like 6E-204 or AI-101")
+    private String flightNumber;
 
-    private Long noOfEconomySeats;
-    private Long noOfBusinessSeats;
-    private Long noOfFirstSeats;
+    @NotNull(message = "Airline ID is required")
+    private Long airlineId;
+
+    @NotNull(message = "Origin airport ID is required")
+    private Long originAirportId;
+
+    @NotNull(message = "Destination airport ID is required")
+    private Long destinationAirportId;
+
+    @NotNull(message = "Duration is required")
+    @Min(value = 30, message = "Duration must be at least 30 minutes")
+    private Integer durationMinutes;
 }
