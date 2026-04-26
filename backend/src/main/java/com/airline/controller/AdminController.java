@@ -17,12 +17,6 @@ import java.util.List;
 @SecurityRequirement(name = "bearerAuth")
 @RequiredArgsConstructor
 public class AdminController {
-//
-//	@Autowired
-//	public FlightServiceImpl flightServiceImpl;
-//
-//	@Autowired
-//	private AdminServiceImpl adminService;
 
     private final UserService userService;
 

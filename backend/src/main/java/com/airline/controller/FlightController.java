@@ -1,95 +1,79 @@
-//package com.airline.controller;
-//
-//import java.util.List;
-//
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.http.ResponseEntity;
-//import org.springframework.web.bind.annotation.CrossOrigin;
-//import org.springframework.web.bind.annotation.DeleteMapping;
-//import org.springframework.web.bind.annotation.GetMapping;
-//import org.springframework.web.bind.annotation.PathVariable;
-//import org.springframework.web.bind.annotation.PostMapping;
-//import org.springframework.web.bind.annotation.PutMapping;
-//import org.springframework.web.bind.annotation.RequestBody;
-//import org.springframework.web.bind.annotation.RequestMapping;
-//import org.springframework.web.bind.annotation.RestController;
-//
-//import com.airline.request.AirlineRequestDto;
-//import com.airline.request.FlightRequestDto;
-//import com.airline.request.PassengerRequestDto;
-//import com.airline.request.FlightScheduleRequestDto;
-//import com.airline.response.AirlineResponseDto;
-//import com.airline.dto.ApiResponse;
-//import com.airline.response.FlightResponseDto;
-//import com.airline.response.PassengerResponseDto;
-//import com.airline.response.ScheduleFlightResponseDto;
-//import com.airline.service.FlightServiceImpl;
-//
-//@RestController
-//@RequestMapping("/admin")
-//@CrossOrigin(origins = "http://localhost:3000")
-//public class FlightController {
-//
-//	@Autowired
-//	public FlightServiceImpl flightServiceImpl;
-//
-//	@PostMapping("/addairline")
-//	public ResponseEntity<ApiResponse<AirlineResponseDto>> addAirline(@RequestBody AirlineRequestDto dto) {
-//        return ResponseEntity.ok(flightServiceImpl.addAirline(dto));
-//    }
-//
-//	@GetMapping("/allflight")
-//	public ResponseEntity<List<FlightResponseDto>> allflight() {
-//        return ResponseEntity.ok(flightServiceImpl.getAllFlight());
-//    }
-//
-//	@PostMapping("/addflight")
-//	public ResponseEntity<ApiResponse<FlightResponseDto>> addNewFlight(@RequestBody FlightRequestDto dto) {
-//        return ResponseEntity.ok(flightServiceImpl.addFlight(dto));
-//    }
-//
-//	@GetMapping("/allscheduleflight")
-//	public ResponseEntity<List<ScheduleFlightResponseDto>> allScheduleFlight() {
-//        return ResponseEntity.ok(flightServiceImpl.getAllScheduleFlight());
-//    }
-//
-//
-//	@PostMapping("/addscheduleflight")
-//	public ResponseEntity<ApiResponse<ScheduleFlightResponseDto>> addNewFlight(@RequestBody FlightScheduleRequestDto dto) {
-//        return ResponseEntity.ok(flightServiceImpl.addScheduleFlight(dto));
-//    }
-//
-//	@PutMapping("/scheduleflight/{id}")
-//	public ResponseEntity<ApiResponse<ScheduleFlightResponseDto>> UpdateFlight(@PathVariable Long id,@RequestBody FlightScheduleRequestDto dto) {
-//        return ResponseEntity.ok(flightServiceImpl.updateScheduleFlight(id,dto));
-//    }
-//
-//	@GetMapping("/allpassengers")
-//	public ResponseEntity<List<PassengerResponseDto>> allPassengers() {
-//        return ResponseEntity.ok(flightServiceImpl.getAllPassengers());
-//    }
-//
-//	@PostMapping("/addpassengers")
-//	public ResponseEntity<ApiResponse<List<PassengerResponseDto>>> allPassengers(@RequestBody List<PassengerRequestDto> list) {
-//        return ResponseEntity.ok(flightServiceImpl.addPassenger(list));
-//    }
-//
-//	@DeleteMapping("/scheduleflight/{id}")
-//    public ResponseEntity<ApiResponse<?>> deleteScheduleFlight(@PathVariable Long id) {
-//		flightServiceImpl.deleteScheduleFlight(id);
-//        return ResponseEntity.ok(new ApiResponse<>(true,"Delete Success..",id));
-//    }
-//
-//	@GetMapping("/scheduleflight/{id}")
-//	public ResponseEntity<FlightResponseDto> getByIdFlight(@PathVariable Long id) {
-//        return ResponseEntity.ok(flightServiceImpl.getFlightById(id));
-//    }
-//
-//	@DeleteMapping("/deleteflight/{flightName}")
-//    public ResponseEntity<ApiResponse<?>> deleteFlight(@PathVariable String flightName) {
-//		flightServiceImpl.deleteFlight(flightName);
-//        return ResponseEntity.ok(new ApiResponse<>(true,"Delete Success..",flightName));
-//    }
-//
-//
-//}
+package com.airline.controller;
+
+import com.airline.dto.*;
+import com.airline.request.FlightRequestDto;
+import com.airline.response.FlightResponseDto;
+import com.airline.service.FlightService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequiredArgsConstructor
+public class FlightController {
+
+    private final FlightService flightService;
+
+    @PostMapping("/admin/flights")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<ApiResponse<FlightResponseDto>> addFlight(
+            @Valid @RequestBody FlightRequestDto request) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Flight added successfully",
+                        flightService.addFlight(request)));
+    }
+
+    @PutMapping("/admin/flights/{id}")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<ApiResponse<FlightResponseDto>> updateFlight(
+            @PathVariable Long id,
+            @Valid @RequestBody FlightRequestDto request) {
+        return ResponseEntity.ok(ApiResponse.success("Flight updated successfully",
+                flightService.updateFlight(id, request)));
+    }
+
+    @PatchMapping("/admin/flights/{id}/deactivate")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<ApiResponse<Void>> deactivateFlight(@PathVariable Long id) {
+        return ResponseEntity.ok(flightService.deactivateFlight(id));
+    }
+
+    @PatchMapping("/admin/flights/{id}/reactivate")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<ApiResponse<Void>> reactivateFlight(@PathVariable Long id) {
+        return ResponseEntity.ok(flightService.reactivateFlight(id));
+    }
+
+    @GetMapping("/admin/flights")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<ApiResponse<List<FlightResponseDto>>> getAllFlights() {
+        return ResponseEntity.ok(ApiResponse.success("Flights fetched",
+                flightService.getAllFlights()));
+    }
+
+    @GetMapping("/admin/flights/airline/{airlineId}")
+    @SecurityRequirement(name = "bearerAuth")
+    public ResponseEntity<ApiResponse<List<FlightResponseDto>>> getFlightsByAirline(
+            @PathVariable Long airlineId) {
+        return ResponseEntity.ok(ApiResponse.success("Flights fetched",
+                flightService.getFlightsByAirline(airlineId)));
+    }
+
+    @GetMapping("/user/flights")
+    public ResponseEntity<ApiResponse<List<FlightResponseDto>>> getActiveFlights() {
+        return ResponseEntity.ok(ApiResponse.success("Active flights fetched",
+                flightService.getActiveFlights()));
+    }
+
+    @GetMapping("/user/flights/{id}")
+    public ResponseEntity<ApiResponse<FlightResponseDto>> getFlightById(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.success("Flight fetched",
+                flightService.getFlightById(id)));
+    }
+}

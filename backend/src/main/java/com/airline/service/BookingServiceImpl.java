@@ -244,7 +244,6 @@ public class BookingServiceImpl implements BookingService{
         FlightSchedule fs = b.getFlightSchedule();
         Flight f = fs.getFlight();
 
-        // Map passengers
         List<PassengerResponseDto> passengerResponses = passengerDao
                 .findByBookingId(b.getId())
                 .stream()
