@@ -1,31 +1,45 @@
-//package com.sunbeam.response;
-//
-//
-//import java.math.BigDecimal;
-//import java.time.LocalDateTime;
-//import java.util.List;
-//
-//import com.sunbeam.entities.Booking.BookingStatus;
-//import com.sunbeam.request.PassengerRequestDto;
-//
-//import lombok.AllArgsConstructor;
-//import lombok.Getter;
-//import lombok.NoArgsConstructor;
-//import lombok.Setter;
-//
-//
-//@Getter
-//@Setter
-//@NoArgsConstructor
-//@AllArgsConstructor
-//public class BookingResponseDto {
-//    private String bookingId;
-//    private String pnr;
-//    private BookingStatus bookingStatus;
-//    private com.sunbeam.entities.Booking.PaymentStatus paymentStatus;
-//    private String transactionId;
-//    private BigDecimal totalFare;
-//    private LocalDateTime bookingDate;
-//    private List<PassengerRequestDto> passengers;
-//}
-//
+package com.airline.response;
+
+import lombok.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class BookingResponseDto {
+
+    private Long id;
+    private String bookingReference;
+
+    private Long userId;
+    private String userName;
+
+    private Long scheduleId;
+    private String flightNumber;
+    private String airlineName;
+    private String originCode;
+    private String originCity;
+    private String destinationCode;
+    private String destinationCity;
+    private LocalDate journeyDate;
+    private LocalTime departureTime;
+    private LocalTime arrivalTime;
+    private String durationFormatted;
+
+    private Integer numberOfPassengers;
+    private BigDecimal pricePerPassenger;
+    private BigDecimal totalAmount;
+    private String status;
+
+    private List<PassengerResponseDto> passengers;
+    private PaymentResponseDto payment;
+
+    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
+}

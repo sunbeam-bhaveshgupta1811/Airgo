@@ -58,6 +58,7 @@ public class AirportController {
 
 
     @GetMapping("/{id}")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<AirportResponseDto>> getAirportById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success("Airport fetched",
                 airportService.getAirportById(id)));

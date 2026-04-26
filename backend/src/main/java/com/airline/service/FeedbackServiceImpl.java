@@ -1,77 +1,128 @@
-//package com.sunbeam.service;
-//
-//import java.time.LocalDateTime;
-//import java.util.ArrayList;
-//import java.util.List;
-//
-//import org.modelmapper.ModelMapper;
-//import org.springframework.beans.factory.annotation.Autowired;
-//import org.springframework.stereotype.Service;
-//
-//import com.sunbeam.dao.BookingDao;
-//import com.sunbeam.dao.FeedbackDao;
-//import com.sunbeam.dao.UserDao;
-//import com.sunbeam.dto.FeedbackDto;
-//import com.sunbeam.entities.Booking;
-//import com.sunbeam.entities.Feedback;
-//import com.sunbeam.entities.User;
-//import com.sunbeam.exception.ResourceNotFoundException;
-//import com.sunbeam.request.UserFeedbackRequestDto;
-//import com.sunbeam.response.ApiResponse;
-//
-//@Service
-//public class FeedbackServiceImpl implements FeedbackService{
-//
-//	@Autowired
-//    private FeedbackDao feedbackDao;
-//
-//	@Autowired
-//	private BookingDao bookingDao;
-//
-//	@Autowired
-//	private UserDao userDao;
-//
-//	@Autowired
-//    private ModelMapper modelMapper;
-//
-//	@Override
-//	public ApiResponse<String> addFeedback(UserFeedbackRequestDto dto) {
-//
-//		Booking booking = bookingDao.findById(dto.getBookingId())
-//                .orElseThrow(() -> new ResourceNotFoundException("Booking not found with ID: " + dto.getBookingId()));
-//
-//		User user = userDao.findById(dto.getUserId())
-//                .orElseThrow(() -> new ResourceNotFoundException("User not found with ID: " + dto.getUserId()));
-//
-//
-//		Feedback feedback = new Feedback();
-//		feedback.setBooking(booking);
-//        feedback.setUser(user);
-//        feedback.setRating(dto.getRating());
-//        feedback.setComments(dto.getComments());
-//        feedback.setSubmittedAt(LocalDateTime.now());
-//        feedbackDao.save(feedback);
-//
-//        return new ApiResponse<>(true, "Feedback submitted successfully", null);
-//	}
-//
-//	@Override
-//	public ApiResponse<List<FeedbackDto>> getFeedbackByUserId(Long userId) {
-//		List<Feedback> feedbacks = feedbackDao.findByUserId(userId);
-//
-//		List<FeedbackDto> feedbackDto = new ArrayList<>();
-//
-//        if (feedbacks.isEmpty()) {
-//            return new ApiResponse<>(true, "No feedbacks found for this user", List.of());
-//        }
-//        for(Feedback feedback : feedbacks) {
-//        	FeedbackDto feedbackdto = modelMapper.map(feedback, FeedbackDto.class);
-//        	feedbackdto.setBookingId(feedback.getBooking().getBookingId());
-//        	feedbackdto.setFlightName(feedback.getBooking().getFlightNumber());
-//        	feedbackdto.setUserId(feedback.getUser().getId());
-//        	feedbackDto.add(feedbackdto);
-//        }
-//        return new ApiResponse<>(true, "Feedback fetched successfully",feedbackDto);
-//	}
-//
-//}
+package com.airline.service;
+
+import com.airline.dao.*;
+import com.airline.entity.*;
+import com.airline.exception.*;
+import com.airline.request.FeedbackRequestDto;
+import com.airline.response.FeedbackResponseDto;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Service
+@RequiredArgsConstructor
+public class FeedbackServiceImpl implements FeedbackService {
+
+    private final FeedbackDao feedbackDao;
+    private final BookingDao bookingDao;
+    private final UserDao userDao;
+
+    @Override
+    public FeedbackResponseDto addFeedback(FeedbackRequestDto request) {
+
+        User user = getLoggedInUser();
+
+        Booking booking = bookingDao.findById(request.getBookingId())
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+        if (!booking.getUser().getId().equals(user.getId())) {
+            throw new BadRequestException("Not your booking");
+        }
+
+        if (booking.getStatus() != BookingStatus.COMPLETED) {
+            throw new BadRequestException("Feedback allowed only after journey completion");
+        }
+
+        if (feedbackDao.existsByBookingId(booking.getId())) {
+            throw new DuplicateResourceException("Feedback already submitted");
+        }
+
+        if (request.getRating() < 1 || request.getRating() > 5) {
+            throw new BadRequestException("Rating must be between 1 and 5");
+        }
+
+        Feedback feedback = Feedback.builder()
+                .booking(booking)
+                .user(user)
+                .rating(request.getRating())
+                .comment(request.getComments())
+                .createdAt(LocalDateTime.now())
+                .build();
+
+        return mapToResponse(feedbackDao.save(feedback));
+    }
+
+    @Override
+    public List<FeedbackResponseDto> getMyFeedbacks() {
+        User user = getLoggedInUser();
+        return feedbackDao.findByUserId(user.getId())
+                .stream().map(this::mapToResponse).toList();
+    }
+
+    @Override
+    public List<FeedbackResponseDto> getFeedbacksByBooking(Long bookingId) {
+        return feedbackDao.findByBookingId(bookingId)
+                .stream().map(this::mapToResponse).toList();
+    }
+
+    @Override
+    public List<FeedbackResponseDto> getAllFeedbacks() {
+        return feedbackDao.findAll()
+                .stream().map(this::mapToResponse).toList();
+    }
+
+    @Override
+    public FeedbackResponseDto updateFeedback(Long id, FeedbackRequestDto request) {
+
+        User user = getLoggedInUser();
+
+        Feedback feedback = feedbackDao.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Feedback not found"));
+
+        if (!feedback.getUser().getId().equals(user.getId())) {
+            throw new BadRequestException("Unauthorized");
+        }
+
+        feedback.setRating(request.getRating());
+        feedback.setComment(request.getComments());
+
+        return mapToResponse(feedbackDao.save(feedback));
+    }
+
+    @Override
+    public void deleteFeedback(Long id) {
+
+        User user = getLoggedInUser();
+
+        Feedback feedback = feedbackDao.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Feedback not found"));
+
+        if (!feedback.getUser().getId().equals(user.getId())) {
+            throw new BadRequestException("Unauthorized");
+        }
+
+        feedbackDao.delete(feedback);
+    }
+
+    private User getLoggedInUser() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        return userDao.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+    }
+
+    private FeedbackResponseDto mapToResponse(Feedback f) {
+        return FeedbackResponseDto.builder()
+                .id(f.getId())
+                .bookingId(f.getBooking().getId())
+                .bookingReference(f.getBooking().getBookingReference())
+                .userId(f.getUser().getId())
+                .userName(f.getUser().getFirstName() + " " + f.getUser().getLastName())
+                .rating(f.getRating())
+                .comment(f.getComment())
+                .createdAt(f.getCreatedAt())
+                .build();
+    }
+}
