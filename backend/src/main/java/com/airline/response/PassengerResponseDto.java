@@ -1,26 +1,31 @@
-//package com.sunbeam.response;
-//
-//import com.sunbeam.entities.Passenger.Gender;
-//
-//import lombok.AllArgsConstructor;
-//import lombok.Data;
-//import lombok.Getter;
-//import lombok.NoArgsConstructor;
-//import lombok.Setter;
-//
-//import java.time.LocalDate;
-//
-//@Data
-//@Getter
-//@Setter
-//@AllArgsConstructor
-//@NoArgsConstructor
-//public class PassengerResponseDto {
-//
-//    private Long bookingId;
-//    private String name;
-//    private Integer age;
-//    private Gender gender;
-//    private String phoneNumber;
-//    private LocalDate dateOfBirth;
-//}
+package com.airline.response;
+
+import lombok.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class PassengerResponseDto {
+
+    private Long id;
+    private Long bookingId;
+    private String bookingReference;
+
+    private String firstName;
+    private String lastName;
+    private String fullName;
+
+    private String gender;
+    private LocalDate dateOfBirth;
+
+    private String idType;
+    private String idNumber;
+
+    private String seatNumber;
+    private String seatZone;
+
+    private LocalDateTime createdAt;
+}
