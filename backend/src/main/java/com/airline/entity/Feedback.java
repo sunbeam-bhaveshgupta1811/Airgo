@@ -1,41 +1,46 @@
-//package com.sunbeam.entities;
-//
-//import java.time.LocalDateTime;
-//import jakarta.persistence.*;
-//import lombok.AllArgsConstructor;
-//import lombok.Getter;
-//import lombok.NoArgsConstructor;
-//import lombok.Setter;
-//
-//@Entity
-//@Table(name = "feedback")
-//@Setter
-//@Getter
-//@AllArgsConstructor
-//@NoArgsConstructor
-//public class Feedback {
-//
-//    @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
-//    @Column(name = "feedback_id")
-//    private Long id;
-//
-//    @Column(length = 500)
-//    private String comments;
-//
-//    @Column(nullable = false)
-//    private Integer rating;
-//
-//    @Column(name = "submitted_at", nullable = false)
-//    private LocalDateTime submittedAt;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "booking_id", nullable = false)
-//    private Booking booking;
-//
-//    @ManyToOne
-//    @JoinColumn(name = "user_id", nullable = false)
-//    private User user;
-//
-//
-//}
+package com.airline.entity;
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.*;
+import java.time.LocalDateTime;
+
+@Entity
+@Table(name = "feedbacks")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Feedback {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "booking_id", nullable = false)
+    private Booking booking;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+
+    @NotNull(message = "Rating is required")
+    @Min(value = 1, message = "Rating must be at least 1")
+    @Max(value = 5, message = "Rating must not exceed 5")
+    private Integer rating;
+
+    @NotBlank(message = "Comment cannot be empty")
+    @Size(max = 1000, message = "Comment must not exceed 1000 characters")
+    private String comment;
+
+    @Column(nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    protected void onCreate() {
+        createdAt = LocalDateTime.now();
+    }
+}

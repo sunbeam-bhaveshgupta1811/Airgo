@@ -11,7 +11,7 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserFeedbackRequestDto {
+public class FeedbackRequestDto {
 	
 	private Long bookingId;
     private String flightName;
