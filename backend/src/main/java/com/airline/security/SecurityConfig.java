@@ -10,7 +10,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.*;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -25,11 +25,29 @@ public class SecurityConfig {
     private final UserDetailsService userDetailsService;
 
     private static final String[] PUBLIC_URLS = {
-            "/auth/**",
+            "/api/auth/**",
+            "/api/airlines",
+            "/api/airlines/**",
+            "/api/airports",
+            "/api/airports/**",
+
+            "/api/flights",
+            "/api/flights/**",
+
             "/error",
             "/v3/api-docs/**",
             "/swagger-ui/**",
             "/swagger-ui.html"
+    };
+
+    private static final String[] AUTHENTICATED_URLS = {
+            "/user/**",
+            "/bookings/**",
+            "/payments/**",
+            "/passengers/**"
+    };
+    private static final String[] ADMIN_URLS = {
+            "/admin/**"
     };
 
     @Bean
@@ -38,7 +56,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
-                        .requestMatchers("/admin/**").hasRole("ADMIN")
+                        .requestMatchers(ADMIN_URLS).hasRole("ADMIN")
+                        .requestMatchers(AUTHENTICATED_URLS).authenticated()
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session ->
@@ -64,7 +83,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
+            throws Exception {
         return config.getAuthenticationManager();
     }
 }

@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 
+
 @Service
 @RequiredArgsConstructor
 public class FeedbackServiceImpl implements FeedbackService {
@@ -28,20 +29,19 @@ public class FeedbackServiceImpl implements FeedbackService {
         Booking booking = bookingDao.findById(request.getBookingId())
                 .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
 
+        // ✅ Ownership check
         if (!booking.getUser().getId().equals(user.getId())) {
             throw new BadRequestException("Not your booking");
         }
 
+        // ✅ Only after completed journey
         if (booking.getStatus() != BookingStatus.COMPLETED) {
             throw new BadRequestException("Feedback allowed only after journey completion");
         }
 
+        // ✅ One feedback per booking
         if (feedbackDao.existsByBookingId(booking.getId())) {
             throw new DuplicateResourceException("Feedback already submitted");
-        }
-
-        if (request.getRating() < 1 || request.getRating() > 5) {
-            throw new BadRequestException("Rating must be between 1 and 5");
         }
 
         Feedback feedback = Feedback.builder()
@@ -59,19 +59,36 @@ public class FeedbackServiceImpl implements FeedbackService {
     public List<FeedbackResponseDto> getMyFeedbacks() {
         User user = getLoggedInUser();
         return feedbackDao.findByUserId(user.getId())
-                .stream().map(this::mapToResponse).toList();
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     @Override
     public List<FeedbackResponseDto> getFeedbacksByBooking(Long bookingId) {
+
+        User user = getLoggedInUser();
+
+        Booking booking = bookingDao.findById(bookingId)
+                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+
+        // ✅ SECURITY FIX
+        if (!booking.getUser().getId().equals(user.getId())) {
+            throw new BadRequestException("Unauthorized access to this booking");
+        }
+
         return feedbackDao.findByBookingId(bookingId)
-                .stream().map(this::mapToResponse).toList();
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     @Override
     public List<FeedbackResponseDto> getAllFeedbacks() {
         return feedbackDao.findAll()
-                .stream().map(this::mapToResponse).toList();
+                .stream()
+                .map(this::mapToResponse)
+                .toList();
     }
 
     @Override
@@ -82,6 +99,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         Feedback feedback = feedbackDao.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Feedback not found"));
 
+        // ✅ Ownership check
         if (!feedback.getUser().getId().equals(user.getId())) {
             throw new BadRequestException("Unauthorized");
         }
@@ -100,6 +118,7 @@ public class FeedbackServiceImpl implements FeedbackService {
         Feedback feedback = feedbackDao.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Feedback not found"));
 
+        // ✅ Ownership check
         if (!feedback.getUser().getId().equals(user.getId())) {
             throw new BadRequestException("Unauthorized");
         }
