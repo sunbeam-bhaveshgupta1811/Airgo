@@ -1,12 +1,10 @@
 package com.airline.service;
 
 import com.airline.dto.ApiResponse;
-import com.airline.entity.Airline;
 import com.airline.request.AirlineRequestDto;
 import com.airline.response.AirlineResponseDto;
 
 import java.util.List;
-
 
 public interface AirlineService {
     AirlineResponseDto addAirline(AirlineRequestDto request);

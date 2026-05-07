@@ -31,7 +31,7 @@ public class Airline {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private AirlineStatus status;         // ACTIVE / INACTIVE
+	private AirlineStatus status;
 
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdAt;

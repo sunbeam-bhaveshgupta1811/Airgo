@@ -1,15 +1,15 @@
-//package com.airline.dao;
-//
-//import java.util.List;
-//
-//import org.springframework.data.jpa.repository.JpaRepository;
-//import org.springframework.stereotype.Repository;
-//
-//import com.airline.entity.Feedback;
-//
-//
-//
-//@Repository
-//public interface FeedbackDao extends JpaRepository<Feedback, Long>{
-//	List<Feedback> findByUserId(Long userId);
-//}
+package com.airline.dao;
+
+import com.airline.entity.Feedback;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
+
+public interface FeedbackDao extends JpaRepository<Feedback, Long> {
+
+    List<Feedback> findByBookingId(Long bookingId);
+
+    List<Feedback> findByUserId(Long userId);
+
+    boolean existsByBookingId(Long bookingId);
+}

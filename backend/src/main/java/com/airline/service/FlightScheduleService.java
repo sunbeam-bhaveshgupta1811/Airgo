@@ -2,6 +2,7 @@ package com.airline.service;
 
 import com.airline.dto.ApiResponse;
 import com.airline.request.FlightScheduleRequestDto;
+import com.airline.request.FlightSearchRequestDto;
 import com.airline.response.FlightScheduleResponseDto;
 
 import java.util.List;
@@ -14,4 +15,5 @@ public interface FlightScheduleService {
     List<FlightScheduleResponseDto> getAllSchedules();
     FlightScheduleResponseDto getScheduleById(Long id);
     List<FlightScheduleResponseDto> getSchedulesByFlight(Long flightId);
+    List<FlightScheduleResponseDto> searchFlights(FlightSearchRequestDto request);
 }

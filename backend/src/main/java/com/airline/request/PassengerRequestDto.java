@@ -1,28 +1,31 @@
-//package com.sunbeam.request;
-//
-//import java.time.LocalDate;
-//
-//import com.sunbeam.entities.Passenger;
-//import com.sunbeam.entities.Passenger.Gender;
-//import com.sunbeam.entities.Passenger.MealPreference;
-//
-//import lombok.AllArgsConstructor;
-//import lombok.Getter;
-//import lombok.NoArgsConstructor;
-//import lombok.Setter;
-//
-//@Getter
-//@Setter
-//@NoArgsConstructor
-//@AllArgsConstructor
-//public class PassengerRequestDto {
-//	private Long bookingId;
-//    private String name;
-//    private Integer age;
-//    private Gender gender;
-//    private String seatNumber;
-//    private String passportNumber;
-//    private String specialRequests;
-//    private MealPreference mealPreference;
-//    private LocalDate dateOfBirth;
-//}
+package com.airline.request;
+
+import jakarta.validation.constraints.*;
+import lombok.Data;
+
+import java.time.LocalDate;
+
+@Data
+public class PassengerRequestDto {
+
+    @NotBlank(message = "First name is required")
+    @Size(min = 2, max = 50)
+    private String firstName;
+
+    @NotBlank(message = "Last name is required")
+    @Size(min = 2, max = 50)
+    private String lastName;
+
+    @NotBlank(message = "Gender is required")
+    private String gender;              // MALE / FEMALE / OTHER
+
+    @NotNull(message = "Date of birth is required")
+    @Past(message = "Date of birth must be in the past")
+    private LocalDate dateOfBirth;
+
+    @NotBlank(message = "ID type is required")
+    private String idType;             // PASSPORT / AADHAAR / PAN
+
+    @NotBlank(message = "ID number is required")
+    private String idNumber;
+}

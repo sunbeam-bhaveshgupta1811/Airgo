@@ -1,10 +1,15 @@
 package com.airline.service;
 
+import com.airline.dao.FlightDao;
+import com.airline.entity.Booking;
+import com.airline.entity.Payment;
+import com.airline.util.TicketPdfGenerator;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.scheduling.annotation.Async;
@@ -22,6 +27,8 @@ public class EmailService {
 
     @Value("${app.base-url}")
     private String baseUrl;
+
+    private TicketPdfGenerator ticketPdfGenerator;
 
 
     @Async
@@ -117,5 +124,108 @@ public class EmailService {
         mailSender.send(message);
     }
 
+    @Async
+    public void sendBookingCancellationEmail(Booking booking, Payment payment) {
+        try {
+            String toEmail = booking.getUser().getEmail();
+            String firstName = booking.getUser().getFirstName();
+
+            String htmlContent = """
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px;">
+                    <h2 style="color: #E74C3C;">❌ Booking Cancelled</h2>
+                   \s
+                    <p>Hi <strong>%s</strong>,</p>
+                    <p>Your flight booking has been successfully cancelled.</p>
+
+                    <h3 style="color: #2E75B6;">📄 Booking Details:</h3>
+                    <ul>
+                        <li><strong>Booking ID:</strong> %s</li>
+                        <li><strong>Flight:</strong> %s</li>
+                        <li><strong>Passengers:</strong> %d</li>
+                    </ul>
+
+                    <h3 style="color: #27AE60;">💰 Refund Details:</h3>
+                    <ul>
+                        <li><strong>Amount Paid:</strong> ₹%s</li>
+                        <li><strong>Refund Status:</strong> %s</li>
+                    </ul>
+
+                    <p style="color: #888;">Refund will be processed within 5-7 business days.</p>
+
+                    <hr style="border: none; border-top: 1px solid #eee;">
+                    <p style="color: #aaa; font-size: 12px;">AirlineApp · Do not reply to this email</p>
+                </div>
+               \s""".formatted(
+                    firstName,
+                    booking.getId(),
+                    booking.getFlightSchedule().getFlight().getFlightNumber(),
+                    booking.getPassengers().size(),
+                    payment != null ? payment.getAmount() : "0",
+                    payment != null ? "Initiated" : "N/A"
+            );
+
+            sendHtmlEmail(toEmail, "❌ Booking Cancelled - AirlineApp", htmlContent);
+
+            log.info("Booking cancellation email sent to {}", toEmail);
+
+        } catch (Exception e) {
+            log.error("Failed to send cancellation email: {}", e.getMessage());
+        }
+    }
+
+
+    @Async
+    public void sendBookingConfirmationEmail(Booking booking, Payment payment) {
+        try {
+            String toEmail = booking.getUser().getEmail();
+            String firstName = booking.getUser().getFirstName();
+
+            String htmlContent = """
+                <div style="font-family: Arial; max-width: 600px; margin: auto;">
+                    <h2 style="color: #27AE60;">✅ Booking Confirmed</h2>
+
+                    <p>Hi <strong>%s</strong>,</p>
+                    <p>Your booking has been successfully confirmed.</p>
+
+                    <h3>📄 Booking Details:</h3>
+                    <ul>
+                        <li><b>Booking ID:</b> %s</li>
+                        <li><b>Flight:</b> %s</li>
+                        <li><b>Passengers:</b> %d</li>
+                    </ul>
+
+                    <h3>💰 Payment:</h3>
+                    <ul>
+                        <li><b>Amount Paid:</b> ₹%s</li>
+                    </ul>
+
+                    <p>Your ticket is attached as a PDF.</p>
+                </div>
+                """.formatted(
+                    firstName,
+                    booking.getId(),
+                    booking.getFlightSchedule().getFlight().getFlightNumber(),
+                    booking.getPassengers().size(),
+                    payment.getAmount()
+            );
+
+            MimeMessage message = mailSender.createMimeMessage();
+            MimeMessageHelper helper = new MimeMessageHelper(message, true);
+
+            helper.setTo(toEmail);
+            helper.setSubject("✅ Booking Confirmed - AirlineApp");
+            helper.setText(htmlContent, true);
+
+            byte[] pdfBytes = ticketPdfGenerator.generateTicket(booking, payment);
+            helper.addAttachment("ticket.pdf", new ByteArrayResource(pdfBytes));
+
+            mailSender.send(message);
+
+            log.info("Booking confirmation email sent to {}", toEmail);
+
+        } catch (Exception e) {
+            log.error("Failed to send booking confirmation email: {}", e.getMessage());
+        }
+    }
 
 }

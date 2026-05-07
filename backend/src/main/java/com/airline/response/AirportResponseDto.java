@@ -16,5 +16,5 @@ public class AirportResponseDto {
     private String country;
     private String timezone;
     private boolean active;
-    private LocalDateTime createdAt;
+    private LocalDateTime updatedAt;
 }
