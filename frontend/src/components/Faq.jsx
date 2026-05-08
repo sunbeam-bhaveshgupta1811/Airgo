@@ -5,6 +5,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { TypeAnimation } from 'react-type-animation';
 import '../css/Faq.css'
 
+const Motion = motion;
+
 const FAQChatbot = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState([]);

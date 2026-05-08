@@ -1,16 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Accordion, Button, Badge, ProgressBar } from "react-bootstrap";
 import { FaPlane, FaUsers, FaHeadset, FaGlobe, FaAward, FaShieldAlt, FaClock, FaHeart, FaRocket, FaHandshake, FaStar, FaMapMarkerAlt } from "react-icons/fa";
-import { motion, useInView } from "framer-motion";
+import { motion } from "framer-motion";
 import "../css/About.css";
 
-function About() {
-  const [counters, setCounters] = useState({
-    destinations: 0,
-    travelers: 0,
-    support: 24
-  });
+const Motion = motion;
 
+function About() {
   const airlines = [
     { 
       name: "Chhatrapati Shivaji Airport", 
@@ -83,19 +79,6 @@ function About() {
       description: "Every decision is made with our travelers in mind"
     }
   ];
-
-  // Counter animation
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setCounters({
-        destinations: 50,
-        travelers: 10000000,
-        support: 24
-      });
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, []);
 
   const CounterCard = ({ value, label, suffix = "" }) => {
     const [count, setCount] = useState(0);

@@ -1,6 +1,58 @@
-import React from "react";
+import React, { useState } from "react";
 
 function ChangePassword() {
+  const [formData, setFormData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [successMessage, setSuccessMessage] = useState("");
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError("");
+
+    if (formData.newPassword !== formData.confirmNewPassword) {
+      setError("New password and confirm password do not match.");
+      return;
+    }
+
+    const strongPassword = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&]).{8,}$/;
+    if (!strongPassword.test(formData.newPassword)) {
+      setError("Password must be 8+ chars with letters, numbers, and special chars.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await new Promise((resolve) => setTimeout(resolve, 500));
+      setSuccessMessage("Password changed successfully.");
+      setShowSuccessModal(true);
+      setFormData({
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCloseSuccessModal = () => {
+    setShowSuccessModal(false);
+  };
+
   return (
     <div className="container mt-5">
       <div className="row justify-content-center">

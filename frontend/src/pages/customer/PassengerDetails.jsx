@@ -38,23 +38,14 @@ const PassengerDetails = () => {
   useEffect(() => {
     if (!bookingData) return;
 
-    if (passengers.length === 0) {
-      const newPassengers = Array(passengerCount).fill().map((_, i) => ({
-        id: Date.now() + i,
-        title: '',
-        firstName: '',
-        lastName: '',
-        mobile: '',
-        dob: '',
-        gender: '',
-        passport: ''
-      }));
-      setPassengers(newPassengers);
-    } else if (passengerCount > passengers.length) {
-      const newPassengers = Array(passengerCount - passengers.length)
-        .fill()
-        .map((_, i) => ({
-          id: Date.now() + passengers.length + i,
+    setPassengers((currentPassengers) => {
+      if (currentPassengers.length === passengerCount) {
+        return currentPassengers;
+      }
+
+      if (currentPassengers.length === 0) {
+        return Array(passengerCount).fill().map((_, i) => ({
+          id: Date.now() + i,
           title: '',
           firstName: '',
           lastName: '',
@@ -63,11 +54,27 @@ const PassengerDetails = () => {
           gender: '',
           passport: ''
         }));
-      setPassengers([...passengers, ...newPassengers]);
-    } else if (passengerCount < passengers.length) {
-      setPassengers(passengers.slice(0, passengerCount));
-    }
-  }, [passengerCount, bookingData, passengers.length]);
+      }
+
+      if (passengerCount > currentPassengers.length) {
+        const newPassengers = Array(passengerCount - currentPassengers.length)
+          .fill()
+          .map((_, i) => ({
+            id: Date.now() + currentPassengers.length + i,
+            title: '',
+            firstName: '',
+            lastName: '',
+            mobile: '',
+            dob: '',
+            gender: '',
+            passport: ''
+          }));
+        return [...currentPassengers, ...newPassengers];
+      }
+
+      return currentPassengers.slice(0, passengerCount);
+    });
+  }, [passengerCount, bookingData]);
 
   // Validate individual passenger data
   const validatePassenger = (passenger) => {

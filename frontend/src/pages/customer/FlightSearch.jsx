@@ -1,19 +1,18 @@
 import React, { useState } from 'react';
-import { FaPlane, FaSearch, FaMapMarkerAlt, FaCalendarAlt, FaExchangeAlt, FaUser, FaChevronDown } from 'react-icons/fa';
-import { Button, Dropdown, Badge } from 'react-bootstrap';
+import { FaExchangeAlt, FaChevronDown } from 'react-icons/fa';
+import { Badge } from 'react-bootstrap';
 import '../../css/FlightSearch.css';
 import { useNavigate } from 'react-router-dom';
 import { searchFlights } from '../../services/customerService/flightSearchService';
 
 const FlightSearch = () => {
   const navigate = useNavigate();
-  const [tripType, setTripType] = useState('oneway');
+  const [tripType] = useState('oneway');
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [departureDate, setDepartureDate] = useState('');
   const [returnDate, setReturnDate] = useState('');
-  const [travelers, setTravelers] = useState({ adults: 1, children: 0, infants: 0 });
-  const [travelClass, setTravelClass] = useState('economy');
+  const [travelers] = useState({ adults: 1, children: 0, infants: 0 });
   const [specialFare, setSpecialFare] = useState('regular');
   const [isSearching, setIsSearching] = useState(false);
 

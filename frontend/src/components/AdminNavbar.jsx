@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function AdminNavbar() {
@@ -10,14 +10,6 @@ function AdminNavbar() {
     const name = sessionStorage.getItem("name");
     if (name) setAdminName(name);
   }, []);
-
-  const addscheduleflight = () => {
-    navigate("/admin/addscheduleflight");
-  };
-
-  const addFlight = () => {
-    navigate("/admin/addflight");
-  };
 
   const Logout = () => {
     sessionStorage.clear();
@@ -50,7 +42,7 @@ function AdminNavbar() {
           <ul className="navbar-nav me-auto">
             <li className="nav-item">
               <NavLink
-                to="/admin/admindashboard"
+                to="/admin/dashboard"
                 className={({ isActive }) =>
                   `nav-link ${isActive ? "active" : ""}`
                 }
@@ -100,7 +92,7 @@ function AdminNavbar() {
             </li>
             <li className="nav-item">
               <NavLink
-                to="/admin/feedback"
+                to="/admin/viewfeedback"
                 className={({ isActive }) =>
                   `nav-link ${isActive ? "active" : ""}`
                 }

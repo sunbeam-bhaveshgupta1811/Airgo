@@ -51,7 +51,7 @@ function ResetPasswordPage() {
       } else {
         toast.error(res?.message || 'Reset link is invalid or expired')
       }
-    } catch (error) {
+    } catch {
       toast.error('An error occurred. Please try again.')
     } finally {
       setIsLoading(false)

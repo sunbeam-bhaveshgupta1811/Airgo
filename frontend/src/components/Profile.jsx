@@ -1,13 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { useNavigate } from 'react-router-dom';
 import { getProfileData } from '../services/AdminServices/AdminProfile';
 const Profile = () => {
-  const [user, setUser] = useState([]);
+  const [user, setUser] = useState({});
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const navigate = useNavigate();
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setUser((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
 
   const handleImageChange = (e) => {
     const file = e.target.files[0];
@@ -32,8 +38,7 @@ const Profile = () => {
       await new Promise(resolve => setTimeout(resolve, 1500));
       setIsEditMode(false);
       toast.success('Profile updated successfully!');
-      navigate('/dashboard');
-    } catch (error) {
+    } catch {
       toast.error('Failed to update profile');
     } finally {
       setIsLoading(false);

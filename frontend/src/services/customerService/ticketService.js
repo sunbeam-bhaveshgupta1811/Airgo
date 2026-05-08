@@ -56,6 +56,22 @@ export const generateTicketPDF = async (bookingId) => {
   }
 }
 
+export const sendBookingConfirmationEmail = async (bookingId) => {
+  try {
+    const response = await axios.post(
+      `${config.serverURL}/bookings/${bookingId}/email`,
+      {},
+      getAuthHeaders()
+    )
+    return response.data
+  } catch (error) {
+    console.error('Error sending booking confirmation email:', error)
+    if (error.response?.status === 404) throw new Error('Booking not found')
+    if (error.response?.status === 401) throw new Error('Not authorized')
+    throw new Error(error.response?.data?.message || 'Failed to send email')
+  }
+}
+
 export const getPaymentByBookingId = async (bookingId) => {
   try {
     const response = await axios.get(

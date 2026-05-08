@@ -7,7 +7,7 @@ function Login() {
     <BaseLogin
       loginType="admin"
       authService={login}
-      redirectPath="/admin/admindashboard"
+      redirectPath="/admin/dashboard"
     />
   )
 }

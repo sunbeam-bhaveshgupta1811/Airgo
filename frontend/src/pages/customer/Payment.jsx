@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaCreditCard, FaLock, FaCheckCircle, FaRupeeSign } from 'react-icons/fa';
-import { processPayment } from '../../services/customerService/bookingService';
+import { processPayment as processPaymentApi } from '../../services/customerService/paymentService';
 import '../../css/Payment.css';
 
 const Payment = () => {
@@ -314,7 +314,20 @@ const Payment = () => {
 
       console.log('Payment data being sent:', JSON.stringify(paymentData, null, 2));
 
-      const bookingConfirmation = await processPayment(paymentData);
+      const existingBookingId = bookingData?.bookingId || bookingData?.id;
+      const paymentResult = existingBookingId
+        ? await processPaymentApi(existingBookingId, paymentMethod === 'card' ? 'CREDIT_CARD' : 'UPI')
+        : paymentData.paymentInfo;
+
+      const bookingConfirmation = {
+        booking: {
+          ...paymentData.bookingDetails,
+          id: existingBookingId || paymentData.paymentInfo.transactionId,
+          bookingId: existingBookingId || paymentData.paymentInfo.transactionId,
+          status: 'CONFIRMED'
+        },
+        payment: paymentResult
+      };
       
       console.log('Booking confirmation received:', bookingConfirmation);
 
@@ -387,7 +400,7 @@ const Payment = () => {
         {error && <div className="error-message">{error}</div>}
 
         {/* Debug info - remove in production */}
-        {process.env.NODE_ENV === 'development' && (
+        {import.meta.env.DEV && (
           <div style={{backgroundColor: '#f0f0f0', padding: '10px', margin: '10px 0', fontSize: '12px'}}>
             <strong>Debug Info:</strong><br/>
             Flight Number: {bookingData?.flight?.flightNumber || bookingData?.flightNumber || 'Missing'}<br/>

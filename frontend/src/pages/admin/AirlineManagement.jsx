@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "../../css/AirlineManagement.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import AdminNavbar from "./../../components/AdminNavbar";
 import { useNavigate } from "react-router-dom";
-import { deleteAirline, fetchAirline } from "../../services/AdminServices/airlineManagementServies";
+import { deactivateAirline, fetchAllAirlines } from "../../services/AdminServices/airlineManagementServies";
 import { toast } from "react-toastify";
 
 const AirlineManagement = () => {
@@ -19,17 +18,15 @@ const AirlineManagement = () => {
   const navigate = useNavigate();
 
   const handleDelete = async(id) => {
-
-    const data = await deleteAirline(id);
-    if(data.error){
-      toast.error(data.error);
-      return;
-    }else{
+    try {
+      await deactivateAirline(id);
       toast.success("Airline deleted successfully");
+      setAirlines((currentAirlines) =>
+        currentAirlines.filter((airline) => (airline.airlineId || airline.id) !== id)
+      );
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to delete airline");
     }
-
-    setAirlines(data.filter((airline) => airline.airlineId !== id));
-    setLoading(false);
   };
 
   const handleAddNew = () => {
@@ -43,7 +40,7 @@ const AirlineManagement = () => {
     }
 
     const filteredAirlines = airlines.filter((airline) =>
-      airline.airlineName.toLowerCase().includes(searchTerm.toLowerCase())
+      (airline.airlineName || airline.name || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
     setAirlines(filteredAirlines);
   };
@@ -51,7 +48,7 @@ const AirlineManagement = () => {
   const fetchAirlines = async () => {
     try {
       setLoading(true);
-      const data = await fetchAirline();
+      const data = await fetchAllAirlines();
       setAirlines(data);
     } catch (error) {
       console.error("Error fetching airlines:", error);
@@ -63,10 +60,6 @@ const AirlineManagement = () => {
   useEffect(() => {
     fetchAirlines();
   }, []);
-
-  if (loading && searchTerm.trim() === "") {
-    fetchAirline().then((data) => setAirlines(data));
-  }
 
   return (
     <>
@@ -90,6 +83,7 @@ const AirlineManagement = () => {
 
         {/* Airlines table */}
         <div className="table-container">
+          {loading && <div className="alert alert-info">Loading airlines...</div>}
           <table className="airline-table">
             <thead>
               <tr>
@@ -102,19 +96,19 @@ const AirlineManagement = () => {
             </thead>
             <tbody>
               {airlines.map((airline, index) => (
-                <tr key={airline.airlineId}>
+                <tr key={airline.airlineId || airline.id}>
                   <td>{index + 1}</td>
-                  <td>{airline.airlineName}</td>
-                  <td>{airline.noOfFlights}</td>
+                  <td>{airline.airlineName || airline.name}</td>
+                  <td>{airline.noOfFlights || airline.flightCount || 0}</td>
                   <td className="action-buttons">
                     <button
-                      onClick={() => handleEdit(airline.airlineId)}
+                      onClick={() => handleEdit(airline.airlineId || airline.id)}
                       className="edit-btn"
                     >
                       Add Flight
                     </button>
                     <button
-                      onClick={() => handleDelete(airline.airlineId)}
+                      onClick={() => handleDelete(airline.airlineId || airline.id)}
                       className="delete-btn"
                     >
                       Delete

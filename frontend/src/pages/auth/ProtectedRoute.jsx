@@ -1,14 +1,20 @@
 import { Navigate } from "react-router-dom";
 
-const ProtectedRoute = ({ children, allowedRoles }) => {
+const normalizeRole = (role) => {
+  if (!role) return "";
+  return role.toString().replace(/^ROLE_/i, "").toUpperCase();
+};
+
+const ProtectedRoute = ({ children, allowedRoles, redirectTo = "/login" }) => {
   const isLoggedIn = sessionStorage.getItem("isLoggedIn") === "true";
-  const userRole = sessionStorage.getItem("userType");
+  const userRole = normalizeRole(sessionStorage.getItem("userType"));
+  const normalizedRoles = allowedRoles?.map(normalizeRole);
 
   if (!isLoggedIn) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to={redirectTo} replace />;
   }
 
-  if (allowedRoles && !allowedRoles.includes(userRole)) {
+  if (normalizedRoles && !normalizedRoles.includes(userRole)) {
     return <Navigate to="/unauthorized" replace />;
   }
 

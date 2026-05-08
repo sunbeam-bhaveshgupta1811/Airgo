@@ -1,11 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { FaUser, FaUserShield, FaUserPlus } from "react-icons/fa";
+import { FaUser } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const HomeNavbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
-  const [activeTab, setActiveTab] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
@@ -20,16 +19,17 @@ const HomeNavbar = () => {
         padding: 0,
         border: "none",
         background: "#fff",
-        position: "relative",
-        zIndex: 10,
-        boxShadow: "0 2px 12px rgba(0,0,0,0.04)",
+        position: "sticky",
+        top: 0,
+        zIndex: 1000,
+        boxShadow: isScrolled ? "0 10px 30px rgba(15, 23, 42, 0.10)" : "0 1px 0 rgba(15, 23, 42, 0.08)",
         minHeight: 70,
       }}
     >
       <div className="container-fluid px-4" style={{ maxWidth: 1400 }}>
-        <div className="d-flex w-100 align-items-center" style={{ minHeight: 70 }}>
+        <div className="home-navbar-row d-flex w-100 align-items-center" style={{ minHeight: 70 }}>
           {/* Left: Logo */}
-          <div className="d-flex align-items-center" style={{ minWidth: 180 }}>
+          <div className="home-navbar-brand d-flex align-items-center" style={{ minWidth: 180 }}>
             <img
               src="/images/airlineLogo.jpg"
               alt="Logo"
@@ -43,13 +43,13 @@ const HomeNavbar = () => {
             </span>
           </div>
           {/* Center: Nav Links */}
-          <div className="d-flex align-items-center justify-content-center flex-grow-1" style={{ gap: "2.5rem" }}>
+          <div className="home-navbar-links d-flex align-items-center justify-content-center flex-grow-1" style={{ gap: "2.5rem" }}>
             <Link to="/" className="nav-link fw-semibold navbar-link-main">Home</Link>
             <Link to="/about" className="nav-link fw-semibold navbar-link-main">About us</Link>
             <Link to="/contactus" className="nav-link fw-semibold navbar-link-main">Contact us</Link>
           </div>
           {/* Right: Auth Buttons */}
-          <div className="d-flex align-items-center justify-content-end" style={{ gap: "12px", minWidth: 320 }}>
+          <div className="home-navbar-actions d-flex align-items-center justify-content-end" style={{ gap: "12px", minWidth: 320 }}>
             <div className="dropdown">
               <button
                 className="btn btn-link fw-semibold navbar-link-main dropdown-toggle"
@@ -103,6 +103,41 @@ const HomeNavbar = () => {
         }
         .btn-primary:hover {
           background: #0047b3 !important;
+        }
+        @media (max-width: 900px) {
+          .home-navbar-row {
+            min-height: auto !important;
+            flex-wrap: wrap;
+            gap: 10px;
+            padding: 12px 0;
+          }
+          .home-navbar-brand {
+            min-width: auto !important;
+            flex: 1 1 auto;
+          }
+          .home-navbar-links {
+            order: 3;
+            flex: 1 0 100%;
+            justify-content: flex-start !important;
+            gap: 0.5rem !important;
+            overflow-x: auto;
+            padding-top: 4px;
+          }
+          .home-navbar-actions {
+            min-width: auto !important;
+          }
+          .navbar-link-main {
+            white-space: nowrap;
+          }
+        }
+        @media (max-width: 520px) {
+          .home-navbar-actions .btn-primary {
+            padding: 7px 12px !important;
+          }
+          #signinDropdown {
+            padding-left: 0;
+            padding-right: 0;
+          }
         }
       `}</style>
     </nav>

@@ -61,7 +61,7 @@ const ScheduleFlight = () => {
         setAirlines(mockAirlines);
         setFlights(mockFlights);
         setAirports(mockAirports);
-      } catch (error) {
+      } catch {
         toast.error('Failed to load data');
       } finally {
         setIsLoading(false);
@@ -119,7 +119,7 @@ const ScheduleFlight = () => {
       
       toast.success('Flight scheduled successfully!');
       navigate('/scheduleflight');
-    } catch (error) {
+    } catch {
       toast.error('Failed to schedule flight');
     } finally {
       setIsLoading(false);
