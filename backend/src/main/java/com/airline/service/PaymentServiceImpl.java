@@ -1,9 +1,6 @@
 package com.airline.service;
 
-import com.airline.dao.BookingDao;
-import com.airline.dao.PassengerDao;
-import com.airline.dao.PaymentDao;
-import com.airline.dao.UserDao;
+import com.airline.dao.*;
 import com.airline.entity.*;
 import com.airline.exception.BadRequestException;
 import com.airline.exception.DuplicateResourceException;
@@ -30,6 +27,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final BookingDao bookingDao;
     private final UserDao userDao;
     private final PassengerDao passengerDao;
+    private final FlightScheduleDao scheduleDao;
     private final SeatAssignmentService seatAssignmentService;
     private final EmailService emailService;
 
@@ -106,6 +104,8 @@ public class PaymentServiceImpl implements PaymentService {
             FlightSchedule schedule = booking.getFlightSchedule();
             schedule.setAvailableSeats(
                     schedule.getAvailableSeats() + booking.getNumberOfPassengers());
+            scheduleDao.save(schedule);
+
             booking.setStatus(BookingStatus.CANCELLED);
             bookingDao.save(booking);
 
@@ -173,7 +173,7 @@ public class PaymentServiceImpl implements PaymentService {
         FlightSchedule schedule = booking.getFlightSchedule();
         schedule.setAvailableSeats(
                 schedule.getAvailableSeats() + booking.getNumberOfPassengers());
-
+        scheduleDao.save(schedule);
         emailService.sendBookingCancellationEmail(booking, payment);
 
         log.info("Payment {} refunded for booking {}",

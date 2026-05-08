@@ -201,9 +201,17 @@ public class BookingServiceImpl implements BookingService{
 
     @Transactional(readOnly = true)
     public BookingResponseDto getBookingByReference(String reference) {
+        User user = getLoggedInUser();
+
         Booking booking = bookingDao.findByBookingReference(reference)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Booking not found with reference: " + reference));
+
+        if (user.getRole() != Role.ADMIN
+                && !booking.getUser().getId().equals(user.getId())) {
+            throw new BadRequestException("You are not authorized to view this booking");
+        }
+
         return mapToResponse(booking);
     }
 
