@@ -474,3 +474,108 @@
 .flight-search-form {
   background: transparent;
 }
+
+/* Company-standard search refresh */
+.search-container {
+  border: 1px solid rgba(217, 226, 236, 0.95);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+}
+
+.search-form {
+  padding: clamp(1rem, 2.5vw, 2rem);
+}
+
+.search-fields-row {
+  grid-template-columns: minmax(160px, 1.1fr) 44px minmax(160px, 1.1fr) minmax(150px, 0.9fr) minmax(150px, 0.9fr);
+  gap: 12px;
+}
+
+.city-input,
+.date-input,
+.travelers-input,
+.fare-option {
+  border-color: var(--color-border);
+  border-radius: var(--radius-md);
+  box-shadow: none;
+}
+
+.city-input input,
+.date-input input[type="date"] {
+  position: static;
+  width: 100%;
+  opacity: 1;
+  pointer-events: auto;
+  border: 0;
+  outline: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--color-text);
+  font-weight: 700;
+}
+
+.city-input input {
+  font-size: 1.25rem;
+}
+
+.date-input input[type="date"] {
+  font-size: 0.95rem;
+  margin-bottom: 6px;
+}
+
+.city-input input::placeholder {
+  color: var(--color-text-muted);
+}
+
+.city-name {
+  display: none;
+}
+
+.airport-name,
+.date-day,
+.class-text,
+.fare-description {
+  color: var(--color-text-muted);
+}
+
+.city-input:hover,
+.date-input:hover,
+.travelers-input:hover,
+.fare-option:hover,
+.fare-option.active {
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 0.2rem rgba(15, 94, 168, 0.12);
+}
+
+.swap-btn {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.swap-btn:hover {
+  background: var(--color-primary);
+}
+
+.search-button {
+  min-width: min(260px, 100%);
+  border-radius: var(--radius-md);
+  background: var(--color-primary);
+  box-shadow: 0 12px 24px rgba(15, 94, 168, 0.22);
+}
+
+.search-button:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+  box-shadow: 0 14px 28px rgba(15, 94, 168, 0.28);
+}
+
+@media (max-width: 1200px) {
+  .search-fields-row {
+    grid-template-columns: minmax(150px, 1fr) 44px minmax(150px, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .search-fields-row {
+    grid-template-columns: 1fr;
+  }
+}

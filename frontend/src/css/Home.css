@@ -255,5 +255,103 @@
   min-height: calc(100vh - 70px);
   display: flex;
   flex-direction: column;
-  margin-top: 70px;
+}
+
+/* Company-standard visual refresh */
+.hero-section-fixed {
+  min-height: calc(100vh - 70px);
+  padding: 48px 0;
+  background:
+    linear-gradient(90deg, rgba(9, 28, 54, 0.88), rgba(9, 28, 54, 0.58)),
+    url("/images/background.png") center / cover no-repeat;
+}
+
+.hero-background-gradient {
+  display: none;
+}
+
+.hero-container {
+  min-height: calc(100vh - 166px);
+}
+
+.hero-content-grid {
+  gap: clamp(2rem, 4vw, 4rem);
+}
+
+.hero-text-section {
+  padding-left: 0;
+}
+
+.hero-main-title {
+  max-width: 680px;
+  font-size: clamp(2.6rem, 5vw, 4.8rem);
+  font-weight: 800;
+  letter-spacing: 0;
+  text-shadow: none;
+}
+
+.hero-subtitle {
+  max-width: 600px;
+  color: rgba(255, 255, 255, 0.88);
+  text-shadow: none;
+}
+
+.feature-badge {
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.stats-section-overlay,
+.features-section,
+.destinations-section,
+.testimonials-section {
+  padding: 72px 0;
+}
+
+.stat-card-overlay,
+.feature-card,
+.destination-card,
+.testimonial-card {
+  border: 1px solid var(--color-border) !important;
+  border-radius: var(--radius-md) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
+.stat-card-overlay {
+  background: var(--color-surface);
+  padding: 28px 18px;
+}
+
+.stat-number-overlay {
+  color: var(--color-primary);
+  font-weight: 800;
+}
+
+.stat-label-overlay {
+  color: var(--color-text-muted);
+  margin-bottom: 0;
+}
+
+.destination-image {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+}
+
+.floating-chat-button {
+  display: none;
+}
+
+@media (max-width: 992px) {
+  .hero-section-fixed,
+  .hero-container {
+    min-height: auto;
+  }
+
+  .hero-text-section {
+    order: 1;
+  }
+
+  .hero-search-section {
+    order: 2;
+  }
 }

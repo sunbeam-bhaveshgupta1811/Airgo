@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Badge } from "react-bootstrap";
 import {
   FaPlane,
@@ -12,12 +12,15 @@ import {
   FaShieldAlt,
   FaClock,
 } from "react-icons/fa";
-import { motion } from "framer-motion";
+import { motion as Motion } from "framer-motion";
 import HomeNavbar from "../components/HomeNavbar";
 import FlightSearch from "./customer/FlightSearch";
 import "../css/Home.css";
 
 function Home() {
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
   const features = [
     {
       icon: FaPlane,
@@ -125,6 +128,11 @@ function Home() {
     <div className="airline-home-background">
       <div className="content-overlay">
         <HomeNavbar />
+        {!isHomePage ? (
+          <main className="main-content-outlet">
+            <Outlet />
+          </main>
+        ) : (
         <div className="main-content">
           {/* Hero Section */}
           <section id="home" className="hero-section-fixed">
@@ -134,7 +142,7 @@ function Home() {
                   <Col lg={12} className="hero-content-wrapper">
                     <div className="hero-content-grid">
                       {/* Left Content */}
-                      <motion.div
+                      <Motion.div
                         initial={{ opacity: 0, x: -50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
@@ -162,24 +170,24 @@ function Home() {
                             Global Coverage
                           </div>
                         </div>
-                      </motion.div>
+                      </Motion.div>
 
                       {/* Right Content - Flight Search */}
-                      <motion.div
+                      <Motion.div
                         initial={{ opacity: 0, x: 50 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8, delay: 0.3 }}
                         className="hero-search-section"
                       >
                         <FlightSearch />
-                      </motion.div>
+                      </Motion.div>
                     </div>
                   </Col>
                 </Row>
               </Container>
 
               {/* Floating Chat Button */}
-              <motion.div
+              <Motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 1, type: "spring" }}
@@ -188,7 +196,7 @@ function Home() {
                 <Button className="chat-btn">
                   <i className="bi bi-chat-dots"></i>
                 </Button>
-              </motion.div>
+              </Motion.div>
           </section>
 
           {/* Scrollable Content Below */}
@@ -199,7 +207,7 @@ function Home() {
                   <Row className="g-4">
                     {stats.map((stat, index) => (
                       <Col md={3} key={index}>
-                        <motion.div
+                        <Motion.div
                           initial={{ opacity: 0, y: 30 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true }}
@@ -208,7 +216,7 @@ function Home() {
                         >
                           <h3 className="stat-number-overlay">{stat.number}</h3>
                           <p className="stat-label-overlay">{stat.label}</p>
-                        </motion.div>
+                        </Motion.div>
                       </Col>
                     ))}
                   </Row>
@@ -218,7 +226,7 @@ function Home() {
             {/* Features Section */}
             <section id="features" className="features-section py-5 bg-white">
                 <Container>
-                  <motion.div
+                  <Motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -230,12 +238,12 @@ function Home() {
                     <p className="section-subtitle">
                       One platform, endless possibilities
                     </p>
-                  </motion.div>
+                  </Motion.div>
 
                   <Row className="g-4">
                     {features.map((feature, index) => (
                       <Col md={6} lg={3} key={index}>
-                        <motion.div
+                        <Motion.div
                           initial={{ opacity: 0, y: 30 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true }}
@@ -261,7 +269,7 @@ function Home() {
                               </p>
                             </Card.Body>
                           </Card>
-                        </motion.div>
+                        </Motion.div>
                       </Col>
                     ))}
                   </Row>
@@ -271,7 +279,7 @@ function Home() {
             {/* Popular Destinations */}
             <section id="destinations" className="destinations-section py-5 bg-light">
                 <Container>
-                  <motion.div
+                  <Motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -281,12 +289,12 @@ function Home() {
                     <p className="section-subtitle">
                       Discover amazing places around the world
                     </p>
-                  </motion.div>
+                  </Motion.div>
 
                   <Row className="g-4">
                     {popularDestinations.map((destination, index) => (
                       <Col md={6} lg={3} key={index}>
-                        <motion.div
+                        <Motion.div
                           initial={{ opacity: 0, y: 30 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true }}
@@ -339,7 +347,7 @@ function Home() {
                               </div>
                             </Card.Body>
                           </Card>
-                        </motion.div>
+                        </Motion.div>
                       </Col>
                     ))}
                   </Row>
@@ -349,7 +357,7 @@ function Home() {
             {/* Testimonials Section */}
             <section id="testimonials" className="testimonials-section py-5 bg-white">
                 <Container>
-                  <motion.div
+                  <Motion.div
                     initial={{ opacity: 0, y: 30 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
@@ -359,12 +367,12 @@ function Home() {
                     <p className="section-subtitle">
                       Real experiences from real people
                     </p>
-                  </motion.div>
+                  </Motion.div>
 
                   <Row className="g-4">
                     {testimonials.map((testimonial, index) => (
                       <Col md={4} key={index}>
-                        <motion.div
+                        <Motion.div
                           initial={{ opacity: 0, y: 30 }}
                           whileInView={{ opacity: 1, y: 0 }}
                           viewport={{ once: true }}
@@ -400,80 +408,16 @@ function Home() {
                               </p>
                             </Card.Body>
                           </Card>
-                        </motion.div>
+                        </Motion.div>
                       </Col>
                     ))}
                   </Row>
                 </Container>
             </section>
 
-            {/* Testimonials Section */}
-            <section id="testimonials" className="testimonials-section py-5 bg-white">
-              <Container>
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  className="text-center mb-5"
-                >
-                  <h2 className="section-title">What Our Travelers Say</h2>
-                  <p className="section-subtitle">
-                    Real experiences from real people
-                  </p>
-                </motion.div>
-
-                <Row className="g-4">
-                  {testimonials.map((testimonial, index) => (
-                    <Col md={4} key={index}>
-                      <motion.div
-                        initial={{ opacity: 0, y: 30 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: index * 0.1 }}
-                      >
-                        <Card className="testimonial-card border-0 shadow-sm h-100">
-                          <Card.Body className="p-4">
-                            <div className="d-flex align-items-center mb-3">
-                              <img
-                                src={testimonial.avatar}
-                                alt={testimonial.name}
-                                className="testimonial-avatar me-3"
-                              />
-                              <div>
-                                <h6 className="fw-bold mb-0">
-                                  {testimonial.name}
-                                </h6>
-                                <small className="text-muted">
-                                  {testimonial.location}
-                                </small>
-                              </div>
-                            </div>
-                            <div className="rating mb-3">
-                              {[...Array(testimonial.rating)].map((_, i) => (
-                                <FaStar
-                                  key={i}
-                                  className="text-warning me-1"
-                                />
-                              ))}
-                            </div>
-                            <p className="testimonial-text">
-                              "{testimonial.comment}"
-                            </p>
-                          </Card.Body>
-                        </Card>
-                      </motion.div>
-                    </Col>
-                  ))}
-                </Row>
-              </Container>
-            </section>
           </div>
         </div>
-
-        {/* Outlet for nested routes (About, Contact Us, Profile, etc.) */}
-        <main className="main-content-outlet">
-          <Outlet />
-        </main>
+        )}
       </div>
     </div>
   );

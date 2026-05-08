@@ -1,6 +1,5 @@
 import axios from 'axios'
 import { config } from '../../../config'
-import { toast } from 'react-toastify'
 
 export async function registerUser(firstName, lastName, email, phone, password) {
   try {

@@ -4,6 +4,8 @@ import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaHeadset, FaPaperPlane, 
 import { motion, AnimatePresence } from 'framer-motion';
 import '../css/ContactUs.css';
 
+const Motion = motion;
+
 const ContactUs = () => {
   const [formData, setFormData] = useState({
     name: '',
@@ -84,7 +86,7 @@ const ContactUs = () => {
       case 'email':
         return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value) ? '' : 'Please enter a valid email address';
       case 'phone':
-        return value === '' || /^[\+]?[1-9][\d]{0,15}$/.test(value) ? '' : 'Please enter a valid phone number';
+        return value === '' || /^\+?[1-9][\d]{0,15}$/.test(value) ? '' : 'Please enter a valid phone number';
       case 'name':
         return value.length >= 2 ? '' : 'Name must be at least 2 characters';
       case 'bookingRef':

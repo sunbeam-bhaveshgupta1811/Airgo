@@ -30,14 +30,24 @@ export const fetchActiveAirlines = async () => {
     return []
   }
 }
-export const addAirline = async (airlineData) => {
+export const addAirline = async (airlineData, noOfFlights = 0) => {
+  const normalizedAirline = typeof airlineData === 'string'
+    ? {
+        name: airlineData,
+        code: airlineData.trim().slice(0, 3).toUpperCase(),
+        country: 'India',
+        noOfFlights
+      }
+    : airlineData
+
   const payload = {
-    name: airlineData.name,
-    code: airlineData.code,
-    country: airlineData.country,
-    contactEmail: airlineData.contactEmail || '',
-    contactPhone: airlineData.contactPhone || '',
-    logoUrl: airlineData.logoUrl || ''
+    name: normalizedAirline.name,
+    code: normalizedAirline.code,
+    country: normalizedAirline.country,
+    noOfFlights: normalizedAirline.noOfFlights || 0,
+    contactEmail: normalizedAirline.contactEmail || '',
+    contactPhone: normalizedAirline.contactPhone || '',
+    logoUrl: normalizedAirline.logoUrl || ''
   }
 
   try {

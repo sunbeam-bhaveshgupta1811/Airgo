@@ -1,12 +1,11 @@
 import React, { useState } from "react";
 import "../../css/PassengerList.css";
 import "bootstrap/dist/css/bootstrap.min.css";
-import AdminNavbar from "../../components/AdminNavbar";
 
 const PassengersList = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("all");
-  const [passengers, setPassengers] = useState([
+  const passengers = [
     {
       id: 1,
       name: "John Doe",
@@ -31,7 +30,7 @@ const PassengersList = () => {
       gender: "Male",
       booking: "FL-3210",
     },
-  ]);
+  ];
 
   const handleSearch = () => {
     console.log("Searching for:", searchTerm);
