@@ -75,6 +75,18 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
 
         Flight flight = findFlight(request.getFlightId());
 
+        if (scheduleDao.existsByFlightIdAndJourneyDateAndDepartureTime(
+                request.getFlightId(), request.getJourneyDate(), request.getDepartureTime())
+                && !(schedule.getFlight().getId().equals(request.getFlightId())
+                && schedule.getJourneyDate().equals(request.getJourneyDate())
+                && schedule.getDepartureTime().equals(request.getDepartureTime()))) {
+            throw new DuplicateResourceException(
+                    "A schedule already exists for flight " + flight.getFlightNumber()
+                            + " on " + request.getJourneyDate()
+                            + " at " + request.getDepartureTime());
+        }
+
+
         if (!request.getArrivalTime().isAfter(request.getDepartureTime())) {
             throw new BadRequestException("Arrival time must be after departure time");
         }
@@ -84,7 +96,15 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
         schedule.setDepartureTime(request.getDepartureTime());
         schedule.setArrivalTime(request.getArrivalTime());
         schedule.setPrice(request.getPrice());
+        int bookedSeats = schedule.getTotalSeats() - schedule.getAvailableSeats();
+
+        if (request.getTotalSeats() < bookedSeats) {
+            throw new BadRequestException(
+                    "Total seats cannot be less than already booked seats: " + bookedSeats);
+        }
+
         schedule.setTotalSeats(request.getTotalSeats());
+        schedule.setAvailableSeats(request.getTotalSeats() - bookedSeats);
 
         FlightSchedule updated = scheduleDao.save(schedule);
         log.info("Schedule updated: id {}", id);

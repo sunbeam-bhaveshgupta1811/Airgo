@@ -5,6 +5,7 @@ import com.airline.response.IssueTicketResponseByAdminDto;
 import com.airline.response.IssueTicketResponseDto;
 import com.airline.service.IssueTicketService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -21,7 +22,7 @@ public class IssueTicketController {
 
     @PreAuthorize("hasRole('USER')")
     @PostMapping("/user/tickets")
-    public IssueTicketResponseDto create(@RequestBody IssueTicketRequestDto request) {
+    public IssueTicketResponseDto create(@Valid @RequestBody IssueTicketRequestDto request) {
         return ticketService.createTicket(request);
     }
 

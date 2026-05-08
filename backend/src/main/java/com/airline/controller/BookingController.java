@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,18 +64,21 @@ public class BookingController {
     }
 
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/bookings")
     public ResponseEntity<ApiResponse<List<BookingResponseDto>>> getAllBookings() {
         return ResponseEntity.ok(ApiResponse.success("All bookings fetched",
                 bookingService.getAllBookings()));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/bookings/{id}")
     public ResponseEntity<ApiResponse<BookingResponseDto>> getAnyBookingById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success("Booking fetched",
                 bookingService.getBookingById(id)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/bookings/{id}/cancel")
     public ResponseEntity<ApiResponse<Void>> adminCancelBooking(@PathVariable Long id) {
         return ResponseEntity.ok(bookingService.cancelBooking(id));

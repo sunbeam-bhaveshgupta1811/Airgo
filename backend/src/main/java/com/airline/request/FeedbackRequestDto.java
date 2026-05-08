@@ -1,23 +1,27 @@
 package com.airline.request;
 
-import java.time.LocalDateTime;
-
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class FeedbackRequestDto {
-	
-	private Long bookingId;
-    private String flightName;
-    private Integer rating;
-    private String comments;
-    private LocalDateTime submittedAt;
-    private Long userId;
 
+    @NotNull(message = "Booking ID is required")
+    private Long bookingId;
+
+    @NotNull(message = "Rating is required")
+    @Min(value = 1, message = "Rating must be at least 1")
+    @Max(value = 5, message = "Rating must be at most 5")
+    private Integer rating;
+
+    @Size(max = 1000, message = "Comments cannot exceed 1000 characters")
+    private String comments;
 }
+

@@ -34,7 +34,7 @@ public class FlightScheduleRequestDto {
 
     @NotNull(message = "Total seats is required")
     @Min(value = 1, message = "Total seats must be at least 1")
-    @Max(value = 853, message = "Total seats cannot exceed 853")
+    @Max(value = 180, message = "Total seats cannot exceed 180")
     private Integer totalSeats;
 
 }
