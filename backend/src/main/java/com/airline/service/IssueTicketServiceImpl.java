@@ -27,7 +27,12 @@ public class IssueTicketServiceImpl implements IssueTicketService {
         User user = getLoggedInUser();
 
         Booking booking = bookingDao.findById(request.getBookingId())
-                .orElseThrow(() -> new ResourceNotFoundException("Booking not found"));
+                .orElseThrow(() -> new
+                        ResourceNotFoundException("Booking not found"));
+
+        if (!booking.getUser().getId().equals(user.getId())) {
+            throw new BadRequestException("You are not authorized to create a ticket for this booking");
+        }
 
         SupportTicket ticket = SupportTicket.builder()
                 .subject(request.getSubject())

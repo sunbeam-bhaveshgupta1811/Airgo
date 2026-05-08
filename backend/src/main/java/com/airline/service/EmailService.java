@@ -28,13 +28,13 @@ public class EmailService {
     @Value("${app.base-url}")
     private String baseUrl;
 
-    private TicketPdfGenerator ticketPdfGenerator;
+    private final TicketPdfGenerator ticketPdfGenerator;
 
 
     @Async
     public void sendVerificationEmail(String toEmail, String firstName, String token) {
         try {
-            String verifyUrl = baseUrl + "/auth/verify-email?token=" + token;
+            String verifyUrl = baseUrl + "/api/auth/verify-email?token=" + token;
 
             String htmlContent = """
                     <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px;">
