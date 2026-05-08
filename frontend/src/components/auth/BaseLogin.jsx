@@ -1,77 +1,82 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, Link } from "react-router-dom";
-import "../../css/Login.css";
-import { FaPlane } from "react-icons/fa";
-import { toast } from "react-toastify";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState, useEffect } from 'react'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
+import '../../css/Login.css'
+import { FaPlane } from 'react-icons/fa'
+import { toast } from 'react-toastify'
+import 'bootstrap/dist/css/bootstrap.min.css'
 
 function BaseLogin({ loginType, authService, redirectPath }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [rememberMe, setRememberMe] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [rememberMe, setRememberMe] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
-  const navigate = useNavigate();
-  const location = useLocation();
+  const navigate = useNavigate()
+  const location = useLocation()
 
   useEffect(() => {
-    const params = new URLSearchParams(location.search);
-    if (params.get("verified")) {
-      toast.success("Your account has been verified! Please login.");
-      navigate(location.pathname, { replace: true });
+    const params = new URLSearchParams(location.search)
+    if (params.get('verified')) {
+      toast.success('Your account has been verified! Please login.')
+      navigate(location.pathname, { replace: true })
     }
-  }, [location, navigate]);
+  }, [location, navigate])
 
   const onLogin = async (e) => {
-    e.preventDefault();
-
-    if (!/^\S+@\S+\.\S+$/.test(email)) {
-      toast.warn("Please enter a valid email");
-      return;
-    }
+    e.preventDefault()
 
     if (!email.trim()) {
-      toast.warn("Please enter email without spaces");
-      return;
+      toast.warn('Please enter your email')
+      return
+    }
+
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      toast.warn('Please enter a valid email')
+      return
     }
 
     if (password.length === 0) {
-      toast.warn("Please enter your password");
-      return;
+      toast.warn('Please enter your password')
+      return
     }
 
     try {
-      setIsLoading(true);
-      const result = await authService(email, password, loginType);
-      console.log("Login result:", result);
-      if (result.success == true) {
-        sessionStorage.setItem("isLoggedIn", "true");
-        sessionStorage.setItem("userEmail", email);
-        sessionStorage.setItem("userType", result.data.role || "");
-        sessionStorage.setItem("jwt", result.data.jwt || "");
-        sessionStorage.setItem("userId", result.data.customerId || "0");
-        sessionStorage.setItem("name", result.data.firstName || "");
-        toast.success("Login successful!");
-        navigate(redirectPath);
-      } else if (
-        result.success == false &&
-        result.message == "Access denied: You are not allowed to log in as USER"
-      ) {
-        toast.error(result.message);
+      setIsLoading(true)
+
+      // Fixed: removed loginType param — backend login() only takes email + password
+      const result = await authService(email, password)
+      console.log('Login result:', result)
+
+      if (result && result.success === true) {
+        const userData = result.data
+
+        // Fixed: correct field names from backend response
+        sessionStorage.setItem('isLoggedIn', 'true')
+        sessionStorage.setItem('userEmail', email)
+        sessionStorage.setItem('userType', userData.role || '')
+        sessionStorage.setItem('jwt', userData.token || '')        // was userData.jwt
+        sessionStorage.setItem('userId', userData.userId || '0')  // was userData.customerId
+        sessionStorage.setItem('name', userData.firstName || '')
+
+        toast.success(`Login successful! Welcome back, ${userData.firstName}.`)
+        navigate(redirectPath)
+
       } else {
-        toast.error(result.message || "Login failed. Please try again.");
+        toast.error(result?.message || 'Login failed. Please try again.')
       }
+
     } catch (error) {
-      console.error("Login error:", error);
-      toast.error("An error occurred during login");
+      console.error('Login error:', error)
+      toast.error('An error occurred during login')
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <div className="register-page login-page">
       <div className="register-split">
+
         {/* Login Card */}
         <div className="register-panel-shell">
           <div className="register-card">
@@ -80,8 +85,12 @@ function BaseLogin({ loginType, authService, redirectPath }) {
                 Need help?
               </Link>
             </div>
+
             <form className="register-form" onSubmit={onLogin}>
-              <h2 style={{textAlign: 'center', marginBottom: '1.5rem'}}>{loginType === "admin" ? "Admin Login" : "Login"}</h2>
+              <h2 style={{ textAlign: 'center', marginBottom: '1.5rem' }}>
+                {loginType === 'admin' ? 'Admin Login' : 'Login'}
+              </h2>
+
               <div className="register-field-group">
                 <label htmlFor="login-email">Email</label>
                 <input
@@ -95,6 +104,7 @@ function BaseLogin({ loginType, authService, redirectPath }) {
                   required
                 />
               </div>
+
               <div className="register-field-group">
                 <label htmlFor="login-password">Password</label>
                 <input
@@ -108,31 +118,38 @@ function BaseLogin({ loginType, authService, redirectPath }) {
                   required
                 />
               </div>
-              <div className="register-terms" style={{marginTop: '0.5rem', marginBottom: '0.5rem'}}>
+
+              <div className="register-terms" style={{ marginTop: '0.5rem', marginBottom: '0.5rem' }}>
                 <input
                   type="checkbox"
                   id="rememberMe"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
                 />
-                <label htmlFor="rememberMe" style={{fontWeight: 400}}>Remember me</label>
-                <span style={{marginLeft: 'auto'}}>
-                  <Link to="/forgot-password" className="register-inline-link">Forgot password?</Link>
+                <label htmlFor="rememberMe" style={{ fontWeight: 400 }}>Remember me</label>
+                <span style={{ marginLeft: 'auto' }}>
+                  <Link to="/forgot-password" className="register-inline-link">
+                    Forgot password?
+                  </Link>
                 </span>
               </div>
+
               <button className="register-submit" type="submit" disabled={isLoading}>
-                {isLoading ? "Logging in..." : "Login Now"}
+                {isLoading ? 'Logging in...' : 'Login Now'}
               </button>
-              <div className="register-footer-text" style={{marginTop: '1.2rem'}}>
-                {loginType !== "admin" && (
+
+              <div className="register-footer-text" style={{ marginTop: '1.2rem' }}>
+                {loginType !== 'admin' && (
                   <>
-                    Don't have an account? <Link className="register-login-link" to="/register">Signup</Link>
+                    Don't have an account?{' '}
+                    <Link className="register-login-link" to="/register">Signup</Link>
                   </>
                 )}
               </div>
             </form>
           </div>
         </div>
+
         {/* Hero Section */}
         <aside className="register-hero">
           <div className="register-hero-inner">
@@ -157,9 +174,10 @@ function BaseLogin({ loginType, authService, redirectPath }) {
             </div>
           </div>
         </aside>
+
       </div>
     </div>
-  );
+  )
 }
 
-export default BaseLogin;
+export default BaseLogin

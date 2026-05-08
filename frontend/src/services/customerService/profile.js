@@ -1,37 +1,38 @@
-import axios from 'axios';
-import { config } from '../../../config';
+import axios from 'axios'
+import { config } from '../../../config'
 
-export async function getProfileData() {
+const getAuthHeaders = () => ({
+  headers: {
+    Authorization: `Bearer ${sessionStorage.getItem('jwt')}`,
+    'Content-Type': 'application/json'
+  }
+})
+
+export const getProfileData = async () => {
   try {
-    const response = await axios.get(`${config.serverURL}/profile`, {
-      headers: {
-        Authorization: `Bearer ${sessionStorage.getItem('jwt')}`,
-      },
-    });
+    const response = await axios.get(
+      `${config.serverURL}/user/profile`,
+      getAuthHeaders()
+    )
+    return response.data?.data || null
 
-    if (response.status === 200) {
-      return response.data;
-    }
-    return null;
   } catch (error) {
-    console.error('Error fetching profile data:', error);
-    return null;
+    console.error('Error fetching profile data:', error)
+    return null
   }
 }
-export async function updateProfileData(profileData) {
+
+export const updateProfileData = async (profileData) => {
   try {
     const response = await axios.put(
-      `${config.serverURL}/profile`,
+      `${config.serverURL}/user/profile`,
       profileData,
-      {
-        headers: {
-          Authorization: `Bearer ${sessionStorage.getItem('jwt')}`,
-        },
-      }
-    );
-    return response.status === 200;
+      getAuthHeaders()
+    )
+    return response.status === 200
+
   } catch (error) {
-    console.error('Error updating profile data:', error);
-    return false;
+    console.error('Error updating profile data:', error)
+    return false
   }
 }
