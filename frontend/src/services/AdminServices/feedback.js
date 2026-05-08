@@ -1,3 +1,6 @@
+import axios from "axios";
+import { config } from "../../../config";
+
 export const submitCustomerFeedBack = async (userId, bookingId, rating, comment) => {
   try {
     const payload = {

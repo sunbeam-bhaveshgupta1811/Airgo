@@ -20,15 +20,21 @@ const AddAirline = () => {
   const [airlineName, setAirlineName] = useState("");
   const [airlineNoOfFlights, setAirlineNoOfFlights] = useState(0);
 
-  const submit = async() => {
+  const submit = async(e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
 
-    const data = await addAirline(airlineName, airlineNoOfFlights);
-    if (!data) {
-      toast.error("Failed to add airline. Please try again.");
-      return;
+    try {
+      const data = await addAirline(airlineName, airlineNoOfFlights);
+      if (!data) {
+        toast.error("Failed to add airline. Please try again.");
+        return;
+      }
+      toast.success("Airline added successfully!");
+      navigate("/admin/airlinemanagement");
+    } finally {
+      setIsSubmitting(false);
     }
-    toast.success("Airline added successfully!");
-    navigate("/admin/airlinemanagement");
   };
 
   const handleBack = () => {

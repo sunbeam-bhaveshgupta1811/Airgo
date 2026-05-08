@@ -31,7 +31,7 @@ const ForgotPassword = () => {
       } else {
         toast.error(result.message || "Error sending reset link");
       }
-    } catch (error) {
+    } catch {
       toast.error("An error occurred. Please try again.");
     } finally {
       setIsLoading(false);

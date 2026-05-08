@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useEffect } from 'react';
-import { FaPlane, FaClock, FaChair, FaArrowLeft, FaFilter, FaSort, FaStar, FaWifi, FaUtensils } from 'react-icons/fa';
+import React, { useState, useMemo } from 'react';
+import { FaPlane, FaClock, FaChair, FaArrowLeft, FaFilter, FaStar, FaWifi, FaUtensils } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
 import '../../css/FlightList.css';
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -7,7 +7,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 const FlightList = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const flights = location.state?.flights || [];
+  const flights = useMemo(() => location.state?.flights || [], [location.state]);
   const searchParams = location.state?.searchParams || {};
 
   // State for filters and sorting
@@ -15,7 +15,6 @@ const FlightList = () => {
   const [filterBy, setFilterBy] = useState({
     maxPrice: '',
     airlines: [],
-    classTypes: [],
     timeOfDay: 'all' // morning, afternoon, evening, all
   });
   const [showFilters, setShowFilters] = useState(false);
@@ -61,10 +60,11 @@ const FlightList = () => {
       switch (sortBy) {
         case 'price':
           return Math.min(...Object.values(a.prices)) - Math.min(...Object.values(b.prices));
-        case 'duration':
+        case 'duration': {
           const aDuration = parseInt(a.duration.split('h')[0]) * 60 + parseInt(a.duration.split('h')[1]?.replace('m', '') || 0);
           const bDuration = parseInt(b.duration.split('h')[0]) * 60 + parseInt(b.duration.split('h')[1]?.replace('m', '') || 0);
           return aDuration - bDuration;
+        }
         case 'departure':
           return a.departureTime.localeCompare(b.departureTime);
         default:
@@ -137,7 +137,6 @@ const FlightList = () => {
     setFilterBy({
       maxPrice: '',
       airlines: [],
-      classTypes: [],
       timeOfDay: 'all'
     });
   };

@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Outlet } from "react-router-dom";
 import "../../css/AdminNavbar.css";
 import "../../css/AdminDashboard.css";
 import {
@@ -11,12 +10,8 @@ import {
   getAirlineCount,
   getFlightCount,
   getBookingCount,
-  getTotalAmountBooking,
+  getTotalRevenue,
 } from "../../services/AdminServices/adminDashboardServices";
-
-import {
-  LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer,
-} from "recharts";
 
 import PerformanceChart from './../../components/PerformanceChart';
 
@@ -40,7 +35,7 @@ function AdminDashboard() {
 
         setCountBooking(await getBookingCount());
 
-        setTotalAmountBooking(await getTotalAmountBooking());
+        setTotalAmountBooking(await getTotalRevenue());
       } catch (err) {
         setError("Failed to load airline count");
         console.error(err);
@@ -54,6 +49,9 @@ function AdminDashboard() {
   return (
     <div className="admin-layout">
       <div className="container-fluid p-4 dashboard-content">
+        {error && <div className="alert alert-danger">{error}</div>}
+        {loading && <div className="alert alert-info">Loading dashboard data...</div>}
+
         {/* Summary Cards Row - 4 cards in one row */}
         <div className="row summary-cards">
           <div className="col-xl-3 col-md-6 mb-4">

@@ -1,16 +1,55 @@
-// src/services/paymentService.js
+import axios from 'axios'
+import { config } from '../../../config'
 
-import axios from 'axios';
-
-const API_BASE_URL = 'http://localhost:5000/api/payments'; // Replace with your backend URL
-
-// Simulate or send payment request to server
-export const processPayment = async (paymentData) => {
-  try {
-    const response = await axios.post(`${API_BASE_URL}/process`, paymentData);
-    return response.data;
-  } catch (error) {
-    console.error('Payment failed:', error);
-    throw error;
+const getAuthHeaders = () => ({
+  headers: {
+    Authorization: `Bearer ${sessionStorage.getItem('jwt')}`,
+    'Content-Type': 'application/json'
   }
-};
+})
+
+export const processPayment = async (bookingId, paymentMethod = 'CREDIT_CARD') => {
+  try {
+    const response = await axios.post(
+      `${config.serverURL}/payments/pay`,
+      {
+        bookingId,
+        paymentMethod: paymentMethod.toUpperCase()
+      },
+      getAuthHeaders()
+    )
+    return response.data?.data || null
+
+  } catch (error) {
+    console.error('Payment failed:', error)
+    const msg = error.response?.data?.message || 'Payment failed. Please try again.'
+    throw new Error(msg)
+  }
+}
+export const getPaymentByBookingId = async (bookingId) => {
+  try {
+    const response = await axios.get(
+      `${config.serverURL}/payments/booking/${bookingId}`,
+      getAuthHeaders()
+    )
+    return response.data?.data || null
+
+  } catch (error) {
+    console.error('Error fetching payment:', error)
+    throw error
+  }
+}
+
+export const getPaymentByTransactionId = async (transactionId) => {
+  try {
+    const response = await axios.get(
+      `${config.serverURL}/payments/transaction/${transactionId}`,
+      getAuthHeaders()
+    )
+    return response.data?.data || null
+
+  } catch (error) {
+    console.error('Error fetching payment by txn:', error)
+    throw error
+  }
+}
