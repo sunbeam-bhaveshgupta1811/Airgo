@@ -2,8 +2,8 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { forgotPasswordApi } from "../../services/auth/user";
 import { toast } from "react-toastify";
-import "../../css/Login.css";
-import "../../css/ForgetPassword.css";
+import "../../styles/Login.css";
+import "../../styles/ForgetPassword.css";
 
 const ForgotPassword = () => {
   const [email, setEmail] = useState("");

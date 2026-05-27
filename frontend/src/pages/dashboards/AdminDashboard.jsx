@@ -1,20 +1,15 @@
 import React, { useEffect, useState } from "react";
-import "../../css/AdminNavbar.css";
-import "../../css/AdminDashboard.css";
-import {
-  FaPlane,
-  FaMoneyBillWave,
-  FaClipboardList,
-} from "react-icons/fa";
+import "../../styles/AdminNavbar.css";
+import "../../styles/AdminDashboard.css";
+import { FaPlane, FaMoneyBillWave, FaClipboardList } from "react-icons/fa";
 import {
   getAirlineCount,
   getFlightCount,
   getBookingCount,
   getTotalRevenue,
-} from "../../services/AdminServices/adminDashboardServices";
-
-import PerformanceChart from './../../components/PerformanceChart';
-
+} from "../../services/admin/adminDashboardServices";
+import { Outlet } from "react-router-dom";
+import PerformanceChart from "./../../components/PerformanceChart";
 
 function AdminDashboard() {
   const [countAirline, setCountAirline] = useState(0);
@@ -50,7 +45,9 @@ function AdminDashboard() {
     <div className="admin-layout">
       <div className="container-fluid p-4 dashboard-content">
         {error && <div className="alert alert-danger">{error}</div>}
-        {loading && <div className="alert alert-info">Loading dashboard data...</div>}
+        {loading && (
+          <div className="alert alert-info">Loading dashboard data...</div>
+        )}
 
         {/* Summary Cards Row - 4 cards in one row */}
         <div className="row summary-cards">
@@ -161,12 +158,8 @@ function AdminDashboard() {
             </div>
           </div>
         </div>
-
-        {/* Main Content Area */}
         <Outlet />
       </div>
-
-      {/* Footer */}
       <footer className="sticky-footer bg-white">
         <div className="container my-auto">
           <div className="copyright text-center my-auto">

@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { FaPlane, FaClock, FaChair, FaArrowLeft, FaFilter, FaStar, FaWifi, FaUtensils } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
-import '../../css/FlightList.css';
+import '../../styles/FlightList.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const FlightList = () => {

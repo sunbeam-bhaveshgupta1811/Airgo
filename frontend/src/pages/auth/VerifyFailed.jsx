@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "../../css/Login.css"
+import "../../styles/Login.css"
 import Login from './../admin/auth/Login';
 
 function VerifyFailedPage() {
