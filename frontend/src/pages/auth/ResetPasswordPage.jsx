@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
 import { resetPasswordApi } from '../../services/auth/user'
 import { toast } from 'react-toastify'
-import '../../css/ResetPassword.css'
+import '../../styles/ResetPassword.css'
 
 function ResetPasswordPage() {
   const [password, setPassword] = useState('')

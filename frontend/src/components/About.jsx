@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Row, Col, Card, Accordion, Button, Badge, ProgressBar } from "react-bootstrap";
 import { FaPlane, FaUsers, FaHeadset, FaGlobe, FaAward, FaShieldAlt, FaClock, FaHeart, FaRocket, FaHandshake, FaStar, FaMapMarkerAlt } from "react-icons/fa";
 import { motion } from "framer-motion";
-import "../css/About.css";
+import "../styles/About.css";
 
 const Motion = motion;
 

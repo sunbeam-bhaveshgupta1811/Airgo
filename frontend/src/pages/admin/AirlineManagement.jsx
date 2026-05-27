@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import "../../css/AirlineManagement.css";
+import "../../styles/AirlineManagement.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
-import { deactivateAirline, fetchAllAirlines } from "../../services/AdminServices/airlineManagementServies";
+import { deactivateAirline, fetchAllAirlines } from "../../services/admin/airlineManagementServies";
 import { toast } from "react-toastify";
 
 const AirlineManagement = () => {

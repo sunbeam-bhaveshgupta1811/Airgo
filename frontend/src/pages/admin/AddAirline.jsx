@@ -11,7 +11,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { FaPlane, FaArrowLeft, FaCheck } from "react-icons/fa";
 import { toast } from "react-toastify";
-import { addAirline } from "../../services/AdminServices/airlineManagementServies";
+import { addAirline } from "../../services/admin/airlineManagementServies";
 
 const AddAirline = () => {
   const navigate = useNavigate();

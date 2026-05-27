@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../css/PassengerList.css";
+import "../../styles/PassengerList.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const PassengersList = () => {

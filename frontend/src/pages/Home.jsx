@@ -14,8 +14,9 @@ import {
 } from "react-icons/fa";
 import { motion as Motion } from "framer-motion";
 import HomeNavbar from "../components/HomeNavbar";
+import Footer from "../components/Footer";
 import FlightSearch from "./customer/FlightSearch";
-import "../css/Home.css";
+import "../styles/Home.css";
 
 function Home() {
   const location = useLocation();
@@ -416,6 +417,7 @@ function Home() {
             </section>
 
           </div>
+          <Footer />
         </div>
         )}
       </div>

@@ -12,7 +12,7 @@
   padding: 0;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
   border: 1px solid rgba(255, 255, 255, 0.2);
-  overflow: visible;
+  overflow: hidden;
   width: 100%;
 }
 
@@ -298,7 +298,7 @@
 
 .special-fares-options {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
 }
 
@@ -487,8 +487,16 @@
 }
 
 .search-fields-row {
-  grid-template-columns: minmax(160px, 1.1fr) 44px minmax(160px, 1.1fr) minmax(150px, 0.9fr) minmax(150px, 0.9fr);
+  grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
   gap: 12px;
+}
+
+.date-field {
+  grid-column: 1 / 2;
+}
+
+.travelers-field {
+  grid-column: 2 / 4;
 }
 
 .city-input,
@@ -514,17 +522,28 @@
   font-weight: 700;
 }
 
+.date-input input[type="date"] {
+  position: absolute;
+  inset: 0;
+  height: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+
 .city-input input {
   font-size: 1.25rem;
 }
 
-.date-input input[type="date"] {
-  font-size: 0.95rem;
-  margin-bottom: 6px;
-}
-
 .city-input input::placeholder {
   color: var(--color-text-muted);
+}
+
+.date-placeholder {
+  min-height: 54px;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-muted);
+  font-weight: 650;
 }
 
 .city-name {
@@ -570,12 +589,117 @@
 
 @media (max-width: 1200px) {
   .search-fields-row {
-    grid-template-columns: minmax(150px, 1fr) 44px minmax(150px, 1fr);
+    grid-template-columns: minmax(0, 1fr) 44px minmax(0, 1fr);
   }
 }
 
 @media (max-width: 768px) {
   .search-fields-row {
     grid-template-columns: 1fr;
+  }
+
+  .date-field,
+  .travelers-field {
+    grid-column: auto;
+  }
+
+  .special-fares-options {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Equal-size flight search layout */
+.search-fields-row {
+  position: relative;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.search-field,
+.fare-option {
+  min-width: 0;
+}
+
+.from-field,
+.date-field {
+  grid-column: 1;
+}
+
+.to-field,
+.travelers-field {
+  grid-column: 2;
+}
+
+.swap-button-container {
+  position: absolute;
+  top: 58px;
+  left: 50%;
+  z-index: 2;
+  margin: 0;
+  transform: translateX(-50%);
+}
+
+.city-input,
+.date-input,
+.travelers-input {
+  min-height: 112px;
+  height: 112px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.date-placeholder {
+  min-height: auto;
+}
+
+.special-fares-options {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 16px;
+}
+
+.fare-option {
+  min-height: 116px;
+  height: 100%;
+}
+
+.fare-content {
+  justify-content: center;
+}
+
+.fare-label {
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.fare-label .badge {
+  margin-left: 0 !important;
+}
+
+@media (max-width: 768px) {
+  .search-fields-row,
+  .special-fares-options {
+    grid-template-columns: 1fr;
+  }
+
+  .from-field,
+  .to-field,
+  .date-field,
+  .travelers-field {
+    grid-column: auto;
+  }
+
+  .swap-button-container {
+    position: static;
+    transform: none;
+    margin: -2px 0;
+  }
+
+  .city-input,
+  .date-input,
+  .travelers-input {
+    height: auto;
+    min-height: 96px;
   }
 }

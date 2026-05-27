@@ -69,7 +69,6 @@ export const getTotalRevenue = async () => {
       getAuthHeaders()
     )
     const bookings = response.data?.data || []
-    // Sum totalAmount of all CONFIRMED bookings
     const total = bookings
       .filter(b => b.status === 'CONFIRMED')
       .reduce((sum, b) => sum + (b.totalAmount || 0), 0)

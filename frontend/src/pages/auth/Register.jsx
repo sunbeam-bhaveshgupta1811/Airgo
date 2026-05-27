@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { FaPlane, FaEye, FaEyeSlash } from "react-icons/fa";
 import { registerUser } from "../../services/auth/user";
 import { toast } from "react-toastify";
-import "../../css/Register.css";
+import "../../styles/Register.css";
 
 const DEFAULT_TITLE = "Mr";
 

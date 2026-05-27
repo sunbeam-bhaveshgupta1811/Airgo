@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { getProfileData } from '../services/AdminServices/AdminProfile';
+import { getProfileData } from '../services/admin/AdminProfile';
 const Profile = () => {
   const [user, setUser] = useState({});
 
