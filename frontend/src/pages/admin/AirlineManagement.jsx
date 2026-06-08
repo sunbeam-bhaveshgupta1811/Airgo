@@ -49,7 +49,10 @@ const AirlineManagement = () => {
     try {
       setLoading(true);
       const data = await fetchAllAirlines();
-      setAirlines(data);
+      const activeAirlines = data.filter(
+        (airline) => !airline.status || airline.status === "ACTIVE"
+      );
+      setAirlines(activeAirlines);
     } catch (error) {
       console.error("Error fetching airlines:", error);
     }finally {
