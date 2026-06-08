@@ -120,7 +120,7 @@ public class AirlineServiceImpl implements AirlineService {
 
     @Transactional(readOnly = true)
     public List<AirlineResponseDto> getAllAirlines() {
-        return airlineDao.findAll()
+        return airlineDao.findByStatus(AirlineStatus.ACTIVE)
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
