@@ -12,8 +12,8 @@ import {
   getBookingById, 
   sendBookingConfirmationEmail, 
   //generateTicketPDF 
-} from '../../services/customerService/ticketService';
-import '../../css/TicketPage.css';
+} from '../../services/customer/ticketService';
+import '../../styles/TicketPage.css';
 
 const TicketPage = () => {
   const location = useLocation();

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { FaExchangeAlt, FaChevronDown } from 'react-icons/fa';
 import { Badge } from 'react-bootstrap';
-import '../../css/FlightSearch.css';
+import '../../styles/FlightSearch.css';
 import { useNavigate } from 'react-router-dom';
-import { searchFlights } from '../../services/customerService/flightSearchService';
+import { searchFlights } from '../../services/customer/flightSearchService';
 
 const FlightSearch = () => {
   const navigate = useNavigate();
@@ -163,11 +163,7 @@ const FlightSearch = () => {
                       <span className="date-day">{formatDate(departureDate).dayName}</span>
                     </>
                   ) : (
-                    <>
-                      <span className="date-number">20</span>
-                      <span className="date-month">Apr'26</span>
-                      <span className="date-day">Monday</span>
-                    </>
+                    <span className="date-placeholder">Select date</span>
                   )}
                 </div>
               </div>

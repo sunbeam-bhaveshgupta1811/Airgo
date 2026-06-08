@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import "../../css/FlightDetails.css";
+import "../../styles/FlightDetails.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import AdminNavbar from "../../components/AdminNavbar";
 import { useNavigate } from "react-router-dom";

@@ -23,7 +23,8 @@ dist-ssr
 *.sln
 *.sw?
 
-
+# VS Code
+.vscode/
 
 # Ignore node_modules
 node_modules/

@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import "../../css/AirlineManagement.css";
+import "../../styles/AirlineManagement.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
-import { deactivateAirline, fetchAllAirlines } from "../../services/AdminServices/airlineManagementServies";
+import { deactivateAirline, fetchAllAirlines } from "../../services/admin/airlineManagementServies";
 import { toast } from "react-toastify";
 
 const AirlineManagement = () => {
@@ -49,7 +49,10 @@ const AirlineManagement = () => {
     try {
       setLoading(true);
       const data = await fetchAllAirlines();
-      setAirlines(data);
+      const activeAirlines = data.filter(
+        (airline) => !airline.status || airline.status === "ACTIVE"
+      );
+      setAirlines(activeAirlines);
     } catch (error) {
       console.error("Error fetching airlines:", error);
     }finally {

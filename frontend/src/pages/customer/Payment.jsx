@@ -3,8 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaCreditCard, FaLock, FaCheckCircle, FaRupeeSign } from 'react-icons/fa';
-import { processPayment as processPaymentApi } from '../../services/customerService/paymentService';
-import '../../css/Payment.css';
+import { processPayment as processPaymentApi } from '../../services/customer/paymentService';
+import '../../styles/Payment.css';
 
 const Payment = () => {
   const navigate = useNavigate();

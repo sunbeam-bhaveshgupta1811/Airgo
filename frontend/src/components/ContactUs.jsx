@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Container, Row, Col, Form, Button, Card, Alert, Badge, ProgressBar } from 'react-bootstrap';
 import { FaPhone, FaEnvelope, FaMapMarkerAlt, FaClock, FaHeadset, FaPaperPlane, FaCheckCircle, FaUpload, FaComments, FaPlane, FaExclamationTriangle } from 'react-icons/fa';
 import { motion, AnimatePresence } from 'framer-motion';
-import '../css/ContactUs.css';
+import '../styles/ContactUs.css';
 
 const Motion = motion;
 

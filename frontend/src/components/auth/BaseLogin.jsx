@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
-import '../../css/Login.css'
+import '../../styles/Login.css'
 import { FaPlane } from 'react-icons/fa'
 import { toast } from 'react-toastify'
 import 'bootstrap/dist/css/bootstrap.min.css'

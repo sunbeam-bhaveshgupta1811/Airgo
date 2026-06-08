@@ -53,6 +53,8 @@
   justify-content: center;
   align-items: center;
   padding-right: 2rem;
+  min-width: 0;
+  width: 100%;
 }
 
 .hero-main-title {
@@ -275,11 +277,15 @@
 }
 
 .hero-content-grid {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
   gap: clamp(2rem, 4vw, 4rem);
+  max-width: 1680px;
 }
 
 .hero-text-section {
   padding-left: 0;
+  justify-self: start;
+  text-align: left;
 }
 
 .hero-main-title {
@@ -294,6 +300,15 @@
   max-width: 600px;
   color: rgba(255, 255, 255, 0.88);
   text-shadow: none;
+}
+
+.hero-search-section .modern-flight-search {
+  width: min(100%, 1040px);
+}
+
+.hero-search-section {
+  justify-content: flex-end;
+  padding-right: 0;
 }
 
 .feature-badge {
@@ -339,6 +354,23 @@
 
 .floating-chat-button {
   display: none;
+}
+
+@media (max-width: 1100px) {
+  .hero-content-grid {
+    grid-template-columns: 1fr;
+    max-width: 1040px;
+  }
+
+  .hero-text-section,
+  .hero-search-section {
+    padding-left: 0;
+    padding-right: 0;
+  }
+
+  .hero-search-section {
+    justify-content: center;
+  }
 }
 
 @media (max-width: 992px) {
