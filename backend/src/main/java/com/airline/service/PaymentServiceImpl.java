@@ -152,10 +152,16 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Transactional
-    public PaymentResponseDto refundPayment(Long paymentId) {
+    public synchronized PaymentResponseDto refundPayment(Long paymentId) {
         Payment payment = paymentDao.findById(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Payment not found with id: " + paymentId));
+
+        if (payment.getStatus() == PaymentStatus.REFUNDED) {
+            throw new BadRequestException(
+                    "Payment has already been refunded. Transaction: "
+                            + payment.getTransactionId());
+        }
 
         if (payment.getStatus() != PaymentStatus.SUCCESS) {
             throw new BadRequestException(
@@ -182,6 +188,12 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     private PaymentStatus simulatePaymentGateway(PaymentMethod method) {
+        // Simulate ~10% failure rate like a real gateway
+        double random = Math.random();
+        if (random < 0.10) {
+            log.warn("Simulated payment gateway declined transaction for method: {}", method);
+            return PaymentStatus.FAILED;
+        }
         return PaymentStatus.SUCCESS;
     }
 

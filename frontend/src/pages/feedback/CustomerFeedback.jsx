@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { config } from "../../../config";
 import "bootstrap/dist/css/bootstrap.min.css";
+
+const getAuthHeaders = () => {
+  const token = sessionStorage.getItem("jwt");
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+};
 
 const CustomerFeedback = () => {
   const [users, setUsers] = useState([]);
@@ -15,11 +25,11 @@ const CustomerFeedback = () => {
 
   // ✅ Fetch users and bookings from backend
   useEffect(() => {
-    axios.get("http://localhost:8080/customer/feedback")
+    axios.get(`${config.serverURL}/customer/feedback`, getAuthHeaders())
       .then((res) => setUsers(res.data))
       .catch((err) => console.error("Error fetching users:", err));
 
-    axios.get("http://localhost:8080/customer/booking")
+    axios.get(`${config.serverURL}/customer/booking`, getAuthHeaders())
       .then((res) => setBookings(res.data))
       .catch((err) => console.error("Error fetching bookings:", err));
   }, []);
@@ -43,7 +53,7 @@ const CustomerFeedback = () => {
       return;
     }
     try {
-      const response = await axios.post("http://localhost:8080/api/feedback", formData);
+      const response = await axios.post(`${config.serverURL}/api/feedback`, formData, getAuthHeaders());
       if (response.status === 200) {
         setAlert({ type: "success", message: "Feedback submitted successfully!" });
         setFormData({ user_id: "", booking_id: "", rating: 0, comments: "" });
@@ -124,10 +134,4 @@ const CustomerFeedback = () => {
 };
 
 export default CustomerFeedback;
-
-<button type="submit" className="btn btn-primary btn-sm">
-  Submit Feedback
-</button>
-
-
 

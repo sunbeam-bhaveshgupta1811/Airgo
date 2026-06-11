@@ -38,7 +38,7 @@ public class BookingServiceImpl implements BookingService{
 
         User user = getLoggedInUser();
 
-        FlightSchedule schedule = scheduleDao.findById(request.getScheduleId())
+        FlightSchedule schedule = scheduleDao.findByIdWithLock(request.getScheduleId())
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Flight schedule not found with id: " + request.getScheduleId()));
 
