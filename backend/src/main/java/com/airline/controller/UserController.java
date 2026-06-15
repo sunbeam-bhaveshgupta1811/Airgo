@@ -2,6 +2,7 @@ package com.airline.controller;
 
 import com.airline.dto.ApiResponse;
 import com.airline.dto.auth.ChangePasswordRequest;
+import com.airline.request.UpdateProfileRequestDto;
 import com.airline.response.UserProfileResponseDto;
 import com.airline.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -25,6 +26,15 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserProfileResponseDto>> getMyProfile() {
         return ResponseEntity.ok(
                 ApiResponse.success("Profile fetched successfully", userService.getMyProfile())
+        );
+    }
+
+    @PutMapping("/profile")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateProfile(
+            @Valid @RequestBody UpdateProfileRequestDto request) {
+        return ResponseEntity.ok(
+                ApiResponse.success("Profile updated successfully", userService.updateProfile(request))
         );
     }
 

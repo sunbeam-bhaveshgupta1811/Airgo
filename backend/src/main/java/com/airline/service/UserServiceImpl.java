@@ -7,6 +7,7 @@ import com.airline.dto.auth.ChangePasswordRequest;
 import com.airline.entity.User;
 import com.airline.exception.BadRequestException;
 import com.airline.exception.ResourceNotFoundException;
+import com.airline.request.UpdateProfileRequestDto;
 import com.airline.response.UserProfileResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,6 +59,26 @@ public class UserServiceImpl implements UserService{
                 .stream()
                 .map(user -> this.mapToProfileResponse(user))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public UserProfileResponseDto updateProfile(UpdateProfileRequestDto request) {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+
+        User user = userDao.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        user.setFirstName(request.getFirstName().trim());
+        user.setLastName(request.getLastName().trim());
+
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone().trim());
+        }
+
+        User saved = userDao.save(user);
+        log.info("Profile updated for user: {}", email);
+        return mapToProfileResponse(saved);
     }
 
     @Transactional

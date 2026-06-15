@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
+import axios from 'axios';
+import { config } from '../../config';
 import { getProfileData } from '../services/admin/AdminProfile';
 const Profile = () => {
   const [user, setUser] = useState({});
@@ -33,13 +35,28 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const token = sessionStorage.getItem('jwt');
+      const response = await axios.put(
+        `${config.serverURL}/user/profile`,
+        {
+          firstName: user.firstName,
+          lastName: user.lastName,
+          phone: user.phone,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const updatedUser = response.data?.data;
+      if (updatedUser) {
+        setUser(updatedUser);
+      }
       setIsEditMode(false);
       toast.success('Profile updated successfully!');
-    } catch {
-      toast.error('Failed to update profile');
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update profile');
     } finally {
       setIsLoading(false);
     }
