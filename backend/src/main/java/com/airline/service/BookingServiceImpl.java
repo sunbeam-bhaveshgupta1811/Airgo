@@ -181,7 +181,7 @@ public class BookingServiceImpl implements BookingService{
     @Transactional(readOnly = true)
     public List<BookingResponseDto> getMyBookings() {
         User user = getLoggedInUser();
-        return bookingDao.findByUserIdOrderByCreatedAtDesc(user.getId())
+        return bookingDao.findByUserIdWithDetails(user.getId())
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -217,7 +217,7 @@ public class BookingServiceImpl implements BookingService{
 
     @Transactional(readOnly = true)
     public List<BookingResponseDto> getAllBookings() {
-        return bookingDao.findAll()
+        return bookingDao.findAllWithDetails()
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -252,8 +252,7 @@ public class BookingServiceImpl implements BookingService{
         FlightSchedule fs = b.getFlightSchedule();
         Flight f = fs.getFlight();
 
-        List<PassengerResponseDto> passengerResponses = passengerDao
-                .findByBookingId(b.getId())
+        List<PassengerResponseDto> passengerResponses = b.getPassengers()
                 .stream()
                 .map(p -> PassengerResponseDto.builder()
                         .id(p.getId())
