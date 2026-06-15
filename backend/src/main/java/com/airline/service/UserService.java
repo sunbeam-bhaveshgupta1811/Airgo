@@ -1,5 +1,7 @@
 package com.airline.service;
 
+import com.airline.dto.ApiResponse;
+import com.airline.dto.auth.ChangePasswordRequest;
 import com.airline.response.UserProfileResponseDto;
 
 import java.util.List;
@@ -8,4 +10,5 @@ public interface UserService {
     UserProfileResponseDto getMyProfile();
     UserProfileResponseDto getUserById(Long id);
     List<UserProfileResponseDto> getAllUsers();
+    ApiResponse<Void> changePassword(ChangePasswordRequest request);
 }

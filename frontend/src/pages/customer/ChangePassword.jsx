@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import axios from "axios";
+import { config } from "../../../config";
 
 function ChangePassword() {
   const [formData, setFormData] = useState({
@@ -36,7 +38,18 @@ function ChangePassword() {
 
     setLoading(true);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const token = sessionStorage.getItem("jwt");
+      await axios.put(
+        `${config.serverURL}/user/change-password`,
+        {
+          currentPassword: formData.currentPassword,
+          newPassword: formData.newPassword,
+          confirmPassword: formData.confirmNewPassword,
+        },
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
       setSuccessMessage("Password changed successfully.");
       setShowSuccessModal(true);
       setFormData({
@@ -44,6 +57,10 @@ function ChangePassword() {
         newPassword: "",
         confirmNewPassword: "",
       });
+    } catch (err) {
+      setError(
+        err.response?.data?.message || "Failed to change password. Try again."
+      );
     } finally {
       setLoading(false);
     }
