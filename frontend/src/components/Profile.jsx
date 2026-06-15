@@ -50,12 +50,13 @@ const Profile = () => {
   };
 
   const profileFetch = async() =>{
-    const data = await getProfileData();
-    if (data) {
-      setUser(data);
-    }
-    else {
-      toast.error('Failed to fetch profile data');
+    try {
+      const data = await getProfileData();
+      if (data) {
+        setUser(data);
+      }
+    } catch (error) {
+      toast.error(error.message || 'Failed to fetch profile data');
     }
   };
 

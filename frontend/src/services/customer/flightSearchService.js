@@ -16,7 +16,8 @@ export const searchFlights = async (from, to, journeyDate, passengers = 1) => {
 
   } catch (error) {
     console.error('Error searching flights:', error)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to search flights'
+    throw new Error(msg)
   }
 }
 
@@ -26,7 +27,8 @@ export const fetchAirports = async () => {
     return response.data?.data || []
   } catch (error) {
     console.error('Error fetching airports:', error)
-    return []
+    const msg = error.response?.data?.message || 'Failed to fetch airports'
+    throw new Error(msg)
   }
 }
 
@@ -38,6 +40,7 @@ export const getScheduleById = async (scheduleId) => {
     return response.data?.data || null
   } catch (error) {
     console.error('Error fetching schedule:', error)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to fetch schedule'
+    throw new Error(msg)
   }
 }
