@@ -7,6 +7,7 @@ import { toast } from "react-toastify";
 
 const AirlineManagement = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [allAirlines, setAllAirlines] = useState([]);
   const [airlines, setAirlines] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -21,8 +22,11 @@ const AirlineManagement = () => {
     try {
       await deactivateAirline(id);
       toast.success("Airline deleted successfully");
-      setAirlines((currentAirlines) =>
-        currentAirlines.filter((airline) => (airline.airlineId || airline.id) !== id)
+      setAllAirlines((current) =>
+        current.filter((airline) => (airline.airlineId || airline.id) !== id)
+      );
+      setAirlines((current) =>
+        current.filter((airline) => (airline.airlineId || airline.id) !== id)
       );
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to delete airline");
@@ -35,11 +39,11 @@ const AirlineManagement = () => {
 
   const handleSearch = () => {
     if (!searchTerm) {
-      fetchAirlines();
+      setAirlines(allAirlines);
       return;
     }
 
-    const filteredAirlines = airlines.filter((airline) =>
+    const filteredAirlines = allAirlines.filter((airline) =>
       (airline.airlineName || airline.name || "").toLowerCase().includes(searchTerm.toLowerCase())
     );
     setAirlines(filteredAirlines);
@@ -52,6 +56,7 @@ const AirlineManagement = () => {
       const activeAirlines = data.filter(
         (airline) => !airline.status || airline.status === "ACTIVE"
       );
+      setAllAirlines(activeAirlines);
       setAirlines(activeAirlines);
     } catch (error) {
       console.error("Error fetching airlines:", error);

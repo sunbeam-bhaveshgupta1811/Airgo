@@ -1,7 +1,8 @@
 {
   "permissions": {
     "additionalDirectories": [
-      "c:\\Users\\Gupta Family\\Desktop\\Final Project\\Airline-Reservation-System\\backend\\src\\main\\java\\com\\airline\\controller"
+      "c:\\Users\\Gupta Family\\Desktop\\Final Project\\Airline-Reservation-System\\backend\\src\\main\\java\\com\\airline\\controller",
+      "c:\\Users\\Gupta Family\\Desktop\\Final Project\\Airline-Reservation-System\\backend\\src\\main\\resources"
     ]
   }
 }
