@@ -14,7 +14,7 @@ const PassengerDetails = () => {
   useEffect(() => {
     const storedData = sessionStorage.getItem('flightBookingData');
     if (!storedData) {
-      navigate('/flights');
+      navigate('/customer/flightlist');
       return;
     }
 

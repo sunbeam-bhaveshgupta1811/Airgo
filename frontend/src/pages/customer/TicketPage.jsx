@@ -559,7 +559,7 @@ const TicketPage = () => {
   const handleBackToHome = () => {
     // Clear any remaining session data
     sessionStorage.removeItem('bookingConfirmation');
-    navigate('/customer/dashboard');
+    navigate('/');
   };
 
   // Auto-hide error messages after 5 seconds
