@@ -138,9 +138,10 @@ const BookingPreview = () => {
   };
 
   // Format class type for display
-  const formatClassType = (classType) => {
-    if (classType === 'firstClass') return 'First Class';
-    return classType.charAt(0).toUpperCase() + classType.slice(1);
+  const formatClassType = (type) => {
+    if (!type) return 'Economy';
+    if (type === 'firstClass') return 'First Class';
+    return type.charAt(0).toUpperCase() + type.slice(1);
   };
 
   return (
@@ -211,10 +212,12 @@ const BookingPreview = () => {
               <span>Taxes & Fees</span>
               <span>₹0</span>
             </div>
-            <div className="price-row">
-              <span>Available Seats</span>
-              <span>{flight.seatsAvailable[classType]} left</span>
-            </div>
+            {flight.seatsAvailable && flight.seatsAvailable[classType] != null && (
+              <div className="price-row">
+                <span>Available Seats</span>
+                <span>{flight.seatsAvailable[classType]} left</span>
+              </div>
+            )}
             <div className="price-row total">
               <span>Total Amount</span>
               <span>₹{totalPrice.toLocaleString()}</span>

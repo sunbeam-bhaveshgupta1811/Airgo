@@ -130,9 +130,9 @@ const Profile = () => {
                         margin: '0 auto'
                       }}
                     >
-                      <img 
-                        src={user.profileImage} 
-                        alt="Profile" 
+                      <img
+                        src={user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent((user.firstName || '') + ' ' + (user.lastName || ''))}&background=667eea&color=fff&size=200`}
+                        alt="Profile"
                         className="rounded-circle border shadow-lg"
                         style={{ 
                           width: '200px', 
@@ -304,11 +304,13 @@ const Profile = () => {
                         ) : (
                           <div className="form-control-plaintext fw-medium">
                             <i className="bi bi-calendar me-2 text-muted"></i>
-                            {new Date(user.dob).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}
+                            {user.dob
+                              ? new Date(user.dob).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                })
+                              : 'Not provided'}
                           </div>
                         )}
                       </div>
@@ -402,8 +404,7 @@ const Profile = () => {
           .profile-image-wrapper {
             width: 150px !important;
             height: 150px !important;
-          }import { useEffect } from 'react';
-
+          }
         }
       `}</style>
     </div>

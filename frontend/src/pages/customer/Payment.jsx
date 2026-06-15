@@ -62,7 +62,7 @@ const Payment = () => {
 
       // Enhanced validation with null checks
       if (!flightData || !passengerData || !Array.isArray(passengerData) || passengerData.length === 0) {
-        console.error('Missing or invalid booking data:', { flightData, passengerData });
+        console.error('Missing or invalid booking data');
         navigate('/customer/flightlist');
         return;
       }
@@ -76,13 +76,10 @@ const Payment = () => {
       );
 
       if (validPassengers.length === 0) {
-        console.error('No valid passengers found:', passengerData);
+        console.error('No valid passengers found');
         navigate('/customer/flightlist');
         return;
       }
-
-      console.log('Valid Flight Data:', flightData);
-      console.log('Valid Passengers:', validPassengers);
 
       setBookingData(flightData);
       setPassengers(validPassengers);
@@ -95,10 +92,7 @@ const Payment = () => {
 
   // Enhanced helper function with comprehensive null checks
   const extractFlightData = (bookingData) => {
-    console.log('Extracting flight data from:', bookingData);
-    
     if (!bookingData) {
-      console.error('Booking data is null or undefined');
       return null;
     }
     
@@ -149,11 +143,8 @@ const Payment = () => {
       };
     }
     
-    console.log('Final flight object:', flightObj);
-    
     // Final validation
     if (!flightObj || !flightObj.flightNumber || flightObj.flightNumber === 'UNKNOWN') {
-      console.error('Invalid flight object - missing critical data:', flightObj);
       return null;
     }
     
@@ -250,7 +241,7 @@ const Payment = () => {
     
     if (!flightData) {
       setError('Flight information is incomplete or invalid. Please go back and select flight again.');
-      console.error('Cannot extract valid flight data from:', bookingData);
+      console.error('Cannot extract valid flight data');
       return;
     }
 
@@ -271,9 +262,6 @@ const Payment = () => {
       seatNumber: passenger.seatNumber || null,
       specialRequests: passenger.specialRequests || null
     }));
-
-    console.log('Validated flight data:', flightData);
-    console.log('Validated passengers:', validatedPassengers);
 
     setIsProcessing(true);
 
@@ -312,8 +300,6 @@ const Payment = () => {
         }
       };
 
-      console.log('Payment data being sent:', JSON.stringify(paymentData, null, 2));
-
       const existingBookingId = bookingData?.bookingId || bookingData?.id;
       const paymentResult = existingBookingId
         ? await processPaymentApi(existingBookingId, paymentMethod === 'card' ? 'CREDIT_CARD' : 'UPI')
@@ -329,8 +315,6 @@ const Payment = () => {
         payment: paymentResult
       };
       
-      console.log('Booking confirmation received:', bookingConfirmation);
-
       if (!bookingConfirmation || !bookingConfirmation.booking) {
         throw new Error('Invalid booking confirmation received');
       }
@@ -398,17 +382,6 @@ const Payment = () => {
       <div className="payment-container">
         <h1>PAYMENT</h1>
         {error && <div className="error-message">{error}</div>}
-
-        {/* Debug info - remove in production */}
-        {import.meta.env.DEV && (
-          <div style={{backgroundColor: '#f0f0f0', padding: '10px', margin: '10px 0', fontSize: '12px'}}>
-            <strong>Debug Info:</strong><br/>
-            Flight Number: {bookingData?.flight?.flightNumber || bookingData?.flightNumber || 'Missing'}<br/>
-            Class Type: {bookingData?.classType || 'Missing'}<br/>
-            Passengers: {passengers.length}<br/>
-            Total Price: ₹{(totalPrice || 0).toLocaleString()}
-          </div>
-        )}
 
         <div className="payment-methods">
           <div className={`method-tab ${paymentMethod === 'card' ? 'active' : ''}`} onClick={() => setPaymentMethod('card')}>

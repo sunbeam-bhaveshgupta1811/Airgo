@@ -4,6 +4,7 @@ import { Badge } from 'react-bootstrap';
 import '../../styles/FlightSearch.css';
 import { useNavigate } from 'react-router-dom';
 import { searchFlights } from '../../services/customer/flightSearchService';
+import { toast } from 'react-toastify';
 
 const FlightSearch = () => {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ const FlightSearch = () => {
       const flights = await searchFlights(from, to, departureDate);
       
       if (!flights || flights.length === 0) {
-        alert('No flights found for your search criteria.');
+        toast.info('No flights found for your search criteria.');
         return;
       }
 
@@ -88,7 +89,7 @@ const FlightSearch = () => {
 
       navigate('/customer/flightlist', { state: { flights: transformedFlights } });
     } catch (error) {
-      alert('Failed to fetch flights. Please try again.');
+      toast.error('Failed to fetch flights. Please try again.');
       console.error('Flight search error:', error);
     } finally {
       setIsSearching(false);
