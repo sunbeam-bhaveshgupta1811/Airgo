@@ -33,11 +33,9 @@ const TicketPage = () => {
 
   useEffect(() => {
     const initializeTicketData = async () => {
-      console.log('Initializing ticket data with:', { bookingId, bookingData: !!bookingData });
       
       // Priority 1: Use booking data directly from payment flow
       if (bookingData && Object.keys(bookingData).length > 0) {
-        console.log('Using booking data from payment flow:', bookingData);
         const formattedData = formatTicketData(bookingData);
         if (formattedData) {
           setTicketData(formattedData);
@@ -65,9 +63,7 @@ const TicketPage = () => {
     try {
       setLoading(true);
       setError('');
-      console.log('Fetching booking with ID:', bookingId);
       const data = await getBookingById(bookingId);
-      console.log('API Response:', data);
       
       if (data && Object.keys(data).length > 0) {
         const formattedData = formatTicketData(data);
@@ -94,7 +90,6 @@ const TicketPage = () => {
       const storedConfirmation = sessionStorage.getItem('bookingConfirmation');
       if (storedConfirmation) {
         const confirmation = JSON.parse(storedConfirmation);
-        console.log('Using stored booking confirmation:', confirmation);
         
         // Handle different storage formats
         const bookingToFormat = confirmation.booking || confirmation;
@@ -117,11 +112,10 @@ const TicketPage = () => {
   // Enhanced format function to handle different response structures
   const formatTicketData = (bookingData) => {
     if (!bookingData || typeof bookingData !== 'object') {
-      console.error('Invalid booking data:', bookingData);
+      console.error('Invalid booking data');
       return null;
     }
 
-    console.log('Formatting booking data:', bookingData);
 
     try {
       // Extract flight data from various possible structures
@@ -284,6 +278,17 @@ const TicketPage = () => {
     };
   };
 
+  // Escape HTML special characters to prevent XSS
+  const escapeHTML = (str) => {
+    if (str === null || str === undefined) return '';
+    return String(str)
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#039;');
+  };
+
   // Generate HTML content for printing
   const generatePrintHTML = () => {
     if (!ticketData) return '';
@@ -292,7 +297,7 @@ const TicketPage = () => {
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Flight Ticket - ${ticketData.bookingId}</title>
+        <title>Flight Ticket - ${escapeHTML(ticketData.bookingId)}</title>
         <style>
           body { 
             font-family: Arial, sans-serif; 
@@ -384,22 +389,22 @@ const TicketPage = () => {
             <div class="section-title">Booking Information</div>
             <div class="info-row">
               <span class="info-label">Booking ID:</span>
-              <span>${ticketData.bookingId}</span>
+              <span>${escapeHTML(ticketData.bookingId)}</span>
             </div>
             ${ticketData.pnr ? `
             <div class="info-row">
               <span class="info-label">PNR:</span>
-              <span>${ticketData.pnr}</span>
+              <span>${escapeHTML(ticketData.pnr)}</span>
             </div>
             ` : ''}
             <div class="info-row">
               <span class="info-label">Booking Date:</span>
-              <span>${ticketData.bookingDate}</span>
+              <span>${escapeHTML(ticketData.bookingDate)}</span>
             </div>
             ${ticketData.transactionId ? `
             <div class="info-row">
               <span class="info-label">Transaction ID:</span>
-              <span>${ticketData.transactionId}</span>
+              <span>${escapeHTML(ticketData.transactionId)}</span>
             </div>
             ` : ''}
           </div>
@@ -407,39 +412,39 @@ const TicketPage = () => {
           <div class="print-section">
             <div class="section-title">✈️ Flight Details</div>
             <div class="flight-route">
-              ${ticketData.source} ✈️ ${ticketData.destination}
+              ${escapeHTML(ticketData.source)} ✈️ ${escapeHTML(ticketData.destination)}
             </div>
             <div class="info-row">
               <span class="info-label">Flight Number:</span>
-              <span>${ticketData.flightNumber}</span>
+              <span>${escapeHTML(ticketData.flightNumber)}</span>
             </div>
             <div class="info-row">
               <span class="info-label">Airline:</span>
-              <span>${ticketData.airline}</span>
+              <span>${escapeHTML(ticketData.airline)}</span>
             </div>
             <div class="info-row">
               <span class="info-label">Departure:</span>
-              <span>${ticketData.departureDate} at ${ticketData.departureTime}</span>
+              <span>${escapeHTML(ticketData.departureDate)} at ${escapeHTML(ticketData.departureTime)}</span>
             </div>
             <div class="info-row">
               <span class="info-label">Arrival:</span>
-              <span>${ticketData.arrivalDate} at ${ticketData.arrivalTime}</span>
+              <span>${escapeHTML(ticketData.arrivalDate)} at ${escapeHTML(ticketData.arrivalTime)}</span>
             </div>
             <div class="info-row">
               <span class="info-label">Class:</span>
-              <span>${ticketData.classType}</span>
+              <span>${escapeHTML(ticketData.classType)}</span>
             </div>
           </div>
 
           <div class="print-section">
             <div class="section-title">👥 Passenger Details</div>
-            ${ticketData.passengers && ticketData.passengers.length > 0 
+            ${ticketData.passengers && ticketData.passengers.length > 0
               ? ticketData.passengers.map((passenger, index) => `
                 <div class="passenger-item">
-                  <strong>Passenger ${index + 1}:</strong> ${passenger.name || 'N/A'}
-                  ${passenger.age ? `<br/>Age: ${passenger.age}` : ''}
-                  ${passenger.gender ? `, Gender: ${passenger.gender}` : ''}
-                  ${passenger.seatNumber ? `<br/>Seat: ${passenger.seatNumber}` : ''}
+                  <strong>Passenger ${index + 1}:</strong> ${escapeHTML(passenger.name || 'N/A')}
+                  ${passenger.age ? `<br/>Age: ${escapeHTML(passenger.age)}` : ''}
+                  ${passenger.gender ? `, Gender: ${escapeHTML(passenger.gender)}` : ''}
+                  ${passenger.seatNumber ? `<br/>Seat: ${escapeHTML(passenger.seatNumber)}` : ''}
                 </div>
               `).join('')
               : '<div class="passenger-item">Passenger information will be updated</div>'
@@ -454,15 +459,15 @@ const TicketPage = () => {
             </div>
             <div class="info-row">
               <span class="info-label">Payment Method:</span>
-              <span>${ticketData.paymentMethod}</span>
+              <span>${escapeHTML(ticketData.paymentMethod)}</span>
             </div>
             <div class="info-row">
               <span class="info-label">Payment Status:</span>
-              <span class="status confirmed">${ticketData.paymentStatus}</span>
+              <span class="status confirmed">${escapeHTML(ticketData.paymentStatus)}</span>
             </div>
             <div class="info-row">
               <span class="info-label">Booking Status:</span>
-              <span class="status confirmed">${ticketData.bookingStatus}</span>
+              <span class="status confirmed">${escapeHTML(ticketData.bookingStatus)}</span>
             </div>
           </div>
 
@@ -472,13 +477,13 @@ const TicketPage = () => {
             ${ticketData.specialRequests ? `
             <div class="info-row">
               <span class="info-label">Special Requests:</span>
-              <span>${ticketData.specialRequests}</span>
+              <span>${escapeHTML(ticketData.specialRequests)}</span>
             </div>
             ` : ''}
             ${ticketData.notes ? `
             <div class="info-row">
               <span class="info-label">Notes:</span>
-              <span>${ticketData.notes}</span>
+              <span>${escapeHTML(ticketData.notes)}</span>
             </div>
             ` : ''}
           </div>

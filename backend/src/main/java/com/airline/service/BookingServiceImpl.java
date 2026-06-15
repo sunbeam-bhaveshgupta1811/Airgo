@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -239,8 +240,8 @@ public class BookingServiceImpl implements BookingService{
 
     private String generateBookingReference() {
         String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        long count = bookingDao.count() + 1;
-        return String.format("BK-%s-%05d", date, count);
+        String uniquePart = UUID.randomUUID().toString().toUpperCase().replace("-", "").substring(0, 6);
+        return String.format("BK-%s-%s", date, uniquePart);
     }
 
     private String formatDuration(Integer minutes) {

@@ -5,6 +5,7 @@ import { config } from '../../config';
 import { getProfileData } from '../services/admin/AdminProfile';
 const Profile = () => {
   const [user, setUser] = useState({});
+  const [originalUser, setOriginalUser] = useState({});
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -52,6 +53,7 @@ const Profile = () => {
       const updatedUser = response.data?.data;
       if (updatedUser) {
         setUser(updatedUser);
+        setOriginalUser(updatedUser);
       }
       setIsEditMode(false);
       toast.success('Profile updated successfully!');
@@ -63,6 +65,7 @@ const Profile = () => {
   };
 
   const handleCancel = () => {
+    setUser({ ...originalUser });
     setIsEditMode(false);
   };
 
@@ -71,6 +74,7 @@ const Profile = () => {
       const data = await getProfileData();
       if (data) {
         setUser(data);
+        setOriginalUser(data);
       }
     } catch (error) {
       toast.error(error.message || 'Failed to fetch profile data');
