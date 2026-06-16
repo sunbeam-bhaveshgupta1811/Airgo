@@ -15,12 +15,17 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/admin/airports")
 public class AirportController {
 
     private final AirportService airportService;
 
-    @PostMapping
+    @GetMapping("/api/airports")
+    public ResponseEntity<ApiResponse<List<AirportResponseDto>>> getActiveAirportsPublic() {
+        return ResponseEntity.ok(ApiResponse.success("Active airports fetched",
+                airportService.getActiveAirports()));
+    }
+
+    @PostMapping("/admin/airports")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<AirportResponseDto>> addAirport(
             @Valid @RequestBody AirportRequestDto request) {
@@ -29,7 +34,7 @@ public class AirportController {
                         airportService.addAirport(request)));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/admin/airports/{id}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<AirportResponseDto>> updateAirport(
             @PathVariable Long id, @Valid @RequestBody AirportRequestDto request) {
@@ -37,27 +42,26 @@ public class AirportController {
                 airportService.updateAirport(id, request)));
     }
 
-    @PatchMapping("/{id}/deactivate")
+    @PatchMapping("/admin/airports/{id}/deactivate")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<Void>> deactivateAirport(@PathVariable Long id) {
         return ResponseEntity.ok(airportService.deactivateAirport(id));
     }
 
-    @PatchMapping("/{id}/reactivate")
+    @PatchMapping("/admin/airports/{id}/reactivate")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<Void>> reactivateAirport(@PathVariable Long id) {
         return ResponseEntity.ok(airportService.reactivateAirport(id));
     }
 
-    @GetMapping
+    @GetMapping("/admin/airports")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<List<AirportResponseDto>>> getAllAirports() {
         return ResponseEntity.ok(ApiResponse.success("Airports fetched",
                 airportService.getAllAirports()));
     }
 
-
-    @GetMapping("/{id}")
+    @GetMapping("/admin/airports/{id}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<AirportResponseDto>> getAirportById(@PathVariable Long id) {
         return ResponseEntity.ok(ApiResponse.success("Airport fetched",

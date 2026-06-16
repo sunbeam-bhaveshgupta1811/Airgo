@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaExchangeAlt, FaChevronDown } from 'react-icons/fa';
 import { Badge } from 'react-bootstrap';
 import '../../styles/FlightSearch.css';
 import { useNavigate } from 'react-router-dom';
-import { searchFlights } from '../../services/customer/flightSearchService';
+import { searchFlights, fetchAirports } from '../../services/customer/flightSearchService';
 import { toast } from 'react-toastify';
 
 const FlightSearch = () => {
   const navigate = useNavigate();
   const [tripType] = useState('oneway');
+  const [airports, setAirports] = useState([]);
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [departureDate, setDepartureDate] = useState('');
@@ -16,6 +17,22 @@ const FlightSearch = () => {
   const [passengerCount, setPassengerCount] = useState(1);
   const [specialFare, setSpecialFare] = useState('regular');
   const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    const loadAirports = async () => {
+      try {
+        const data = await fetchAirports();
+        setAirports(data);
+      } catch {
+        // Airports will just be empty, user can still type codes manually
+      }
+    };
+    loadAirports();
+  }, []);
+
+  const filteredDestinations = airports.filter(
+    (a) => a.code !== from
+  );
 
   const specialFares = [
     { id: 'regular', label: 'Regular Fares', description: 'Standard ticket prices', badge: null },
@@ -55,6 +72,11 @@ const FlightSearch = () => {
 
   const customerSearchFlight = async (e) => {
     e.preventDefault();
+    if (from === to) {
+      toast.error('Origin and destination cannot be the same.');
+      return;
+    }
+
     setIsSearching(true);
 
     try {
@@ -117,17 +139,19 @@ const FlightSearch = () => {
             <div className="search-field from-field">
               <label>From</label>
               <div className="city-input">
-                <input
-                  type="text"
+                <select
                   value={from}
                   onChange={(e) => setFrom(e.target.value)}
-                  placeholder="Delhi"
                   required
-                />
-                <div className="city-details">
-                  <span className="city-name">{from || 'Delhi'}</span>
-                  <span className="airport-name">DEL, Delhi Airport India</span>
-                </div>
+                  style={{ width: '100%', border: 'none', outline: 'none', fontSize: '16px', background: 'transparent', cursor: 'pointer' }}
+                >
+                  <option value="">-- Select Origin --</option>
+                  {airports.map((airport) => (
+                    <option key={`from-${airport.id}`} value={airport.code}>
+                      {airport.city} ({airport.code})
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -142,17 +166,20 @@ const FlightSearch = () => {
             <div className="search-field to-field">
               <label>To</label>
               <div className="city-input">
-                <input
-                  type="text"
+                <select
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
-                  placeholder="Bengaluru"
                   required
-                />
-                <div className="city-details">
-                  <span className="city-name">{to || 'Bengaluru'}</span>
-                  <span className="airport-name">BLR, Bengaluru International Airport</span>
-                </div>
+                  disabled={!from}
+                  style={{ width: '100%', border: 'none', outline: 'none', fontSize: '16px', background: 'transparent', cursor: 'pointer' }}
+                >
+                  <option value="">-- Select Destination --</option>
+                  {filteredDestinations.map((airport) => (
+                    <option key={`to-${airport.id}`} value={airport.code}>
+                      {airport.city} ({airport.code})
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 

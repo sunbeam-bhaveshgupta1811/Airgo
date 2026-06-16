@@ -20,25 +20,47 @@ function Register() {
 
   const navigate = useNavigate();
 
+  const validateForm = () => {
+    if (firstName.trim().length < 2) {
+      toast.warn("First name must be at least 2 characters");
+      return false;
+    }
+    if (lastName.trim().length < 2) {
+      toast.warn("Last name must be at least 2 characters");
+      return false;
+    }
+    if (!/^\S+@\S+\.\S+$/.test(email)) {
+      toast.warn("Please enter a valid email address");
+      return false;
+    }
+    if (!/^(\+91)?[6-9][0-9]{9}$/.test(phone)) {
+      toast.warn("Please enter a valid 10-digit phone number starting with 6-9");
+      return false;
+    }
+    if (password.length < 8) {
+      toast.warn("Password must be at least 8 characters");
+      return false;
+    }
+    if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])/.test(password)) {
+      toast.warn("Password must contain uppercase, lowercase, digit, and special character (@$!%*?&)");
+      return false;
+    }
+    if (password !== confirmPassword) {
+      toast.warn("Passwords do not match");
+      return false;
+    }
+    if (!agreedToTerms) {
+      toast.warn("Please agree to the Terms of Service and Privacy Policy");
+      return false;
+    }
+    return true;
+  };
+
   const onRegister = async (e) => {
     e?.preventDefault();
-    if (firstName.length === 0) {
-      toast.warn("Please enter first name");
-    } else if (lastName.length === 0) {
-      toast.warn("Please enter last name");
-    } else if (email.length === 0) {
-      toast.warn("Please enter email");
-    } else if (phone.length === 0) {
-      toast.warn("Please enter phone number");
-    } else if (password.length === 0) {
-      toast.warn("Please enter password");
-    } else if (confirmPassword.length === 0) {
-      toast.warn("Please confirm password");
-    } else if (password !== confirmPassword) {
-      toast.warn("Password does not match");
-    } else if (!agreedToTerms) {
-      toast.warn("Please agree to the Terms of Service and Privacy Policy");
-    } else {
+    if (!validateForm()) return;
+
+    try {
       const result = await registerUser(
         DEFAULT_TITLE,
         firstName,
@@ -53,11 +75,13 @@ function Register() {
         navigate("/");
       } else {
         if (result.status === 409) {
-          toast.error("Email already exists. Please login..");
+          toast.error("Email already exists. Please login.");
         } else {
           toast.error(result.message || "Error while registering the user");
         }
       }
+    } catch (error) {
+      toast.error("An error occurred during registration. Please try again.");
     }
   };
 
