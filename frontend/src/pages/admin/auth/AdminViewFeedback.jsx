@@ -22,7 +22,6 @@ const AdminFeedbackTable = () => {
         );
         setFeedbackList(response.data || []);
       } catch (err) {
-        console.error("Error fetching feedback:", err);
       } finally {
         setLoading(false);
       }

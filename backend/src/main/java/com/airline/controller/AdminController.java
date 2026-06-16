@@ -51,6 +51,19 @@ public class AdminController {
         );
     }
 
+    @GetMapping("/dashboard/revenue-by-airline")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getRevenueByAirline() {
+        List<Object[]> rawData = bookingDao.getRevenueByAirline();
+        List<Map<String, Object>> result = new java.util.ArrayList<>();
+        for (Object[] row : rawData) {
+            Map<String, Object> entry = new LinkedHashMap<>();
+            entry.put("airline", row[0]);
+            entry.put("revenue", row[1]);
+            result.add(entry);
+        }
+        return ResponseEntity.ok(ApiResponse.success("Revenue by airline fetched", result));
+    }
+
     @GetMapping("/dashboard/stats")
     public ResponseEntity<ApiResponse<Map<String, Object>>> getDashboardStats() {
         Map<String, Object> stats = new LinkedHashMap<>();

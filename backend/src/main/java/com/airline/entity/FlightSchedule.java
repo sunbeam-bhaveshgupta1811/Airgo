@@ -49,6 +49,9 @@ public class FlightSchedule {
     @Column(nullable = false)
     private ScheduleStatus status;
 
+    @Version
+    private Long version;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

@@ -17,7 +17,6 @@ export const getBookingById = async (bookingId) => {
     return response.data?.data || null
 
   } catch (error) {
-    console.error('Error fetching booking:', error)
     if (error.response) {
       const msg = error.response.data?.message || `Server error: ${error.response.status}`
       throw new Error(msg)
@@ -49,7 +48,6 @@ export const generateTicketPDF = async (bookingId) => {
     }
 
   } catch (error) {
-    console.error('Error generating PDF:', error)
     if (error.response?.status === 404) throw new Error('Booking not found')
     if (error.response?.status === 401) throw new Error('Not authorized')
     throw new Error(error.message || 'PDF generation failed')
@@ -65,7 +63,6 @@ export const sendBookingConfirmationEmail = async (bookingId) => {
     )
     return response.data
   } catch (error) {
-    console.error('Error sending booking confirmation email:', error)
     if (error.response?.status === 404) throw new Error('Booking not found')
     if (error.response?.status === 401) throw new Error('Not authorized')
     throw new Error(error.response?.data?.message || 'Failed to send email')
@@ -81,7 +78,6 @@ export const getPaymentByBookingId = async (bookingId) => {
     return response.data?.data || null
 
   } catch (error) {
-    console.error('Error fetching payment:', error)
     const msg = error.response?.data?.message || 'Failed to fetch payment details'
     throw new Error(msg)
   }

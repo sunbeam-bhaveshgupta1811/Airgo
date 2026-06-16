@@ -62,7 +62,6 @@ const Payment = () => {
 
       // Enhanced validation with null checks
       if (!flightData || !passengerData || !Array.isArray(passengerData) || passengerData.length === 0) {
-        console.error('Missing or invalid booking data');
         navigate('/customer/flightlist');
         return;
       }
@@ -76,7 +75,6 @@ const Payment = () => {
       );
 
       if (validPassengers.length === 0) {
-        console.error('No valid passengers found');
         navigate('/customer/flightlist');
         return;
       }
@@ -85,7 +83,6 @@ const Payment = () => {
       setPassengers(validPassengers);
       setTotalPrice(calculatedTotal || 0);
     } catch (error) {
-      console.error('Error loading booking data:', error);
       navigate('/customer/flightlist');
     }
   }, [navigate, location.state]);
@@ -240,7 +237,6 @@ const Payment = () => {
     
     if (!flightData) {
       setError('Flight information is incomplete or invalid. Please go back and select flight again.');
-      console.error('Cannot extract valid flight data');
       return;
     }
 
@@ -331,7 +327,6 @@ const Payment = () => {
       }, 2000);
       
     } catch (err) {
-      console.error('Payment error:', err);
       setError(err.message || 'Payment failed. Please try again.');
     } finally {
       setIsProcessing(false);

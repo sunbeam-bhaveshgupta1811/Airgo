@@ -16,8 +16,21 @@ export const getProfileData = async () => {
         );
         return response.data?.data || null;
     } catch (error) {
-        console.error('Error fetching profile data:', error);
         const msg = error.response?.data?.message || 'Failed to fetch profile data';
+        throw new Error(msg);
+    }
+}
+
+export const updateProfileData = async (profileData) => {
+    try {
+        const response = await axios.put(
+            `${config.serverURL}/user/profile`,
+            profileData,
+            getAuthHeaders()
+        );
+        return response.data?.data || null;
+    } catch (error) {
+        const msg = error.response?.data?.message || 'Failed to update profile';
         throw new Error(msg);
     }
 }

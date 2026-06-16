@@ -50,7 +50,6 @@ const PassengersList = () => {
       setAllPassengers(passengerList);
       setPassengers(passengerList);
     } catch (error) {
-      console.error("Error fetching passengers:", error);
     } finally {
       setLoading(false);
     }

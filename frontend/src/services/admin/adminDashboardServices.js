@@ -21,7 +21,6 @@ export const getDashboardStats = async () => {
       totalRevenue: stats.totalRevenue || 0
     }
   } catch (error) {
-    console.error('Error fetching dashboard stats:', error)
     const msg = error.response?.data?.message || 'Failed to fetch dashboard stats'
     throw new Error(msg)
   }

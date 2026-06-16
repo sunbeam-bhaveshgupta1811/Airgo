@@ -34,7 +34,6 @@ const CustomerFeedback = () => {
         const confirmed = allBookings.filter((b) => b.status === "CONFIRMED");
         setBookings(confirmed);
       } catch (err) {
-        console.error("Error fetching bookings:", err);
       } finally {
         setLoading(false);
       }

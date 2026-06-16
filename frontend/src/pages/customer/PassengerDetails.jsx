@@ -27,7 +27,6 @@ const PassengerDetails = () => {
         setPassengerCount(parsedPassengers.length);
       }
     } catch (error) {
-      console.error("Error parsing booking data:", error);
       navigate('/customer/flightlist');
     } finally {
       setIsLoading(false);

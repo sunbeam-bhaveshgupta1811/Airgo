@@ -16,7 +16,6 @@ export const submitCustomerFeedBack = async (bookingId, rating, comments) => {
     );
     return response.data;
   } catch (error) {
-    console.error("Submit feedback error:", error);
     const msg = error.response?.data?.message || "Failed to submit feedback";
     throw new Error(msg);
   }
@@ -30,7 +29,6 @@ export const getMyFeedbacks = async () => {
     );
     return response.data || [];
   } catch (error) {
-    console.error("Error fetching feedbacks:", error);
     const msg = error.response?.data?.message || "Failed to fetch feedbacks";
     throw new Error(msg);
   }
@@ -44,7 +42,6 @@ export const getAllFeedbacks = async () => {
     );
     return response.data || [];
   } catch (error) {
-    console.error("Error fetching all feedbacks:", error);
     const msg = error.response?.data?.message || "Failed to fetch feedbacks";
     throw new Error(msg);
   }

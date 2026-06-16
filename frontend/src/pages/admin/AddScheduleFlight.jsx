@@ -42,7 +42,6 @@ const ScheduleFlight = () => {
         setFlights(flightsRes.data?.data || []);
       } catch (error) {
         toast.error('Failed to load airlines and flights');
-        console.error('Error loading data:', error);
       } finally {
         setIsLoading(false);
       }

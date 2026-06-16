@@ -1,16 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import { FaUser } from "react-icons/fa";
+import { Link, useNavigate } from "react-router-dom";
+import { FaUser, FaSignOutAlt, FaTicketAlt, FaUserCircle } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const HomeNavbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userName, setUserName] = useState("");
+  const navigate = useNavigate();
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useEffect(() => {
+    const loggedIn = sessionStorage.getItem("isLoggedIn") === "true";
+    const name = sessionStorage.getItem("name") || "";
+    setIsLoggedIn(loggedIn);
+    setUserName(name);
+  }, []);
+
+  const handleLogout = () => {
+    sessionStorage.clear();
+    setIsLoggedIn(false);
+    setUserName("");
+    navigate("/");
+  };
 
   return (
     <nav
@@ -50,37 +67,72 @@ const HomeNavbar = () => {
           </div>
           {/* Right: Auth Buttons */}
           <div className="home-navbar-actions d-flex align-items-center justify-content-end" style={{ gap: "12px", minWidth: 320 }}>
-            <div className="dropdown">
-              <button
-                className="btn btn-link fw-semibold navbar-link-main dropdown-toggle"
-                type="button"
-                id="signinDropdown"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                style={{ color: "#111", textDecoration: "none" }}
-              >
-                <FaUser className="me-1" /> Sign in
-              </button>
-              <ul className="dropdown-menu" aria-labelledby="signinDropdown">
-                <li>
-                  <Link className="dropdown-item" to="/login">
-                    User Sign in
-                  </Link>
-                </li>
-                <li>
-                  <Link className="dropdown-item" to="/adminlogin">
-                    Admin Sign in
-                  </Link>
-                </li>
-              </ul>
-            </div>
-            <Link
-              to="/register"
-              className="btn btn-primary fw-semibold"
-              style={{ borderRadius: 10, fontWeight: 600, padding: "8px 22px", fontSize: "1rem", boxShadow: "0 2px 8px rgba(30, 64, 175, 0.07)" }}
-            >
-              Sign up
-            </Link>
+            {isLoggedIn ? (
+              <div className="dropdown">
+                <button
+                  className="btn btn-link fw-semibold navbar-link-main dropdown-toggle"
+                  type="button"
+                  id="userDropdown"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  style={{ color: "#111", textDecoration: "none" }}
+                >
+                  <FaUserCircle className="me-1" /> {userName || "My Account"}
+                </button>
+                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                  <li>
+                    <Link className="dropdown-item" to="/profile">
+                      <FaUser className="me-2" /> Profile
+                    </Link>
+                  </li>
+                  <li>
+                    <Link className="dropdown-item" to="/customer/feedback">
+                      <FaTicketAlt className="me-2" /> My Feedback
+                    </Link>
+                  </li>
+                  <li><hr className="dropdown-divider" /></li>
+                  <li>
+                    <button className="dropdown-item text-danger" onClick={handleLogout}>
+                      <FaSignOutAlt className="me-2" /> Logout
+                    </button>
+                  </li>
+                </ul>
+              </div>
+            ) : (
+              <>
+                <div className="dropdown">
+                  <button
+                    className="btn btn-link fw-semibold navbar-link-main dropdown-toggle"
+                    type="button"
+                    id="signinDropdown"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false"
+                    style={{ color: "#111", textDecoration: "none" }}
+                  >
+                    <FaUser className="me-1" /> Sign in
+                  </button>
+                  <ul className="dropdown-menu" aria-labelledby="signinDropdown">
+                    <li>
+                      <Link className="dropdown-item" to="/login">
+                        User Sign in
+                      </Link>
+                    </li>
+                    <li>
+                      <Link className="dropdown-item" to="/adminlogin">
+                        Admin Sign in
+                      </Link>
+                    </li>
+                  </ul>
+                </div>
+                <Link
+                  to="/register"
+                  className="btn btn-primary fw-semibold"
+                  style={{ borderRadius: 10, fontWeight: 600, padding: "8px 22px", fontSize: "1rem", boxShadow: "0 2px 8px rgba(30, 64, 175, 0.07)" }}
+                >
+                  Sign up
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -134,7 +186,7 @@ const HomeNavbar = () => {
           .home-navbar-actions .btn-primary {
             padding: 7px 12px !important;
           }
-          #signinDropdown {
+          #signinDropdown, #userDropdown {
             padding-left: 0;
             padding-right: 0;
           }

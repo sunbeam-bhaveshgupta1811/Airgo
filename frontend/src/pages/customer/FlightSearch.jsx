@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { FaExchangeAlt, FaChevronDown } from 'react-icons/fa';
-import { Badge } from 'react-bootstrap';
 import '../../styles/FlightSearch.css';
 import { useNavigate } from 'react-router-dom';
 import { searchFlights, fetchAirports } from '../../services/customer/flightSearchService';
@@ -8,14 +7,11 @@ import { toast } from 'react-toastify';
 
 const FlightSearch = () => {
   const navigate = useNavigate();
-  const [tripType] = useState('oneway');
   const [airports, setAirports] = useState([]);
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [departureDate, setDepartureDate] = useState('');
-  const [returnDate, setReturnDate] = useState('');
   const [passengerCount, setPassengerCount] = useState(1);
-  const [specialFare, setSpecialFare] = useState('regular');
   const [isSearching, setIsSearching] = useState(false);
 
   useEffect(() => {
@@ -34,14 +30,6 @@ const FlightSearch = () => {
     (a) => a.code !== from
   );
 
-  const specialFares = [
-    { id: 'regular', label: 'Regular Fares', description: 'Standard ticket prices', badge: null },
-    { id: 'senior', label: 'Senior Citizen', description: 'Special discounts for seniors (60+)', badge: '10% OFF' },
-    { id: 'student', label: 'Student Discount', description: 'Valid student ID required', badge: '15% OFF' },
-    { id: 'family', label: 'Family Package', description: 'Book for 4+ family members', badge: '20% OFF' }
-  ];
-
-
   const calculateDuration = (departureTime, arrivalTime) => {
     const dep = new Date(`2000-01-01T${departureTime}`);
     const arr = new Date(`2000-01-01T${arrivalTime}`);
@@ -57,8 +45,6 @@ const FlightSearch = () => {
     setFrom(to);
     setTo(temp);
   };
-
-  const getTotalTravelers = () => passengerCount;
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -122,8 +108,7 @@ const FlightSearch = () => {
         },
       });
     } catch (error) {
-      toast.error('Failed to fetch flights. Please try again.');
-      console.error('Flight search error:', error);
+      toast.error(error.message || 'Failed to fetch flights. Please try again.');
     } finally {
       setIsSearching(false);
     }
@@ -208,36 +193,7 @@ const FlightSearch = () => {
               </div>
             </div>
 
-            {/* Return Date */}
-            {tripType === 'roundtrip' && (
-              <div className="search-field date-field">
-                <label>Return <FaChevronDown className="dropdown-icon" /></label>
-                <div className="date-input">
-                  <input
-                    type="date"
-                    value={returnDate}
-                    onChange={(e) => setReturnDate(e.target.value)}
-                    min={departureDate || new Date().toISOString().split('T')[0]}
-                  />
-                  <div className="date-display">
-                    {returnDate ? (
-                      <>
-                        <span className="date-number">{formatDate(returnDate).day}</span>
-                        <span className="date-month">{formatDate(returnDate).month}'{formatDate(returnDate).year}</span>
-                        <span className="date-day">{formatDate(returnDate).dayName}</span>
-                      </>
-                    ) : (
-                      <div className="add-return">
-                        <span>Tap to add a return</span>
-                        <span>date for bigger discounts</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Travelers & Class */}
+            {/* Travelers */}
             <div className="search-field travelers-field">
               <label>Travellers</label>
               <div className="travelers-input">
@@ -260,31 +216,6 @@ const FlightSearch = () => {
                   ))}
                 </select>
               </div>
-            </div>
-          </div>
-
-          {/* Special Fares */}
-          <div className="special-fares-section">
-            <div className="special-fares-label">SPECIAL FARES</div>
-            <div className="special-fares-options">
-              {specialFares.map((fare) => (
-                <label key={fare.id} className={`fare-option ${specialFare === fare.id ? 'active' : ''}`}>
-                  <input
-                    type="radio"
-                    name="specialFare"
-                    value={fare.id}
-                    checked={specialFare === fare.id}
-                    onChange={(e) => setSpecialFare(e.target.value)}
-                  />
-                  <div className="fare-content">
-                    <span className="fare-label">
-                      {fare.label}
-                      {fare.badge && <Badge bg="danger" className="ms-1">{fare.badge}</Badge>}
-                    </span>
-                    <span className="fare-description">{fare.description}</span>
-                  </div>
-                </label>
-              ))}
             </div>
           </div>
 

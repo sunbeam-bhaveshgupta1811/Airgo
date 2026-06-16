@@ -8,10 +8,9 @@ import {
   FaMapMarkerAlt, FaRupeeSign, FaDownload, FaEnvelope,
   FaSpinner, FaClock, FaCalendarAlt, FaPrint
 } from 'react-icons/fa';
-import { 
-  getBookingById, 
-  sendBookingConfirmationEmail, 
-  //generateTicketPDF 
+import {
+  getBookingById,
+  sendBookingConfirmationEmail,
 } from '../../services/customer/ticketService';
 import '../../styles/TicketPage.css';
 
@@ -76,7 +75,6 @@ const TicketPage = () => {
         throw new Error('No booking data found');
       }
     } catch (error) {
-      console.error('Error fetching ticket:', error);
       setError('Failed to load ticket data. Please try again.');
       // Try fallback methods
       await tryFromSessionStorage();
@@ -102,7 +100,6 @@ const TicketPage = () => {
         }
       }
     } catch (error) {
-      console.error('Error parsing stored confirmation:', error);
     }
     
     setError('No booking information found. Please try booking again.');
@@ -112,7 +109,6 @@ const TicketPage = () => {
   // Enhanced format function to handle different response structures
   const formatTicketData = (bookingData) => {
     if (!bookingData || typeof bookingData !== 'object') {
-      console.error('Invalid booking data');
       return null;
     }
 
@@ -162,7 +158,6 @@ const TicketPage = () => {
         notes: bookingData.notes || bookingData.remarks || null
       };
     } catch (error) {
-      console.error('Error formatting ticket data:', error);
       return null;
     }
   };
@@ -509,30 +504,9 @@ const TicketPage = () => {
     try {
       setPdfGenerating(true);
       setError('');
-      
-      // Uncomment when generateTicketPDF is implemented
-      // const pdfBlob = await generateTicketPDF(ticketData.bookingId);
-      
-      // For now, show a message that this feature will be available soon
+
       setError('PDF download feature will be available soon. Please use the print option for now.');
-      
-      // When PDF generation is ready, uncomment this:
-      /*
-      // Create download link
-      const url = window.URL.createObjectURL(pdfBlob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `ticket-${ticketData.bookingId}.pdf`;
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
-      
-      setSuccessMessage('Ticket downloaded successfully!');
-      setTimeout(() => setSuccessMessage(''), 3000);
-      */
-    } catch (error) {
-      console.error('Error downloading ticket:', error);
+    } catch {
       setError('Failed to download ticket. Please try again.');
     } finally {
       setPdfGenerating(false);
@@ -554,7 +528,6 @@ const TicketPage = () => {
       setSuccessMessage('Ticket sent to your email successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);
     } catch (error) {
-      console.error('Error sending email:', error);
       setError('Failed to send email. Please try again.');
     } finally {
       setEmailSending(false);

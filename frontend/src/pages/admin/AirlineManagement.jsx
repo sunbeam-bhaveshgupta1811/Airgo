@@ -57,9 +57,9 @@ const AirlineManagement = () => {
       );
       setAllAirlines(activeAirlines);
       setAirlines(activeAirlines);
-    } catch (error) {
-      console.error("Error fetching airlines:", error);
-    }finally {
+    } catch {
+      // Error handled by service layer
+    } finally {
       setLoading(false);
     }
   };

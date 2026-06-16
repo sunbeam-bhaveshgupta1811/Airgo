@@ -37,16 +37,16 @@ const BookingPreview = () => {
         const storedPassengers = sessionStorage.getItem('flightBooking_passengers');
 
         if (!storedFlightData || !storedPassengers) {
-          console.error('Missing booking data in session storage');
           navigate('/customer/flightlist');
           return;
         }
 
         const flightData = JSON.parse(storedFlightData);
         const passengers = JSON.parse(storedPassengers);
-        
-        // Calculate total price
-        const totalPrice = passengers.length * flightData.selectedPrice;
+
+        // Calculate total price with null safety
+        const price = Number(flightData.selectedPrice) || 0;
+        const totalPrice = passengers.length * price;
 
         setBookingData({
           flightData,
@@ -54,8 +54,7 @@ const BookingPreview = () => {
           totalPrice
         });
 
-      } catch (error) {
-        console.error('Error retrieving data from session storage:', error);
+      } catch {
         navigate('/customer/flightlist');
         return;
       }
@@ -119,8 +118,8 @@ const BookingPreview = () => {
       };
       
       sessionStorage.setItem('finalBookingData', JSON.stringify(finalBookingData));
-    } catch (error) {
-      console.error('Error saving final booking data:', error);
+    } catch {
+      // Session storage might be full or unavailable
     }
   };
 
@@ -206,7 +205,7 @@ const BookingPreview = () => {
           <div className="price-details">
             <div className="price-row">
               <span>{formatClassType(classType)} Fare (x{passengers.length})</span>
-              <span>₹{(selectedPrice * passengers.length).toLocaleString()}</span>
+              <span>₹{((Number(selectedPrice) || 0) * passengers.length).toLocaleString()}</span>
             </div>
             <div className="price-row">
               <span>Taxes & Fees</span>

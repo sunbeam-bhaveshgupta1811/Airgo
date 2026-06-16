@@ -21,7 +21,6 @@ export const processPayment = async (bookingId, paymentMethod = 'CREDIT_CARD') =
     return response.data?.data || null
 
   } catch (error) {
-    console.error('Payment failed:', error)
     const msg = error.response?.data?.message || 'Payment failed. Please try again.'
     throw new Error(msg)
   }
@@ -35,7 +34,6 @@ export const getPaymentByBookingId = async (bookingId) => {
     return response.data?.data || null
 
   } catch (error) {
-    console.error('Error fetching payment:', error)
     const msg = error.response?.data?.message || 'Failed to fetch payment details'
     throw new Error(msg)
   }
@@ -50,7 +48,6 @@ export const getPaymentByTransactionId = async (transactionId) => {
     return response.data?.data || null
 
   } catch (error) {
-    console.error('Error fetching payment by txn:', error)
     const msg = error.response?.data?.message || 'Failed to fetch payment'
     throw new Error(msg)
   }
