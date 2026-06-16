@@ -12,7 +12,6 @@ const AirlineManagement = () => {
   const [loading, setLoading] = useState(true);
 
   const handleEdit = (id) => {
-    console.log("Edit airline with id:", id);
     // Edit logic would go here
   };
 

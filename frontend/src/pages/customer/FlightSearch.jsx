@@ -13,7 +13,7 @@ const FlightSearch = () => {
   const [to, setTo] = useState('');
   const [departureDate, setDepartureDate] = useState('');
   const [returnDate, setReturnDate] = useState('');
-  const [travelers] = useState({ adults: 1, children: 0, infants: 0 });
+  const [passengerCount, setPassengerCount] = useState(1);
   const [specialFare, setSpecialFare] = useState('regular');
   const [isSearching, setIsSearching] = useState(false);
 
@@ -41,9 +41,7 @@ const FlightSearch = () => {
     setTo(temp);
   };
 
-  const getTotalTravelers = () => {
-    return travelers.adults + travelers.children + travelers.infants;
-  };
+  const getTotalTravelers = () => passengerCount;
 
   const formatDate = (dateString) => {
     if (!dateString) return '';
@@ -60,34 +58,47 @@ const FlightSearch = () => {
     setIsSearching(true);
 
     try {
-      const flights = await searchFlights(from, to, departureDate);
-      
+      const flights = await searchFlights(from, to, departureDate, passengerCount);
+
       if (!flights || flights.length === 0) {
         toast.info('No flights found for your search criteria.');
         return;
       }
 
       const transformedFlights = flights.map((flight) => ({
-        flightNumber: flight.flightNo,
+        id: flight.scheduleId || flight.id,
+        scheduleId: flight.scheduleId || flight.id,
+        flightNumber: flight.flightNo || flight.flightNumber,
         airline: flight.airlineName,
-        source: flight.fromLocation,
-        destination: flight.toLocation,
+        source: flight.fromLocation || flight.originCity,
+        destination: flight.toLocation || flight.destinationCity,
         departureTime: flight.departureTime,
         arrivalTime: flight.arrivalTime,
         duration: calculateDuration(flight.departureTime, flight.arrivalTime),
+        journeyDate: flight.journeyDate || departureDate,
         prices: {
-          economy: flight.economyFare,
+          economy: flight.economyFare || flight.price,
           business: flight.businessFare,
           firstClass: flight.firstFare,
         },
         seatsAvailable: {
-          economy: flight.availableEconomySeats,
+          economy: flight.availableEconomySeats || flight.availableSeats,
           business: flight.availableBusinessSeats,
           firstClass: flight.availableFirstSeats,
         },
       }));
 
-      navigate('/customer/flightlist', { state: { flights: transformedFlights } });
+      navigate('/customer/flightlist', {
+        state: {
+          flights: transformedFlights,
+          searchParams: {
+            from,
+            to,
+            departDate: departureDate,
+            passengers: passengerCount,
+          },
+        },
+      });
     } catch (error) {
       toast.error('Failed to fetch flights. Please try again.');
       console.error('Flight search error:', error);
@@ -201,13 +212,26 @@ const FlightSearch = () => {
 
             {/* Travelers & Class */}
             <div className="search-field travelers-field">
-              <label>Travellers & Class <FaChevronDown className="dropdown-icon" /></label>
+              <label>Travellers</label>
               <div className="travelers-input">
-                <div className="travelers-display">
-                  <span className="travelers-count">{getTotalTravelers()}</span>
-                  <span className="travelers-text">Traveller</span>
-                  <span className="class-text">Economy/Premium Economy</span>
-                </div>
+                <select
+                  value={passengerCount}
+                  onChange={(e) => setPassengerCount(Number(e.target.value))}
+                  style={{
+                    width: '100%',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: '16px',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                    <option key={n} value={n}>
+                      {n} {n === 1 ? 'Traveller' : 'Travellers'}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
           </div>

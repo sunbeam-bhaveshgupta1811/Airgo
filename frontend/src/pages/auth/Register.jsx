@@ -47,7 +47,6 @@ function Register() {
         phone,
         password
       );
-      console.log(result);
       if (result.success) {
         toast.success("Successfully registered");
         toast.info("Please verify your email before logging in.");

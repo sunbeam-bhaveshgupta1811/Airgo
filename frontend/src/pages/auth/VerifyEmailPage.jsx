@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useSearchParams, Link } from 'react-router-dom'
-import { verifyEmailApi } from '../../services/auth/user'
+import { verifyEmailApi, resendVerificationApi } from '../../services/auth/user'
 
 
 function VerifyEmailPage() {
@@ -8,8 +8,27 @@ function VerifyEmailPage() {
   const [searchParams] = useSearchParams()
   const token = searchParams.get('token')
 
-  const [status, setStatus] = useState('verifying') 
+  const [status, setStatus] = useState('verifying')
   const [message, setMessage] = useState('')
+  const [resendEmail, setResendEmail] = useState('')
+  const [resending, setResending] = useState(false)
+
+  const handleResend = async () => {
+    if (!resendEmail.trim()) return
+    setResending(true)
+    try {
+      const res = await resendVerificationApi(resendEmail)
+      if (res && res.success) {
+        setMessage('Verification email sent! Please check your inbox.')
+      } else {
+        setMessage(res?.message || 'Failed to resend. Please try again.')
+      }
+    } catch {
+      setMessage('Failed to resend verification email.')
+    } finally {
+      setResending(false)
+    }
+  }
 
   useEffect(() => {
     if (!token) {
@@ -18,16 +37,21 @@ function VerifyEmailPage() {
       return
     }
 
-    verifyEmailApi(token).then((res) => {
-      if (res && res.success) {
-        setStatus('success')
-        setMessage(res.message || 'Email verified successfully!')
-        setTimeout(() => navigate('/login?verified=true'), 2000)
-      } else {
+    verifyEmailApi(token)
+      .then((res) => {
+        if (res && res.success) {
+          setStatus('success')
+          setMessage(res.message || 'Email verified successfully!')
+          setTimeout(() => navigate('/login?verified=true'), 2000)
+        } else {
+          setStatus('failed')
+          setMessage(res?.message || 'Verification failed. The link may have expired.')
+        }
+      })
+      .catch((err) => {
         setStatus('failed')
-        setMessage(res?.message || 'Verification failed. The link may have expired.')
-      }
-    })
+        setMessage(err.message || 'Verification failed. Please try again.')
+      })
   }, [token, navigate])
 
   return (
@@ -56,11 +80,26 @@ function VerifyEmailPage() {
             <div style={{ ...styles.icon, color: '#e74c3c' }}>✗</div>
             <h3 style={styles.title}>Verification Failed</h3>
             <p style={styles.sub}>{message}</p>
-            <div style={{ marginTop: '1.5rem', display: 'flex', gap: '12px', justifyContent: 'center' }}>
-              <Link to="/login" style={styles.btn}>Go to Login</Link>
-              <Link to="/resend-verification" style={{ ...styles.btn, background: '#f39c12' }}>
-                Resend Email
-              </Link>
+            <div style={{ marginTop: '1.5rem' }}>
+              <div style={{ marginBottom: '12px' }}>
+                <input
+                  type="email"
+                  placeholder="Enter your email to resend"
+                  value={resendEmail}
+                  onChange={(e) => setResendEmail(e.target.value)}
+                  style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #ddd', width: '100%', marginBottom: '8px' }}
+                />
+              </div>
+              <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+                <Link to="/login" style={styles.btn}>Go to Login</Link>
+                <button
+                  onClick={handleResend}
+                  disabled={resending || !resendEmail.trim()}
+                  style={{ ...styles.btn, background: '#f39c12', border: 'none', cursor: 'pointer' }}
+                >
+                  {resending ? 'Sending...' : 'Resend Email'}
+                </button>
+              </div>
             </div>
           </>
         )}

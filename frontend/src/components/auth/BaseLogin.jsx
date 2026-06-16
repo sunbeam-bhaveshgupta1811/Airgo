@@ -45,7 +45,6 @@ function BaseLogin({ loginType, authService, redirectPath }) {
 
       // Fixed: removed loginType param — backend login() only takes email + password
       const result = await authService(email, password)
-      console.log('Login result:', result)
 
       if (result && result.success === true) {
         const userData = result.data
