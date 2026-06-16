@@ -14,7 +14,7 @@ const PassengerDetails = () => {
   useEffect(() => {
     const storedData = sessionStorage.getItem('flightBookingData');
     if (!storedData) {
-      navigate('/flights');
+      navigate('/customer/flightlist');
       return;
     }
 
@@ -27,7 +27,6 @@ const PassengerDetails = () => {
         setPassengerCount(parsedPassengers.length);
       }
     } catch (error) {
-      console.error("Error parsing booking data:", error);
       navigate('/customer/flightlist');
     } finally {
       setIsLoading(false);

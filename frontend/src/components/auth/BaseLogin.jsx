@@ -45,7 +45,6 @@ function BaseLogin({ loginType, authService, redirectPath }) {
 
       // Fixed: removed loginType param — backend login() only takes email + password
       const result = await authService(email, password)
-      console.log('Login result:', result)
 
       if (result && result.success === true) {
         const userData = result.data
@@ -65,8 +64,7 @@ function BaseLogin({ loginType, authService, redirectPath }) {
         toast.error(result?.message || 'Login failed. Please try again.')
       }
 
-    } catch (error) {
-      console.error('Login error:', error)
+    } catch {
       toast.error('An error occurred during login')
     } finally {
       setIsLoading(false)

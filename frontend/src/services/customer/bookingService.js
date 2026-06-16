@@ -21,7 +21,6 @@ export const createBooking = async (scheduleId, numberOfPassengers) => {
     return response.data?.data || null
 
   } catch (error) {
-    console.error('Error creating booking:', error)
     const msg = error.response?.data?.message || 'Failed to create booking'
     throw new Error(msg)
   }
@@ -46,7 +45,6 @@ export const addPassengers = async (bookingId, passengers) => {
     return response.data?.data || null
 
   } catch (error) {
-    console.error('Error adding passengers:', error)
     const msg = error.response?.data?.message || 'Failed to add passengers'
     throw new Error(msg)
   }
@@ -65,7 +63,6 @@ export const makePayment = async (bookingId, paymentMethod = 'CREDIT_CARD') => {
     return response.data?.data || null
 
   } catch (error) {
-    console.error('Error processing payment:', error)
     const msg = error.response?.data?.message || 'Payment failed'
     throw new Error(msg)
   }
@@ -98,8 +95,8 @@ export const getMyBookings = async () => {
     )
     return response.data?.data || []
   } catch (error) {
-    console.error('Error fetching bookings:', error)
-    return []
+    const msg = error.response?.data?.message || 'Failed to fetch bookings'
+    throw new Error(msg)
   }
 }
 
@@ -111,7 +108,6 @@ export const getBookingById = async (bookingId) => {
     )
     return response.data?.data || null
   } catch (error) {
-    console.error('Error fetching booking:', error)
     const msg = error.response?.data?.message || 'Failed to fetch booking'
     throw new Error(msg)
   }
@@ -125,8 +121,8 @@ export const getBookingByReference = async (reference) => {
     )
     return response.data?.data || null
   } catch (error) {
-    console.error('Error fetching booking:', error)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to fetch booking'
+    throw new Error(msg)
   }
 }
 
@@ -139,7 +135,7 @@ export const cancelBooking = async (bookingId) => {
     )
     return response.data
   } catch (error) {
-    console.error('Error cancelling booking:', error)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to cancel booking'
+    throw new Error(msg)
   }
 }

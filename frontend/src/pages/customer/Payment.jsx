@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { FaCreditCard, FaLock, FaCheckCircle, FaRupeeSign } from 'react-icons/fa';
-import { processPayment as processPaymentApi } from '../../services/customer/paymentService';
+import { processFullBooking } from '../../services/customer/bookingService';
 import '../../styles/Payment.css';
 
 const Payment = () => {
@@ -62,7 +62,6 @@ const Payment = () => {
 
       // Enhanced validation with null checks
       if (!flightData || !passengerData || !Array.isArray(passengerData) || passengerData.length === 0) {
-        console.error('Missing or invalid booking data:', { flightData, passengerData });
         navigate('/customer/flightlist');
         return;
       }
@@ -76,29 +75,21 @@ const Payment = () => {
       );
 
       if (validPassengers.length === 0) {
-        console.error('No valid passengers found:', passengerData);
         navigate('/customer/flightlist');
         return;
       }
-
-      console.log('Valid Flight Data:', flightData);
-      console.log('Valid Passengers:', validPassengers);
 
       setBookingData(flightData);
       setPassengers(validPassengers);
       setTotalPrice(calculatedTotal || 0);
     } catch (error) {
-      console.error('Error loading booking data:', error);
       navigate('/customer/flightlist');
     }
   }, [navigate, location.state]);
 
   // Enhanced helper function with comprehensive null checks
   const extractFlightData = (bookingData) => {
-    console.log('Extracting flight data from:', bookingData);
-    
     if (!bookingData) {
-      console.error('Booking data is null or undefined');
       return null;
     }
     
@@ -149,11 +140,8 @@ const Payment = () => {
       };
     }
     
-    console.log('Final flight object:', flightObj);
-    
     // Final validation
     if (!flightObj || !flightObj.flightNumber || flightObj.flightNumber === 'UNKNOWN') {
-      console.error('Invalid flight object - missing critical data:', flightObj);
       return null;
     }
     
@@ -236,7 +224,6 @@ const Payment = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const generateTransactionId = () => `TXN${Date.now()}${Math.floor(Math.random() * 10000)}`;
   const handleBack = () => navigate(-1);
 
   const handlePaymentSubmit = async (e) => {
@@ -250,7 +237,6 @@ const Payment = () => {
     
     if (!flightData) {
       setError('Flight information is incomplete or invalid. Please go back and select flight again.');
-      console.error('Cannot extract valid flight data from:', bookingData);
       return;
     }
 
@@ -272,91 +258,75 @@ const Payment = () => {
       specialRequests: passenger.specialRequests || null
     }));
 
-    console.log('Validated flight data:', flightData);
-    console.log('Validated passengers:', validatedPassengers);
-
     setIsProcessing(true);
 
     try {
-      // Construct payment data with comprehensive null safety
-      const paymentData = {
-        bookingDetails: {
+      const scheduleId = bookingData?.flight?.scheduleId
+        || bookingData?.flight?.id
+        || bookingData?.scheduleId
+        || bookingData?.id;
+
+      if (!scheduleId) {
+        setError('Flight schedule information is missing. Please go back and select a flight.');
+        setIsProcessing(false);
+        return;
+      }
+
+      const backendPaymentMethod = paymentMethod === 'card' ? 'CREDIT_CARD' : 'UPI';
+
+      const result = await processFullBooking({
+        scheduleId: Number(scheduleId),
+        numberOfPassengers: validatedPassengers.length,
+        passengers: validatedPassengers.map((p) => ({
+          firstName: p.firstName,
+          lastName: p.lastName,
+          gender: (p.gender || 'MALE').toUpperCase(),
+          dateOfBirth: p.dob || p.dateOfBirth,
+          idType: 'PASSPORT',
+          idNumber: p.passport || p.idNumber || 'N/A',
+        })),
+        paymentMethod: backendPaymentMethod,
+      });
+
+      const bookingConfirmation = {
+        booking: {
+          ...result.booking,
+          bookingId: result.booking?.id,
+          bookingReference: result.bookingReference,
           flight: flightData,
           classType: bookingData?.classType || 'ECONOMY',
           passengers: validatedPassengers,
           totalPrice: totalPrice || 0,
-          searchParams: bookingData?.searchParams || {
-            from: flightData.source,
-            to: flightData.destination,
-            departureDate: flightData.departureDate,
-            passengers: validatedPassengers.length
-          },
-          specialRequests: bookingData?.specialRequests || '',
-          notes: bookingData?.notes || '',
-          departureDate: flightData.departureDate,
-          arrivalDate: flightData.arrivalDate
+          status: result.success ? 'CONFIRMED' : 'FAILED',
         },
-        paymentInfo: {
-          method: (paymentMethod || 'CARD').toUpperCase(),
-          transactionId: generateTransactionId(),
-          amount: totalPrice || 0,
-          currency: 'INR',
-          details: paymentMethod === 'card'
-            ? {
-                cardNumber: '****' + (cardDetails.cardNumber || '').replace(/\s/g, '').slice(-4),
-                cardholderName: cardDetails.cardholderName || 'Unknown'
-              }
-            : {
-                upiId: upiId || 'unknown@upi'
-              }
-        }
+        payment: result.payment,
       };
 
-      console.log('Payment data being sent:', JSON.stringify(paymentData, null, 2));
-
-      const existingBookingId = bookingData?.bookingId || bookingData?.id;
-      const paymentResult = existingBookingId
-        ? await processPaymentApi(existingBookingId, paymentMethod === 'card' ? 'CREDIT_CARD' : 'UPI')
-        : paymentData.paymentInfo;
-
-      const bookingConfirmation = {
-        booking: {
-          ...paymentData.bookingDetails,
-          id: existingBookingId || paymentData.paymentInfo.transactionId,
-          bookingId: existingBookingId || paymentData.paymentInfo.transactionId,
-          status: 'CONFIRMED'
-        },
-        payment: paymentResult
-      };
-      
-      console.log('Booking confirmation received:', bookingConfirmation);
-
-      if (!bookingConfirmation || !bookingConfirmation.booking) {
-        throw new Error('Invalid booking confirmation received');
-      }
-
-      // Store booking confirmation with null safety
       sessionStorage.setItem('bookingConfirmation', JSON.stringify(bookingConfirmation));
-      
-      // Clear temporary booking data
+
       sessionStorage.removeItem('flightBookingData');
       sessionStorage.removeItem('flightBooking_passengers');
       sessionStorage.removeItem('finalBookingData');
 
+      if (!result.success) {
+        setError('Payment was declined. Please try again.');
+        setIsProcessing(false);
+        return;
+      }
+
       setIsSuccess(true);
-      
+
       setTimeout(() => {
         navigate('/customer/ticketpage', {
           state: {
             booking: bookingConfirmation.booking,
-            bookingId: bookingConfirmation.booking?.id || bookingConfirmation.booking?.bookingId || 'unknown',
-            fromPayment: true
-          }
+            bookingId: result.booking?.id,
+            fromPayment: true,
+          },
         });
       }, 2000);
       
     } catch (err) {
-      console.error('Payment error:', err);
       setError(err.message || 'Payment failed. Please try again.');
     } finally {
       setIsProcessing(false);
@@ -398,17 +368,6 @@ const Payment = () => {
       <div className="payment-container">
         <h1>PAYMENT</h1>
         {error && <div className="error-message">{error}</div>}
-
-        {/* Debug info - remove in production */}
-        {import.meta.env.DEV && (
-          <div style={{backgroundColor: '#f0f0f0', padding: '10px', margin: '10px 0', fontSize: '12px'}}>
-            <strong>Debug Info:</strong><br/>
-            Flight Number: {bookingData?.flight?.flightNumber || bookingData?.flightNumber || 'Missing'}<br/>
-            Class Type: {bookingData?.classType || 'Missing'}<br/>
-            Passengers: {passengers.length}<br/>
-            Total Price: ₹{(totalPrice || 0).toLocaleString()}
-          </div>
-        )}
 
         <div className="payment-methods">
           <div className={`method-tab ${paymentMethod === 'card' ? 'active' : ''}`} onClick={() => setPaymentMethod('card')}>

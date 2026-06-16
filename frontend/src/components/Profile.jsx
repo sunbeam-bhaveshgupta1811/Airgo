@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
-import { getProfileData } from '../services/admin/AdminProfile';
+import { getProfileData, updateProfileData } from '../services/admin/AdminProfile';
 const Profile = () => {
   const [user, setUser] = useState({});
+  const [originalUser, setOriginalUser] = useState({});
 
   const [isEditMode, setIsEditMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -33,29 +34,40 @@ const Profile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    
+
     try {
-      await new Promise(resolve => setTimeout(resolve, 1500));
+      const updatedUser = await updateProfileData({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        phone: user.phone,
+      });
+      if (updatedUser) {
+        setUser(updatedUser);
+        setOriginalUser(updatedUser);
+      }
       setIsEditMode(false);
       toast.success('Profile updated successfully!');
-    } catch {
-      toast.error('Failed to update profile');
+    } catch (err) {
+      toast.error(err.message || 'Failed to update profile');
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleCancel = () => {
+    setUser({ ...originalUser });
     setIsEditMode(false);
   };
 
   const profileFetch = async() =>{
-    const data = await getProfileData();
-    if (data) {
-      setUser(data);
-    }
-    else {
-      toast.error('Failed to fetch profile data');
+    try {
+      const data = await getProfileData();
+      if (data) {
+        setUser(data);
+        setOriginalUser(data);
+      }
+    } catch (error) {
+      toast.error(error.message || 'Failed to fetch profile data');
     }
   };
 
@@ -130,9 +142,9 @@ const Profile = () => {
                         margin: '0 auto'
                       }}
                     >
-                      <img 
-                        src={user.profileImage} 
-                        alt="Profile" 
+                      <img
+                        src={user.profileImage || `https://ui-avatars.com/api/?name=${encodeURIComponent((user.firstName || '') + ' ' + (user.lastName || ''))}&background=667eea&color=fff&size=200`}
+                        alt="Profile"
                         className="rounded-circle border shadow-lg"
                         style={{ 
                           width: '200px', 
@@ -304,11 +316,13 @@ const Profile = () => {
                         ) : (
                           <div className="form-control-plaintext fw-medium">
                             <i className="bi bi-calendar me-2 text-muted"></i>
-                            {new Date(user.dob).toLocaleDateString('en-US', {
-                              year: 'numeric',
-                              month: 'long',
-                              day: 'numeric'
-                            })}
+                            {user.dob
+                              ? new Date(user.dob).toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric'
+                                })
+                              : 'Not provided'}
                           </div>
                         )}
                       </div>
@@ -402,8 +416,7 @@ const Profile = () => {
           .profile-image-wrapper {
             width: 150px !important;
             height: 150px !important;
-          }import { useEffect } from 'react';
-
+          }
         }
       `}</style>
     </div>

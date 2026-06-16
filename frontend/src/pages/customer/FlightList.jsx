@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { FaPlane, FaClock, FaChair, FaArrowLeft, FaFilter, FaStar, FaWifi, FaUtensils } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import '../../styles/FlightList.css';
 import "bootstrap/dist/css/bootstrap.min.css";
 
@@ -18,8 +19,6 @@ const FlightList = () => {
     timeOfDay: 'all' // morning, afternoon, evening, all
   });
   const [showFilters, setShowFilters] = useState(false);
-  const [selectedFlight, setSelectedFlight] = useState(null);
-  const [loading, setLoading] = useState(false);
 
   // Get unique airlines for filter
   const uniqueAirlines = useMemo(() => {
@@ -75,50 +74,42 @@ const FlightList = () => {
     return filtered;
   }, [flights, filterBy, sortBy]);
 
-  const handleSelect = async (flight, classType) => {
-    setLoading(true);
-    setSelectedFlight({ flight, classType });
+  const handleSelect = (flight, classType) => {
+    const classKey = classType.toLowerCase();
+    const seats = flight.seatsAvailable?.[classKey];
 
-    try {
-      // Simulate API call or validation
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      // Prepare complete booking data
-      const bookingData = {
-        flight: {
-          id: flight.id,
-          flightNumber: flight.flightNumber,
-          airline: flight.airline,
-          source: flight.source,
-          destination: flight.destination,
-          departureTime: flight.departureTime,
-          arrivalTime: flight.arrivalTime,
-          duration: flight.duration,
-          prices: flight.prices,
-          seatsAvailable: flight.seatsAvailable,
-          amenities: flight.amenities || []
-        },
-        classType: classType,
-        searchParams: searchParams,
-        selectedPrice: flight.prices[classType.toLowerCase()],
-        selectedSeats: flight.seatsAvailable[classType.toLowerCase()],
-        timestamp: new Date().toISOString()
-      };
-
-      // Store complete booking data
-      if (typeof sessionStorage !== 'undefined') {
-        sessionStorage.setItem('flightBookingData', JSON.stringify(bookingData));
-      }
-      
-      // Navigate to passenger details
-      navigate('/customer/passengerdetails', { state: { bookingData } });
-    } catch (error) {
-      console.error('Error selecting flight:', error);
-      alert('There was an error selecting this flight. Please try again.');
-    } finally {
-      setLoading(false);
-      setSelectedFlight(null);
+    if (seats === undefined || seats <= 0) {
+      toast.error('No seats available for this class.');
+      return;
     }
+
+    // Prepare complete booking data
+    const bookingData = {
+      flight: {
+        id: flight.id,
+        flightNumber: flight.flightNumber,
+        airline: flight.airline,
+        source: flight.source,
+        destination: flight.destination,
+        departureTime: flight.departureTime,
+        arrivalTime: flight.arrivalTime,
+        duration: flight.duration,
+        prices: flight.prices,
+        seatsAvailable: flight.seatsAvailable,
+        amenities: flight.amenities || []
+      },
+      classType: classType,
+      searchParams: searchParams,
+      selectedPrice: flight.prices[classKey] || 0,
+      selectedSeats: seats,
+      timestamp: new Date().toISOString()
+    };
+
+    // Store complete booking data
+    sessionStorage.setItem('flightBookingData', JSON.stringify(bookingData));
+
+    // Navigate to passenger details
+    navigate('/customer/passengerdetails', { state: { bookingData } });
   };
 
   const handleFilterChange = (type, value) => {
@@ -185,7 +176,6 @@ const FlightList = () => {
         <button 
           className="btn btn-outline-secondary"
           onClick={() => navigate(-1)}
-          disabled={loading}
         >
           <FaArrowLeft className="me-2" />
           Back to Search
@@ -366,31 +356,24 @@ const FlightList = () => {
                           <span className="compact-price text-success fw-bold fs-5">
                             ₹{price.toLocaleString()}
                           </span>
-                          <small className={`d-block ${flight.seatsAvailable[type] < 10 ? 'text-danger' : 'text-muted'}`}>
-                            {flight.seatsAvailable[type]} seats available
+                          <small className={`d-block ${(flight.seatsAvailable?.[type] ?? 0) < 10 ? 'text-danger' : 'text-muted'}`}>
+                            {flight.seatsAvailable?.[type] ?? 0} seats available
                           </small>
                         </div>
                       </div>
                       
                       <button
                         className={`compact-select-btn btn ${
-                          flight.seatsAvailable[type] <= 0 
-                            ? 'btn-secondary' 
-                            : loading && selectedFlight?.flight.id === flight.id && selectedFlight?.classType === type
-                              ? 'btn-primary'
-                              : 'btn-primary'
+                          (flight.seatsAvailable?.[type] ?? 0) <= 0
+                            ? 'btn-secondary'
+                            : 'btn-primary'
                         }`}
                         onClick={() => handleSelect(flight, type)}
-                        disabled={
-                          flight.seatsAvailable[type] <= 0 || 
-                          (loading && selectedFlight?.flight.id === flight.id && selectedFlight?.classType === type)
-                        }
+                        disabled={(flight.seatsAvailable?.[type] ?? 0) <= 0}
                       >
-                        {flight.seatsAvailable[type] <= 0 
+                        {(flight.seatsAvailable?.[type] ?? 0) <= 0
                           ? 'Sold Out'
-                          : loading && selectedFlight?.flight.id === flight.id && selectedFlight?.classType === type
-                            ? 'Selecting...'
-                            : 'Select Flight'
+                          : 'Select Flight'
                         }
                       </button>
                     </div>
@@ -402,14 +385,6 @@ const FlightList = () => {
         </div>
       )}
 
-      {/* Loading Overlay */}
-      {loading && (
-        <div className="position-fixed top-0 start-0 w-100 h-100 d-flex align-items-center justify-content-center bg-dark bg-opacity-50" style={{zIndex: 1050}}>
-          <div className="spinner-border text-light" role="status">
-            <span className="visually-hidden">Loading...</span>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

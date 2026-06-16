@@ -1,181 +1,179 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Table, Form, InputGroup } from "react-bootstrap";
+import { toast } from "react-toastify";
+import axios from "axios";
+import { config } from "../../../config";
 import "bootstrap/dist/css/bootstrap.min.css";
 import { useNavigate } from "react-router-dom";
 
+const getAuthHeaders = () => ({
+  headers: {
+    Authorization: `Bearer ${sessionStorage.getItem("jwt")}`,
+  },
+});
 
 function ScheduleFight() {
   const [search, setSearch] = useState("");
+  const [allSchedules, setAllSchedules] = useState([]);
+  const [schedules, setSchedules] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
-  const flights = [
-    {
-      id: 40,
-      airline: "Emirates",
-      flightNo: 102,
-      src: "NSK",
-      dest: "BOM",
-      adt: "2024-05-22 23:30:00",
-      ddt: "2024-05-23 01:25:00",
-      cec: 1002,
-      cbc: 8002,
-      cfc: 5002,
-      status: "",
-    },
-    {
-      id: 39,
-      airline: "AirIndia",
-      flightNo: 402,
-      src: "NSK",
-      dest: "BOM",
-      adt: "2024-05-22 20:20:00",
-      ddt: "2024-05-22 22:22:00",
-      cec: 1002,
-      cbc: 8002,
-      cfc: 0,
-      status: "",
-    },
-    {
-      id: 38,
-      airline: "AirAsia",
-      flightNo: 301,
-      src: "NSK",
-      dest: "BOM",
-      adt: "2024-05-22 13:20:00",
-      ddt: "2024-05-22 15:15:00",
-      cec: 1003,
-      cbc: 8003,
-      cfc: 5003,
-      status: "",
-    },
-    {
-      id: 37,
-      airline: "IndiGo",
-      flightNo: 202,
-      src: "NSK",
-      dest: "BOM",
-      adt: "2024-05-22 09:00:00",
-      ddt: "2024-05-22 11:25:00",
-      cec: 1002,
-      cbc: 0,
-      cfc: 5002,
-      status: "Running",
-    },
-    {
-      id: 36,
-      airline: "Emirates",
-      flightNo: 101,
-      src: "NSK",
-      dest: "BOM",
-      adt: "2024-05-22 03:15:00",
-      ddt: "2024-05-22 05:10:00",
-      cec: 1001,
-      cbc: 8001,
-      cfc: 0,
-      status: "Arrived",
-    },
-    {
-      id: 35,
-      airline: "AirAsia",
-      flightNo: 301,
-      src: "NSK",
-      dest: "BOM",
-      adt: "2024-05-20 17:40:00",
-      ddt: "2024-05-20 19:10:00",
-      cec: 1010,
-      cbc: 8010,
-      cfc: 5010,
-      status: "Arrived",
-    },
-  ];
+  const loadSchedules = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${config.serverURL}/admin/schedules`,
+        getAuthHeaders()
+      );
+      const data = response.data?.data || [];
+      setAllSchedules(data);
+      setSchedules(data);
+    } catch (error) {
+      toast.error("Failed to load schedules");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const filteredFlights = flights.filter((flight) =>
-    flight.flightNo.toString().includes(search)
-  );
+  useEffect(() => {
+    loadSchedules();
+  }, []);
 
-  const navigate = useNavigate()
-  const back = ()=>{
-    navigate("/admin/addflight")
-  }
+  const handleSearch = () => {
+    if (!search) {
+      setSchedules(allSchedules);
+      return;
+    }
+    const filtered = allSchedules.filter(
+      (s) =>
+        (s.flightNumber || "").toLowerCase().includes(search.toLowerCase()) ||
+        (s.airlineName || "").toLowerCase().includes(search.toLowerCase()) ||
+        (s.originCity || "").toLowerCase().includes(search.toLowerCase()) ||
+        (s.destinationCity || "").toLowerCase().includes(search.toLowerCase())
+    );
+    setSchedules(filtered);
+  };
+
+  const handleCancel = async (id) => {
+    try {
+      await axios.patch(
+        `${config.serverURL}/admin/schedules/${id}/cancel`,
+        {},
+        getAuthHeaders()
+      );
+      toast.success("Schedule cancelled successfully");
+      loadSchedules();
+    } catch (error) {
+      const msg = error.response?.data?.message || "Failed to cancel schedule";
+      toast.error(msg);
+    }
+  };
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "SCHEDULED":
+        return "bg-primary";
+      case "DEPARTED":
+        return "bg-warning text-dark";
+      case "ARRIVED":
+        return "bg-success";
+      case "CANCELLED":
+        return "bg-danger";
+      default:
+        return "bg-secondary";
+    }
+  };
 
   return (
-    <>
-      <div className="container mt-4">
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h3>Scheduled Flight Details</h3>
-          <Button variant="warning"
-          onClick={back}>✈ SCHEDULE FLIGHT</Button>
+    <div className="container mt-4">
+      <div className="d-flex justify-content-between align-items-center mb-3">
+        <h3>Scheduled Flight Details</h3>
+        <Button
+          variant="warning"
+          onClick={() => navigate("/admin/addscheduleflight")}
+        >
+          + Schedule New Flight
+        </Button>
+      </div>
+
+      <InputGroup className="mb-3">
+        <Form.Control
+          placeholder="Search by flight number, airline, or city..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+        />
+        <Button variant="primary" onClick={handleSearch}>
+          Search
+        </Button>
+      </InputGroup>
+
+      {loading ? (
+        <div className="text-center">
+          <div className="spinner-border text-primary"></div>
+          <p>Loading schedules...</p>
         </div>
-
-        <InputGroup className="mb-3">
-          <Form.Control
-            placeholder="you can search here"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-          />
-          <Button variant="primary">Search</Button>
-        </InputGroup>
-        <small>(You can search flight details using flight no)</small>
-
+      ) : (
         <Table striped bordered hover responsive className="mt-3 text-center">
-          <thead>
+          <thead className="table-dark">
             <tr>
-              <th>#</th>
-              <th>Airline Name</th>
+              <th>Sr.No</th>
               <th>Flight No</th>
-              <th>SRC</th>
-              <th>DEST</th>
-              <th>ADT</th>
-              <th>DDT</th>
-              <th>CEC</th>
-              <th>CBC</th>
-              <th>CFC</th>
-              <th>Make Changes</th>
+              <th>Airline</th>
+              <th>Route</th>
+              <th>Date</th>
+              <th>Departure</th>
+              <th>Arrival</th>
+              <th>Price (₹)</th>
+              <th>Seats</th>
+              <th>Status</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {filteredFlights.map((flight) => (
-              <tr key={flight.id}>
-                <td>{flight.id}</td>
-                <td style={{ color: "blue", cursor: "pointer" }}>
-                  {flight.airline}
-                </td>
-                <td>{flight.flightNo}</td>
-                <td>{flight.src}</td>
-                <td>{flight.dest}</td>
-                <td>{flight.adt}</td>
-                <td>{flight.ddt}</td>
-                <td>{flight.cec}</td>
-                <td>{flight.cbc}</td>
-                <td>{flight.cfc}</td>
-                <td className="d-flex justify-content-center gap-2">
-                  {flight.status === "Running" ? (
-                    <Button variant="warning" size="sm">
-                      Running
-                    </Button>
-                  ) : flight.status === "Arrived" ? (
-                    <Button variant="success" size="sm">
-                      Arrived
-                    </Button>
-                  ) : (
-                    <>
-                      <Button variant="info" size="sm">
-                        Edit
-                      </Button>
-                      <Button variant="danger" size="sm">
-                        Remove
-                      </Button>
-                    </>
-                  )}
-                  <Button variant="primary" size="sm">
-                    View
-                  </Button>
-                </td>
+            {schedules.length === 0 ? (
+              <tr>
+                <td colSpan="11">No schedules found</td>
               </tr>
-            ))}
+            ) : (
+              schedules.map((s, index) => (
+                <tr key={s.id}>
+                  <td>{index + 1}</td>
+                  <td>{s.flightNumber}</td>
+                  <td>{s.airlineName}</td>
+                  <td>
+                    {s.originAirportCode} → {s.destinationAirportCode}
+                  </td>
+                  <td>{s.journeyDate}</td>
+                  <td>{s.departureTime}</td>
+                  <td>{s.arrivalTime}</td>
+                  <td>₹{Number(s.price).toLocaleString("en-IN")}</td>
+                  <td>
+                    {s.availableSeats}/{s.totalSeats}
+                  </td>
+                  <td>
+                    <span className={`badge ${getStatusBadge(s.status)}`}>
+                      {s.status}
+                    </span>
+                  </td>
+                  <td>
+                    {s.status === "SCHEDULED" && (
+                      <Button
+                        variant="danger"
+                        size="sm"
+                        onClick={() => handleCancel(s.id)}
+                      >
+                        Cancel
+                      </Button>
+                    )}
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </Table>
-      </div>
-    </>
+      )}
+    </div>
   );
 }
 

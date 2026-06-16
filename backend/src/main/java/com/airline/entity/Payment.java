@@ -40,6 +40,9 @@ public class Payment {
 
     private LocalDateTime paidAt;
 
+    @Version
+    private Long version;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 

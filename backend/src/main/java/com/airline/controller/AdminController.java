@@ -1,6 +1,10 @@
 package com.airline.controller;
 
+import com.airline.dao.AirlineDao;
+import com.airline.dao.BookingDao;
+import com.airline.dao.FlightDao;
 import com.airline.dto.ApiResponse;
+import com.airline.entity.AirlineStatus;
 import com.airline.response.UserProfileResponseDto;
 import com.airline.service.UserService;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -8,17 +12,22 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/admin")
 @PreAuthorize("hasRole('ADMIN')")
-@CrossOrigin(origins = "http://localhost:3000")
 @SecurityRequirement(name = "bearerAuth")
 @RequiredArgsConstructor
 public class AdminController {
 
     private final UserService userService;
+    private final AirlineDao airlineDao;
+    private final FlightDao flightDao;
+    private final BookingDao bookingDao;
 
     @GetMapping("/users")
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getAllUsers() {
@@ -40,6 +49,29 @@ public class AdminController {
         return ResponseEntity.ok(
                 ApiResponse.success("Welcome to Admin Dashboard", "Analytics coming soon")
         );
+    }
+
+    @GetMapping("/dashboard/revenue-by-airline")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getRevenueByAirline() {
+        List<Object[]> rawData = bookingDao.getRevenueByAirline();
+        List<Map<String, Object>> result = new java.util.ArrayList<>();
+        for (Object[] row : rawData) {
+            Map<String, Object> entry = new LinkedHashMap<>();
+            entry.put("airline", row[0]);
+            entry.put("revenue", row[1]);
+            result.add(entry);
+        }
+        return ResponseEntity.ok(ApiResponse.success("Revenue by airline fetched", result));
+    }
+
+    @GetMapping("/dashboard/stats")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getDashboardStats() {
+        Map<String, Object> stats = new LinkedHashMap<>();
+        stats.put("airlineCount", airlineDao.findByStatus(AirlineStatus.ACTIVE).size());
+        stats.put("flightCount", flightDao.count());
+        stats.put("bookingCount", bookingDao.count());
+        stats.put("totalRevenue", bookingDao.getTotalRevenue());
+        return ResponseEntity.ok(ApiResponse.success("Dashboard stats fetched", stats));
     }
 
 //	@GetMapping("/airlines/count")

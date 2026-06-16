@@ -3,35 +3,69 @@ import {
   Form,
   Button,
   Container,
-  Alert,
   Card,
   Row,
   Col,
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { FaPlane, FaArrowLeft, FaCheck } from "react-icons/fa";
+import { FaPlane, FaArrowLeft } from "react-icons/fa";
 import { toast } from "react-toastify";
 import { addAirline } from "../../services/admin/airlineManagementServies";
 
 const AddAirline = () => {
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showSuccess, setShowSuccess] = useState(false);
-  const [airlineName, setAirlineName] = useState("");
-  const [airlineNoOfFlights, setAirlineNoOfFlights] = useState(0);
+  const [formData, setFormData] = useState({
+    name: "",
+    code: "",
+    country: "",
+    contactEmail: "",
+    contactPhone: "",
+  });
 
-  const submit = async(e) => {
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const validateForm = () => {
+    if (formData.name.trim().length < 2) {
+      toast.warn("Airline name must be at least 2 characters");
+      return false;
+    }
+    if (!/^[A-Z0-9]{2,3}$/.test(formData.code)) {
+      toast.warn("IATA code must be 2-3 uppercase letters/digits (e.g. 6E, AI)");
+      return false;
+    }
+    if (!formData.country.trim()) {
+      toast.warn("Please enter the country");
+      return false;
+    }
+    if (formData.contactEmail && !/^\S+@\S+\.\S+$/.test(formData.contactEmail)) {
+      toast.warn("Please enter a valid contact email");
+      return false;
+    }
+    return true;
+  };
+
+  const submit = async (e) => {
     e.preventDefault();
-    setIsSubmitting(true);
+    if (!validateForm()) return;
 
+    setIsSubmitting(true);
     try {
-      const data = await addAirline(airlineName, airlineNoOfFlights);
-      if (!data) {
-        toast.error("Failed to add airline. Please try again.");
-        return;
-      }
+      await addAirline({
+        name: formData.name.trim(),
+        code: formData.code.toUpperCase().trim(),
+        country: formData.country.trim(),
+        contactEmail: formData.contactEmail.trim(),
+        contactPhone: formData.contactPhone.trim(),
+      });
       toast.success("Airline added successfully!");
       navigate("/admin/airlinemanagement");
+    } catch (error) {
+      const msg = error.response?.data?.message || "Failed to add airline";
+      toast.error(msg);
     } finally {
       setIsSubmitting(false);
     }
@@ -64,40 +98,76 @@ const AddAirline = () => {
             </Card.Header>
 
             <Card.Body>
-              {showSuccess && (
-                <Alert
-                  variant="success"
-                  dismissible
-                  onClose={() => setShowSuccess(false)}
-                  className="animate__animated animate__fadeIn"
-                >
-                  <FaCheck className="me-2" />
-                  Airline added successfully!
-                </Alert>
-              )}
-
               <Form onSubmit={submit}>
-                <Form.Group className="mb-4">
-                  <Form.Label className="fw-bold">Airline Name</Form.Label>
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold">Airline Name *</Form.Label>
                   <Form.Control
                     type="text"
-                    name="airlineName"
-                    placeholder="Airline Name"
-                    value={airlineName}
-                    onChange={(e) => setAirlineName(e.target.value)}
+                    name="name"
+                    placeholder="e.g. Air India"
+                    value={formData.name}
+                    onChange={handleChange}
                     required
                   />
                 </Form.Group>
 
-                <Form.Group className="mb-4">
-                  <Form.Label className="fw-bold">Number of Flights</Form.Label>
+                <Row>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label className="fw-bold">IATA Code *</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="code"
+                        placeholder="e.g. AI, 6E"
+                        value={formData.code}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            code: e.target.value.toUpperCase(),
+                          }))
+                        }
+                        maxLength={3}
+                        required
+                      />
+                      <Form.Text className="text-muted">
+                        2-3 uppercase letters/digits
+                      </Form.Text>
+                    </Form.Group>
+                  </Col>
+                  <Col md={6}>
+                    <Form.Group className="mb-3">
+                      <Form.Label className="fw-bold">Country *</Form.Label>
+                      <Form.Control
+                        type="text"
+                        name="country"
+                        placeholder="e.g. India"
+                        value={formData.country}
+                        onChange={handleChange}
+                        required
+                      />
+                    </Form.Group>
+                  </Col>
+                </Row>
+
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold">Contact Email</Form.Label>
                   <Form.Control
-                    type="number"
-                    name="noOfFlights"
-                    placeholder="e.g. 25"
-                    value={airlineNoOfFlights}
-                    onChange={(e) => setAirlineNoOfFlights(e.target.value)}
-                    min={1}
+                    type="email"
+                    name="contactEmail"
+                    placeholder="e.g. contact@airindia.com"
+                    value={formData.contactEmail}
+                    onChange={handleChange}
+                  />
+                </Form.Group>
+
+                <Form.Group className="mb-4">
+                  <Form.Label className="fw-bold">Contact Phone</Form.Label>
+                  <Form.Control
+                    type="tel"
+                    name="contactPhone"
+                    placeholder="e.g. +911234567890"
+                    value={formData.contactPhone}
+                    onChange={handleChange}
                   />
                 </Form.Group>
 
