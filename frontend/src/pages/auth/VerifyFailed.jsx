@@ -1,7 +1,5 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import "../../styles/Login.css"
-import Login from './../admin/auth/Login';
 
 function VerifyFailedPage() {
   const navigate = useNavigate();

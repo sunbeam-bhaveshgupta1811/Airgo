@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -181,7 +182,7 @@ public class BookingServiceImpl implements BookingService{
     @Transactional(readOnly = true)
     public List<BookingResponseDto> getMyBookings() {
         User user = getLoggedInUser();
-        return bookingDao.findByUserIdOrderByCreatedAtDesc(user.getId())
+        return bookingDao.findByUserIdWithDetails(user.getId())
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -217,7 +218,7 @@ public class BookingServiceImpl implements BookingService{
 
     @Transactional(readOnly = true)
     public List<BookingResponseDto> getAllBookings() {
-        return bookingDao.findAll()
+        return bookingDao.findAllWithDetails()
                 .stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
@@ -239,8 +240,8 @@ public class BookingServiceImpl implements BookingService{
 
     private String generateBookingReference() {
         String date = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"));
-        long count = bookingDao.count() + 1;
-        return String.format("BK-%s-%05d", date, count);
+        String uniquePart = UUID.randomUUID().toString().toUpperCase().replace("-", "").substring(0, 6);
+        return String.format("BK-%s-%s", date, uniquePart);
     }
 
     private String formatDuration(Integer minutes) {
@@ -252,8 +253,7 @@ public class BookingServiceImpl implements BookingService{
         FlightSchedule fs = b.getFlightSchedule();
         Flight f = fs.getFlight();
 
-        List<PassengerResponseDto> passengerResponses = passengerDao
-                .findByBookingId(b.getId())
+        List<PassengerResponseDto> passengerResponses = b.getPassengers()
                 .stream()
                 .map(p -> PassengerResponseDto.builder()
                         .id(p.getId())

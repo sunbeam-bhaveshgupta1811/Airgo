@@ -13,7 +13,6 @@ export async function registerUser(title, firstName, lastName, email, phone, pas
     return response.data
 
   } catch (error) {
-    console.error('registerUser error:', error)
     if (error.response) {
       return {
         success: false,
@@ -31,17 +30,12 @@ export async function login(email, password) {
     const body = { email, password }
 
     const response = await axios.post(url, body)
-    if (response.status === 200) {
-      return response.data
-    }
-    return null
+    return response.data
 
   } catch (ex) {
     if (ex.response && ex.response.data) {
-      console.error('Backend error:', ex.response.data)
       return ex.response.data
     }
-    console.error('Network or unexpected error:', ex)
     return { success: false, message: 'Something went wrong. Please try again later.' }
   }
 }
@@ -90,7 +84,6 @@ export async function verifyEmailApi(token) {
     return response.data
 
   } catch (error) {
-    console.error('Verify email error:', error)
     return {
       success: false,
       message: error.response?.data?.message || 'Error verifying email'

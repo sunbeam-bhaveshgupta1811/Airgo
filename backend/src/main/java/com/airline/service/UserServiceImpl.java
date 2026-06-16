@@ -2,12 +2,17 @@ package com.airline.service;
 
 
 import com.airline.dao.UserDao;
+import com.airline.dto.ApiResponse;
+import com.airline.dto.auth.ChangePasswordRequest;
 import com.airline.entity.User;
+import com.airline.exception.BadRequestException;
 import com.airline.exception.ResourceNotFoundException;
+import com.airline.request.UpdateProfileRequestDto;
 import com.airline.response.UserProfileResponseDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +32,7 @@ public class UserServiceImpl implements UserService{
 //    private BookingDao bookingRepo;
 
     private final UserDao userDao;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional(readOnly = true)
     public UserProfileResponseDto getMyProfile() {
@@ -53,6 +59,53 @@ public class UserServiceImpl implements UserService{
                 .stream()
                 .map(user -> this.mapToProfileResponse(user))
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public UserProfileResponseDto updateProfile(UpdateProfileRequestDto request) {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+
+        User user = userDao.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        user.setFirstName(request.getFirstName().trim());
+        user.setLastName(request.getLastName().trim());
+
+        if (request.getPhone() != null) {
+            user.setPhone(request.getPhone().trim());
+        }
+
+        User saved = userDao.save(user);
+        log.info("Profile updated for user: {}", email);
+        return mapToProfileResponse(saved);
+    }
+
+    @Transactional
+    public ApiResponse<Void> changePassword(ChangePasswordRequest request) {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+
+        User user = userDao.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPassword())) {
+            throw new BadRequestException("Current password is incorrect");
+        }
+
+        if (!request.getNewPassword().equals(request.getConfirmPassword())) {
+            throw new BadRequestException("New password and confirm password do not match");
+        }
+
+        if (passwordEncoder.matches(request.getNewPassword(), user.getPassword())) {
+            throw new BadRequestException("New password must be different from current password");
+        }
+
+        user.setPassword(passwordEncoder.encode(request.getNewPassword()));
+        userDao.save(user);
+
+        log.info("Password changed for user: {}", email);
+        return ApiResponse.success("Password changed successfully", null);
     }
 
     private UserProfileResponseDto mapToProfileResponse(User user) {

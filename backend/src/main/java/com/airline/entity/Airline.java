@@ -33,6 +33,9 @@ public class Airline {
 	@Column(nullable = false)
 	private AirlineStatus status;
 
+	@Version
+	private Long version;
+
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdAt;
 

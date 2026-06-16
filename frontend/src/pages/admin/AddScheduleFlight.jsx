@@ -1,145 +1,141 @@
 
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { config } from '../../../config';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import 'react-toastify/dist/ReactToastify.css';
+
+const getAuthHeaders = () => ({
+  headers: {
+    Authorization: `Bearer ${sessionStorage.getItem('jwt')}`,
+    'Content-Type': 'application/json',
+  },
+});
 
 const ScheduleFlight = () => {
   const [formData, setFormData] = useState({
-    airline: '',
-    flightNumber: '',
-    flightDate: '',
-    hasEconomy: true,
-    hasBusiness: true,
-    hasFirstClass: true,
-    economySeats: '',
-    businessSeats: '',
-    firstClassSeats: '',
-    source: '',
-    destination: '',
-    departureDateTime: '',
-    arrivalDateTime: '',
-    economyCost: '',
-    businessCost: '',
-    firstClassCost: ''
+    flightId: '',
+    journeyDate: '',
+    departureTime: '',
+    arrivalTime: '',
+    price: '',
+    totalSeats: '',
   });
 
   const [isLoading, setIsLoading] = useState(false);
   const [airlines, setAirlines] = useState([]);
   const [flights, setFlights] = useState([]);
-  const [airports, setAirports] = useState([]);
+  const [selectedAirline, setSelectedAirline] = useState('');
   const navigate = useNavigate();
 
-  // Fetch data on component mount
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
       try {
-        // Replace with actual API calls
-        const mockAirlines = [
-          { id: 'AI', name: 'Air India' },
-          { id: 'SG', name: 'SpiceJet' },
-          { id: 'I5', name: 'AirAsia India' },
-          { id: '6E', name: 'IndiGo' }
-        ];
-        
-        const mockFlights = [
-          { number: 'AI101', airline: 'AI' },
-          { number: 'SG202', airline: 'SG' },
-          { number: 'I5303', airline: 'I5' },
-          { number: '6E404', airline: '6E' }
-        ];
-        
-        const mockAirports = [
-          { code: 'NSK', name: 'Nashik' },
-          { code: 'BOM', name: 'Mumbai' },
-          { code: 'DEL', name: 'Delhi' },
-          { code: 'BLR', name: 'Bangalore' }
-        ];
-        
-        setAirlines(mockAirlines);
-        setFlights(mockFlights);
-        setAirports(mockAirports);
-      } catch {
-        toast.error('Failed to load data');
+        const [airlinesRes, flightsRes] = await Promise.all([
+          axios.get(`${config.serverURL}/admin/airlines`, getAuthHeaders()),
+          axios.get(`${config.serverURL}/admin/flights`, getAuthHeaders()),
+        ]);
+
+        setAirlines(airlinesRes.data?.data || []);
+        setFlights(flightsRes.data?.data || []);
+      } catch (error) {
+        toast.error('Failed to load airlines and flights');
       } finally {
         setIsLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
+    const { name, value } = e.target;
+    setFormData((prev) => ({
       ...prev,
-      [name]: type === 'checkbox' ? checked : value
+      [name]: value,
     }));
   };
 
+  const handleAirlineChange = (e) => {
+    setSelectedAirline(e.target.value);
+    setFormData((prev) => ({ ...prev, flightId: '' }));
+  };
+
   const validateForm = () => {
-    if (!formData.airline) {
+    if (!selectedAirline) {
       toast.error('Please select an airline');
       return false;
     }
-    
-    if (!formData.flightNumber) {
-      toast.error('Please select a flight number');
+    if (!formData.flightId) {
+      toast.error('Please select a flight');
       return false;
     }
-    
-    if (formData.source === formData.destination) {
-      toast.error('Source and destination cannot be the same');
+    if (!formData.journeyDate) {
+      toast.error('Please select a journey date');
       return false;
     }
-    
-    if (new Date(formData.arrivalDateTime) <= new Date(formData.departureDateTime)) {
+    if (formData.arrivalTime && formData.departureTime && formData.arrivalTime <= formData.departureTime) {
       toast.error('Arrival time must be after departure time');
       return false;
     }
-    
+    if (!formData.price || Number(formData.price) <= 0) {
+      toast.error('Price must be greater than 0');
+      return false;
+    }
+    if (!formData.totalSeats || Number(formData.totalSeats) < 1) {
+      toast.error('Total seats must be at least 1');
+      return false;
+    }
     return true;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     if (!validateForm()) return;
-    
+
     setIsLoading(true);
-    
     try {
-      // Replace with actual API call
-      console.log('Submitting flight data:', formData);
-      
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
+      const payload = {
+        flightId: Number(formData.flightId),
+        journeyDate: formData.journeyDate,
+        departureTime: formData.departureTime,
+        arrivalTime: formData.arrivalTime,
+        price: Number(formData.price),
+        totalSeats: Number(formData.totalSeats),
+      };
+
+      await axios.post(
+        `${config.serverURL}/admin/schedules`,
+        payload,
+        getAuthHeaders()
+      );
+
       toast.success('Flight scheduled successfully!');
-      navigate('/scheduleflight');
-    } catch {
-      toast.error('Failed to schedule flight');
+      navigate('/admin/scheduleflight');
+    } catch (error) {
+      const msg = error.response?.data?.message || 'Failed to schedule flight';
+      toast.error(msg);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const filteredFlights = flights.filter(flight => flight.airline === formData.airline);
-  const filteredDestinations = airports.filter(airport => airport.code !== formData.source);
+  const filteredFlights = selectedAirline
+    ? flights.filter((f) => String(f.airlineId) === String(selectedAirline))
+    : [];
 
   return (
     <div className="container mt-4">
       <h2 className="mb-4">Schedule Flight</h2>
-      <ToastContainer />
-      
-      {isLoading ? (
+
+      {isLoading && airlines.length === 0 ? (
         <div className="text-center">
           <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
           </div>
-          <p>Loading flight data...</p>
+          <p>Loading data...</p>
         </div>
       ) : (
         <form onSubmit={handleSubmit}>
@@ -149,265 +145,128 @@ const ScheduleFlight = () => {
               <label className="form-label">Select Airline</label>
               <select
                 className="form-select"
-                name="airline"
-                value={formData.airline}
-                onChange={handleChange}
+                value={selectedAirline}
+                onChange={handleAirlineChange}
                 required
               >
                 <option value="">-- Select Airline --</option>
-                {airlines.map(airline => (
-                  <option key={airline.id} value={airline.id}>{airline.name}</option>
+                {airlines.map((airline) => (
+                  <option key={airline.id} value={airline.id}>
+                    {airline.name} ({airline.code})
+                  </option>
                 ))}
               </select>
             </div>
 
-            {/* Flight Number */}
+            {/* Flight Selection */}
             <div className="col-md-6">
-              <label className="form-label">Select Flight Number</label>
+              <label className="form-label">Select Flight</label>
               <select
                 className="form-select"
-                name="flightNumber"
-                value={formData.flightNumber}
+                name="flightId"
+                value={formData.flightId}
                 onChange={handleChange}
                 required
-                disabled={!formData.airline}
+                disabled={!selectedAirline}
               >
                 <option value="">-- Select Flight --</option>
-                {filteredFlights.map(flight => (
-                  <option key={flight.number} value={flight.number}>{flight.number}</option>
+                {filteredFlights.map((flight) => (
+                  <option key={flight.id} value={flight.id}>
+                    {flight.flightNumber} ({flight.originCode} → {flight.destinationCode})
+                  </option>
                 ))}
               </select>
             </div>
 
-            {/* Flight Date */}
-            <div className="col-md-12">
-              <label className="form-label">Flight Date</label>
+            {/* Journey Date */}
+            <div className="col-md-6">
+              <label className="form-label">Journey Date</label>
               <input
                 type="date"
                 className="form-control"
-                name="flightDate"
-                value={formData.flightDate}
+                name="journeyDate"
+                value={formData.journeyDate}
                 onChange={handleChange}
+                min={new Date().toISOString().split('T')[0]}
                 required
               />
             </div>
 
-            {/* Flight Classes */}
-            <div className="col-md-12">
-              <label className="form-label">Flight Has</label>
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  name="hasEconomy"
-                  checked={formData.hasEconomy}
-                  onChange={handleChange}
-                  id="economyCheck"
-                />
-                <label className="form-check-label" htmlFor="economyCheck">
-                  Economy Class
-                </label>
-              </div>
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  name="hasBusiness"
-                  checked={formData.hasBusiness}
-                  onChange={handleChange}
-                  id="businessCheck"
-                />
-                <label className="form-check-label" htmlFor="businessCheck">
-                  Business Class
-                </label>
-              </div>
-              <div className="form-check">
-                <input
-                  className="form-check-input"
-                  type="checkbox"
-                  name="hasFirstClass"
-                  checked={formData.hasFirstClass}
-                  onChange={handleChange}
-                  id="firstClassCheck"
-                />
-                <label className="form-check-label" htmlFor="firstClassCheck">
-                  First Class
-                </label>
-              </div>
-            </div>
-
-            {/* Seats Configuration */}
-            {formData.hasEconomy && (
-              <div className="col-md-4">
-                <label className="form-label">Enter Number of Economy Class Seats</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="economySeats"
-                  value={formData.economySeats}
-                  onChange={handleChange}
-                  min="1"
-                  required
-                />
-              </div>
-            )}
-
-            {formData.hasBusiness && (
-              <div className="col-md-4">
-                <label className="form-label">Enter Number of Business Class Seats</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="businessSeats"
-                  value={formData.businessSeats}
-                  onChange={handleChange}
-                  min="1"
-                  required
-                />
-              </div>
-            )}
-
-            {formData.hasFirstClass && (
-              <div className="col-md-4">
-                <label className="form-label">Enter Number of First Class Seats</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="firstClassSeats"
-                  value={formData.firstClassSeats}
-                  onChange={handleChange}
-                  min="1"
-                  required
-                />
-              </div>
-            )}
-
-            {/* Source and Destination */}
+            {/* Total Seats */}
             <div className="col-md-6">
-              <label className="form-label">Select Source</label>
-              <select
-                className="form-select"
-                name="source"
-                value={formData.source}
-                onChange={handleChange}
-                required
-              >
-                <option value="">-- Select Source --</option>
-                {airports.map(airport => (
-                  <option key={`src-${airport.code}`} value={airport.code}>
-                    {airport.name} ({airport.code})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            <div className="col-md-6">
-              <label className="form-label">Select Destination</label>
-              <select
-                className="form-select"
-                name="destination"
-                value={formData.destination}
-                onChange={handleChange}
-                required
-                disabled={!formData.source}
-              >
-                <option value="">-- Select Destination --</option>
-                {filteredDestinations.map(airport => (
-                  <option key={`dest-${airport.code}`} value={airport.code}>
-                    {airport.name} ({airport.code})
-                  </option>
-                ))}
-              </select>
-            </div>
-
-            {/* Date and Time */}
-            <div className="col-md-6">
-              <label className="form-label">Select Departure Date-Time of Flight</label>
+              <label className="form-label">Total Seats</label>
               <input
-                type="datetime-local"
+                type="number"
                 className="form-control"
-                name="departureDateTime"
-                value={formData.departureDateTime}
+                name="totalSeats"
+                value={formData.totalSeats}
                 onChange={handleChange}
+                min="1"
+                max="180"
                 required
               />
             </div>
 
+            {/* Departure Time */}
             <div className="col-md-6">
-              <label className="form-label">Select Arrival Date-Time of Flight</label>
+              <label className="form-label">Departure Time</label>
               <input
-                type="datetime-local"
+                type="time"
                 className="form-control"
-                name="arrivalDateTime"
-                value={formData.arrivalDateTime}
+                name="departureTime"
+                value={formData.departureTime}
                 onChange={handleChange}
                 required
-                min={formData.departureDateTime}
               />
             </div>
 
-            {/* Seat Costs */}
-            {formData.hasEconomy && (
-              <div className="col-md-4">
-                <label className="form-label">Enter Seat Cost for Economy Class (₹)</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="economyCost"
-                  value={formData.economyCost}
-                  onChange={handleChange}
-                  min="0"
-                  step="100"
-                  required
-                />
-              </div>
-            )}
+            {/* Arrival Time */}
+            <div className="col-md-6">
+              <label className="form-label">Arrival Time</label>
+              <input
+                type="time"
+                className="form-control"
+                name="arrivalTime"
+                value={formData.arrivalTime}
+                onChange={handleChange}
+                required
+              />
+            </div>
 
-            {formData.hasBusiness && (
-              <div className="col-md-4">
-                <label className="form-label">Enter Seat Cost for Business Class (₹)</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="businessCost"
-                  value={formData.businessCost}
-                  onChange={handleChange}
-                  min="0"
-                  step="100"
-                  required
-                />
-              </div>
-            )}
+            {/* Price */}
+            <div className="col-md-6">
+              <label className="form-label">Price per Seat (₹)</label>
+              <input
+                type="number"
+                className="form-control"
+                name="price"
+                value={formData.price}
+                onChange={handleChange}
+                min="1"
+                step="100"
+                required
+              />
+            </div>
 
-            {formData.hasFirstClass && (
-              <div className="col-md-4">
-                <label className="form-label">Enter Seat Cost for First Class (₹)</label>
-                <input
-                  type="number"
-                  className="form-control"
-                  name="firstClassCost"
-                  value={formData.firstClassCost}
-                  onChange={handleChange}
-                  min="0"
-                  step="100"
-                  required
-                />
-              </div>
-            )}
-
-            {/* Submit Button */}
+            {/* Submit */}
             <div className="col-12 mt-4">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="btn btn-primary"
                 disabled={isLoading}
               >
                 {isLoading ? (
                   <>
-                    <span className="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span
+                      className="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
                     Scheduling...
                   </>
-                ) : 'Schedule Flight'}
+                ) : (
+                  'Schedule Flight'
+                )}
               </button>
             </div>
           </div>

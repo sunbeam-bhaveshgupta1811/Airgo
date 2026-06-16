@@ -6,7 +6,7 @@ const getAuthHeaders = () => {
   return {
     headers: {
       Authorization: `Bearer ${token}`,
-      'Content-Type': 'application/json' 
+      'Content-Type': 'application/json'
     }
   }
 }
@@ -19,8 +19,8 @@ export const fetchAllFlights = async () => {
     )
     return response.data?.data || []
   } catch (error) {
-    console.error('Error fetching flights:', error.response?.data || error.message)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to fetch flights'
+    throw new Error(msg)
   }
 }
 
@@ -29,8 +29,8 @@ export const fetchAirlinesForDropdown = async () => {
     const response = await axios.get(`${config.serverURL}/api/airlines`)
     return response.data?.data || []
   } catch (error) {
-    console.error('Error fetching airlines for dropdown:', error.response?.data || error.message)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to fetch airlines'
+    throw new Error(msg)
   }
 }
 
@@ -39,8 +39,8 @@ export const fetchAirportsForDropdown = async () => {
     const response = await axios.get(`${config.serverURL}/api/airports`)
     return response.data?.data || []
   } catch (error) {
-    console.error('Error fetching airports:', error.response?.data || error.message)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to fetch airports'
+    throw new Error(msg)
   }
 }
 
@@ -61,8 +61,8 @@ export const createFlight = async (flightData) => {
     )
     return response.data
   } catch (error) {
-    console.error('Error adding flight:', error.response?.data || error.message)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to add flight'
+    throw new Error(msg)
   }
 }
 
@@ -75,8 +75,8 @@ export const updateFlight = async (id, flightData) => {
     )
     return response.data
   } catch (error) {
-    console.error('Error updating flight:', error.response?.data || error.message)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to update flight'
+    throw new Error(msg)
   }
 }
 
@@ -89,7 +89,7 @@ export const deactivateFlight = async (id) => {
     )
     return response.data
   } catch (error) {
-    console.error('Error deactivating flight:', error.response?.data || error.message)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to deactivate flight'
+    throw new Error(msg)
   }
 }

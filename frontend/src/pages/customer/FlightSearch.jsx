@@ -1,28 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaExchangeAlt, FaChevronDown } from 'react-icons/fa';
-import { Badge } from 'react-bootstrap';
 import '../../styles/FlightSearch.css';
 import { useNavigate } from 'react-router-dom';
-import { searchFlights } from '../../services/customer/flightSearchService';
+import { searchFlights, fetchAirports } from '../../services/customer/flightSearchService';
+import { toast } from 'react-toastify';
 
 const FlightSearch = () => {
   const navigate = useNavigate();
-  const [tripType] = useState('oneway');
+  const [airports, setAirports] = useState([]);
   const [from, setFrom] = useState('');
   const [to, setTo] = useState('');
   const [departureDate, setDepartureDate] = useState('');
-  const [returnDate, setReturnDate] = useState('');
-  const [travelers] = useState({ adults: 1, children: 0, infants: 0 });
-  const [specialFare, setSpecialFare] = useState('regular');
+  const [passengerCount, setPassengerCount] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
 
-  const specialFares = [
-    { id: 'regular', label: 'Regular Fares', description: 'Standard ticket prices', badge: null },
-    { id: 'senior', label: 'Senior Citizen', description: 'Special discounts for seniors (60+)', badge: '10% OFF' },
-    { id: 'student', label: 'Student Discount', description: 'Valid student ID required', badge: '15% OFF' },
-    { id: 'family', label: 'Family Package', description: 'Book for 4+ family members', badge: '20% OFF' }
-  ];
+  useEffect(() => {
+    const loadAirports = async () => {
+      try {
+        const data = await fetchAirports();
+        setAirports(data);
+      } catch {
+        // Airports will just be empty, user can still type codes manually
+      }
+    };
+    loadAirports();
+  }, []);
 
+  const filteredDestinations = airports.filter(
+    (a) => a.code !== from
+  );
 
   const calculateDuration = (departureTime, arrivalTime) => {
     const dep = new Date(`2000-01-01T${departureTime}`);
@@ -40,10 +46,6 @@ const FlightSearch = () => {
     setTo(temp);
   };
 
-  const getTotalTravelers = () => {
-    return travelers.adults + travelers.children + travelers.infants;
-  };
-
   const formatDate = (dateString) => {
     if (!dateString) return '';
     const date = new Date(dateString);
@@ -56,40 +58,57 @@ const FlightSearch = () => {
 
   const customerSearchFlight = async (e) => {
     e.preventDefault();
+    if (from === to) {
+      toast.error('Origin and destination cannot be the same.');
+      return;
+    }
+
     setIsSearching(true);
 
     try {
-      const flights = await searchFlights(from, to, departureDate);
-      
+      const flights = await searchFlights(from, to, departureDate, passengerCount);
+
       if (!flights || flights.length === 0) {
-        alert('No flights found for your search criteria.');
+        toast.info('No flights found for your search criteria.');
         return;
       }
 
       const transformedFlights = flights.map((flight) => ({
-        flightNumber: flight.flightNo,
+        id: flight.scheduleId || flight.id,
+        scheduleId: flight.scheduleId || flight.id,
+        flightNumber: flight.flightNo || flight.flightNumber,
         airline: flight.airlineName,
-        source: flight.fromLocation,
-        destination: flight.toLocation,
+        source: flight.fromLocation || flight.originCity,
+        destination: flight.toLocation || flight.destinationCity,
         departureTime: flight.departureTime,
         arrivalTime: flight.arrivalTime,
         duration: calculateDuration(flight.departureTime, flight.arrivalTime),
+        journeyDate: flight.journeyDate || departureDate,
         prices: {
-          economy: flight.economyFare,
+          economy: flight.economyFare || flight.price,
           business: flight.businessFare,
           firstClass: flight.firstFare,
         },
         seatsAvailable: {
-          economy: flight.availableEconomySeats,
+          economy: flight.availableEconomySeats || flight.availableSeats,
           business: flight.availableBusinessSeats,
           firstClass: flight.availableFirstSeats,
         },
       }));
 
-      navigate('/customer/flightlist', { state: { flights: transformedFlights } });
+      navigate('/customer/flightlist', {
+        state: {
+          flights: transformedFlights,
+          searchParams: {
+            from,
+            to,
+            departDate: departureDate,
+            passengers: passengerCount,
+          },
+        },
+      });
     } catch (error) {
-      alert('Failed to fetch flights. Please try again.');
-      console.error('Flight search error:', error);
+      toast.error(error.message || 'Failed to fetch flights. Please try again.');
     } finally {
       setIsSearching(false);
     }
@@ -105,17 +124,19 @@ const FlightSearch = () => {
             <div className="search-field from-field">
               <label>From</label>
               <div className="city-input">
-                <input
-                  type="text"
+                <select
                   value={from}
                   onChange={(e) => setFrom(e.target.value)}
-                  placeholder="Delhi"
                   required
-                />
-                <div className="city-details">
-                  <span className="city-name">{from || 'Delhi'}</span>
-                  <span className="airport-name">DEL, Delhi Airport India</span>
-                </div>
+                  style={{ width: '100%', border: 'none', outline: 'none', fontSize: '16px', background: 'transparent', cursor: 'pointer' }}
+                >
+                  <option value="">-- Select Origin --</option>
+                  {airports.map((airport) => (
+                    <option key={`from-${airport.id}`} value={airport.code}>
+                      {airport.city} ({airport.code})
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -130,17 +151,20 @@ const FlightSearch = () => {
             <div className="search-field to-field">
               <label>To</label>
               <div className="city-input">
-                <input
-                  type="text"
+                <select
                   value={to}
                   onChange={(e) => setTo(e.target.value)}
-                  placeholder="Bengaluru"
                   required
-                />
-                <div className="city-details">
-                  <span className="city-name">{to || 'Bengaluru'}</span>
-                  <span className="airport-name">BLR, Bengaluru International Airport</span>
-                </div>
+                  disabled={!from}
+                  style={{ width: '100%', border: 'none', outline: 'none', fontSize: '16px', background: 'transparent', cursor: 'pointer' }}
+                >
+                  <option value="">-- Select Destination --</option>
+                  {filteredDestinations.map((airport) => (
+                    <option key={`to-${airport.id}`} value={airport.code}>
+                      {airport.city} ({airport.code})
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -169,70 +193,29 @@ const FlightSearch = () => {
               </div>
             </div>
 
-            {/* Return Date */}
-            {tripType === 'roundtrip' && (
-              <div className="search-field date-field">
-                <label>Return <FaChevronDown className="dropdown-icon" /></label>
-                <div className="date-input">
-                  <input
-                    type="date"
-                    value={returnDate}
-                    onChange={(e) => setReturnDate(e.target.value)}
-                    min={departureDate || new Date().toISOString().split('T')[0]}
-                  />
-                  <div className="date-display">
-                    {returnDate ? (
-                      <>
-                        <span className="date-number">{formatDate(returnDate).day}</span>
-                        <span className="date-month">{formatDate(returnDate).month}'{formatDate(returnDate).year}</span>
-                        <span className="date-day">{formatDate(returnDate).dayName}</span>
-                      </>
-                    ) : (
-                      <div className="add-return">
-                        <span>Tap to add a return</span>
-                        <span>date for bigger discounts</span>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Travelers & Class */}
+            {/* Travelers */}
             <div className="search-field travelers-field">
-              <label>Travellers & Class <FaChevronDown className="dropdown-icon" /></label>
+              <label>Travellers</label>
               <div className="travelers-input">
-                <div className="travelers-display">
-                  <span className="travelers-count">{getTotalTravelers()}</span>
-                  <span className="travelers-text">Traveller</span>
-                  <span className="class-text">Economy/Premium Economy</span>
-                </div>
+                <select
+                  value={passengerCount}
+                  onChange={(e) => setPassengerCount(Number(e.target.value))}
+                  style={{
+                    width: '100%',
+                    border: 'none',
+                    outline: 'none',
+                    fontSize: '16px',
+                    background: 'transparent',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                    <option key={n} value={n}>
+                      {n} {n === 1 ? 'Traveller' : 'Travellers'}
+                    </option>
+                  ))}
+                </select>
               </div>
-            </div>
-          </div>
-
-          {/* Special Fares */}
-          <div className="special-fares-section">
-            <div className="special-fares-label">SPECIAL FARES</div>
-            <div className="special-fares-options">
-              {specialFares.map((fare) => (
-                <label key={fare.id} className={`fare-option ${specialFare === fare.id ? 'active' : ''}`}>
-                  <input
-                    type="radio"
-                    name="specialFare"
-                    value={fare.id}
-                    checked={specialFare === fare.id}
-                    onChange={(e) => setSpecialFare(e.target.value)}
-                  />
-                  <div className="fare-content">
-                    <span className="fare-label">
-                      {fare.label}
-                      {fare.badge && <Badge bg="danger" className="ms-1">{fare.badge}</Badge>}
-                    </span>
-                    <span className="fare-description">{fare.description}</span>
-                  </div>
-                </label>
-              ))}
             </div>
           </div>
 

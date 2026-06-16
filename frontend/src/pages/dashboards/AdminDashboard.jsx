@@ -2,44 +2,41 @@ import React, { useEffect, useState } from "react";
 import "../../styles/AdminNavbar.css";
 import "../../styles/AdminDashboard.css";
 import { FaPlane, FaMoneyBillWave, FaClipboardList } from "react-icons/fa";
-import {
-  getAirlineCount,
-  getFlightCount,
-  getBookingCount,
-  getTotalRevenue,
-} from "../../services/admin/adminDashboardServices";
+import { getDashboardStats } from "../../services/admin/adminDashboardServices";
 import { Outlet } from "react-router-dom";
 import PerformanceChart from "./../../components/PerformanceChart";
 
 function AdminDashboard() {
-  const [countAirline, setCountAirline] = useState(0);
-  const [countFlight, setCountFlight] = useState(0);
-  const [countBooking, setCountBooking] = useState(0);
-  const [totalAmountBooking, setTotalAmountBooking] = useState(0);
+  const [stats, setStats] = useState({
+    airlineCount: 0,
+    flightCount: 0,
+    bookingCount: 0,
+    totalRevenue: 0,
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const loadAirlineCount = async () => {
+    const loadStats = async () => {
       try {
-        const airline = await getAirlineCount();
-        setCountAirline(airline);
-
-        const addFlight = await getFlightCount();
-        setCountFlight(addFlight);
-
-        setCountBooking(await getBookingCount());
-
-        setTotalAmountBooking(await getTotalRevenue());
+        const data = await getDashboardStats();
+        setStats(data);
       } catch (err) {
-        setError("Failed to load airline count");
-        console.error(err);
+        setError(err.message || "Failed to load dashboard data");
       } finally {
         setLoading(false);
       }
     };
-    loadAirlineCount();
+    loadStats();
   }, []);
+
+  const formatCurrency = (amount) => {
+    return Number(amount).toLocaleString("en-IN", {
+      style: "currency",
+      currency: "INR",
+      maximumFractionDigits: 0,
+    });
+  };
 
   return (
     <div className="admin-layout">
@@ -63,9 +60,9 @@ function AdminDashboard() {
                   </h6>
                   <div>
                     <div className="h4 mb-0 font-weight-bold">
-                      {countAirline}
+                      {stats.airlineCount}
                     </div>
-                    <small className="text-muted">Alindia lastly added</small>
+                    <small className="text-muted">Active airlines</small>
                   </div>
                 </div>
               </div>
@@ -83,10 +80,10 @@ function AdminDashboard() {
                   <h6 className="card-title text-muted text-uppercase">
                     Available Flights
                   </h6>
-                  <div className="h4 mb-0 font-weight-bold">{countFlight}</div>
-                  <small className="text-muted">
-                    Flight No: 108 lastly added
-                  </small>
+                  <div className="h4 mb-0 font-weight-bold">
+                    {stats.flightCount}
+                  </div>
+                  <small className="text-muted">Registered flights</small>
                 </div>
               </div>
             </div>
@@ -103,8 +100,10 @@ function AdminDashboard() {
                   <h6 className="card-title text-muted text-uppercase">
                     Total Bookings
                   </h6>
-                  <div className="h4 mb-0 font-weight-bold">{countBooking}</div>
-                  <small className="text-muted">From 19 registrations</small>
+                  <div className="h4 mb-0 font-weight-bold">
+                    {stats.bookingCount}
+                  </div>
+                  <small className="text-muted">All time bookings</small>
                 </div>
               </div>
             </div>
@@ -122,9 +121,9 @@ function AdminDashboard() {
                     Total Earnings
                   </h6>
                   <div className="h4 mb-0 font-weight-bold">
-                    {totalAmountBooking}
+                    {formatCurrency(stats.totalRevenue)}
                   </div>
-                  <small className="text-muted">Today: INR 16,004</small>
+                  <small className="text-muted">Confirmed bookings</small>
                 </div>
               </div>
             </div>
@@ -139,18 +138,10 @@ function AdminDashboard() {
                 <h6 className="m-0 font-weight-bold text-primary">
                   Performance Overview
                 </h6>
-                <div className="dropdown no-arrow">
-                  <button className="btn btn-sm dropdown-toggle" type="button">
-                    This Month
-                  </button>
-                </div>
               </div>
               <div className="card-body">
                 <div className="chart-area">
                   <div className="performance-overview">
-                    <h4 style={{ color: "#007bff", marginLeft: "1rem" }}>
-                      Performance Overview
-                    </h4>
                     <PerformanceChart />
                   </div>
                 </div>
@@ -163,7 +154,7 @@ function AdminDashboard() {
       <footer className="sticky-footer bg-white">
         <div className="container my-auto">
           <div className="copyright text-center my-auto">
-            <span>Copyright © sunbeam@2025</span>
+            <span>Copyright &copy; sunbeam@2025</span>
           </div>
         </div>
       </footer>

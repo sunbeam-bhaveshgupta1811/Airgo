@@ -1,288 +1,266 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button, Table, Form, InputGroup, Modal } from "react-bootstrap";
+import { toast } from "react-toastify";
 import "bootstrap/dist/css/bootstrap.min.css";
-import { useNavigate } from "react-router-dom";
+import {
+  fetchAllFlights,
+  fetchAirlinesForDropdown,
+  fetchAirportsForDropdown,
+  createFlight,
+} from "../../services/admin/AddFlightService";
 
 function AddFlight() {
   const [search, setSearch] = useState("");
+  const [flights, setFlights] = useState([]);
+  const [airlines, setAirlines] = useState([]);
+  const [airports, setAirports] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [formData, setFormData] = useState({
-    airline: "",
     flightNumber: "",
-    flightDate: "",
-    hasEconomy: true,
-    hasBusiness: true,
-    hasFirstClass: true,
-    economySeats: "",
-    businessSeats: "",
-    firstClassSeats: "",
-    source: "",
-    destination: "",
-    departureDateTime: "",
-    arrivalDateTime: "",
-    economyCost: "",
-    businessCost: "",
-    firstClassCost: ""
+    airlineId: "",
+    originAirportId: "",
+    destinationAirportId: "",
+    durationMinutes: "",
   });
 
-  const flights = [
-    {
-      id: 40,
-      airline: "Emirates",
-      flightNo: 102,
-      src: "NSK",
-      dest: "BOM",
-      adt: "2024-05-22 23:30:00",
-      ddt: "2024-05-23 01:25:00",
-      cec: 1002,
-      cbc: 8002,
-      cfc: 5002,
-      status: "",
-    },
-    {
-      id: 50,
-      airline: "bke",
-      flightNo: 103,
-      src: "NSK",
-      dest: "BOM",
-      adt: "2024-05-22 23:30:00",
-      ddt: "2024-05-23 01:25:00",
-      cec: 1002,
-      cbc: 8002,
-      cfc: 5002,
-      status: "",
-    },
-  ];
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [flightData, airlineData, airportData] = await Promise.all([
+        fetchAllFlights(),
+        fetchAirlinesForDropdown(),
+        fetchAirportsForDropdown(),
+      ]);
+      setFlights(flightData);
+      setAirlines(airlineData);
+      setAirports(airportData);
+    } catch (error) {
+      toast.error("Failed to load data");
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const airlines = [
-    { id: "AI", name: "Air India" },
-    { id: "SG", name: "SpiceJet" },
-    { id: "I5", name: "AirAsia India" },
-    { id: "6E", name: "IndiGo" }
-  ];
+  useEffect(() => {
+    loadData();
+  }, []);
 
-  const airports = [
-    { code: "NSK", name: "Nashik" },
-    { code: "BOM", name: "Mumbai" },
-    { code: "DEL", name: "Delhi" },
-    { code: "BLR", name: "Bangalore" }
-  ];
-
-  const filteredFlights = flights.filter((flight) =>
-    flight.flightNo.toString().includes(search)
+  const filteredFlights = flights.filter(
+    (flight) =>
+      (flight.flightNumber || "").toLowerCase().includes(search.toLowerCase()) ||
+      (flight.airlineName || "").toLowerCase().includes(search.toLowerCase())
   );
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: type === "checkbox" ? checked : value
-    }));
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Flight scheduled:", formData);
-    setShowModal(false);
+
+    if (formData.originAirportId === formData.destinationAirportId) {
+      toast.error("Origin and destination cannot be the same");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      await createFlight({
+        flightNumber: formData.flightNumber,
+        airlineId: Number(formData.airlineId),
+        originAirportId: Number(formData.originAirportId),
+        destinationAirportId: Number(formData.destinationAirportId),
+        durationMinutes: Number(formData.durationMinutes),
+      });
+      toast.success("Flight added successfully!");
+      setShowModal(false);
+      setFormData({
+        flightNumber: "",
+        airlineId: "",
+        originAirportId: "",
+        destinationAirportId: "",
+        durationMinutes: "",
+      });
+      loadData();
+    } catch (error) {
+      const msg = error.response?.data?.message || "Failed to add flight";
+      toast.error(msg);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
-  const navigate = useNavigate()
-
-  const addflightscheduler = () =>{
-    navigate("/admin/scheduleflight")
-  }
+  const filteredDestinations = airports.filter(
+    (a) => String(a.id) !== String(formData.originAirportId)
+  );
 
   return (
     <div className="container mt-4">
       <div className="d-flex justify-content-between align-items-center mb-3">
-        <h3>Add Schedule Flight</h3>
+        <h3>Flight Management</h3>
+        <Button variant="primary" onClick={() => setShowModal(true)}>
+          + Add New Flight
+        </Button>
       </div>
 
       <InputGroup className="mb-3">
         <Form.Control
-          placeholder="Search by flight number"
+          placeholder="Search by flight number or airline..."
           value={search}
           onChange={(e) => setSearch(e.target.value)}
         />
-        <Button variant="outline-secondary">Search</Button>
       </InputGroup>
-      <small className="text-muted">Search flight details using flight number</small>
 
-      <Table striped bordered hover responsive className="mt-3 text-center">
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>Airline</th>
-            <th>Flight No</th>
-            <th>From</th>
-            <th>To</th>
-            <th>Arrival</th>
-            <th>Departure</th>
-            <th>Economy</th>
-            <th>Business</th>
-            <th>First Class</th>
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredFlights.map((flight) => (
-            <tr key={flight.id}>
-              <td>{flight.id}</td>
-              <td>{flight.airline}</td>
-              <td>{flight.flightNo}</td>
-              <td>{flight.src}</td>
-              <td>{flight.dest}</td>
-              <td>{flight.adt}</td>
-              <td>{flight.ddt}</td>
-              <td>₹{flight.cec}</td>
-              <td>{flight.cbc }</td>
-              <td>{flight.cfc }</td>
-              <td>
-                <Button
-                onClick={addflightscheduler}
-                >
-                <span className="badge bg-primary">Scheduled</span>
-                </Button>
-              </td>
+      {loading ? (
+        <div className="text-center">
+          <div className="spinner-border text-primary"></div>
+          <p>Loading flights...</p>
+        </div>
+      ) : (
+        <Table striped bordered hover responsive className="mt-3 text-center">
+          <thead className="table-dark">
+            <tr>
+              <th>Sr.No</th>
+              <th>Flight No</th>
+              <th>Airline</th>
+              <th>Origin</th>
+              <th>Destination</th>
+              <th>Duration</th>
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {filteredFlights.length === 0 ? (
+              <tr>
+                <td colSpan="7">No flights found</td>
+              </tr>
+            ) : (
+              filteredFlights.map((flight, index) => (
+                <tr key={flight.id}>
+                  <td>{index + 1}</td>
+                  <td>{flight.flightNumber}</td>
+                  <td>{flight.airlineName}</td>
+                  <td>{flight.originCode} - {flight.originCity}</td>
+                  <td>{flight.destinationCode} - {flight.destinationCity}</td>
+                  <td>
+                    {flight.durationMinutes
+                      ? `${Math.floor(flight.durationMinutes / 60)}h ${flight.durationMinutes % 60}m`
+                      : "N/A"}
+                  </td>
+                  <td>
+                    <span
+                      className={`badge ${
+                        flight.status === "ACTIVE" ? "bg-success" : "bg-secondary"
+                      }`}
+                    >
+                      {flight.status}
+                    </span>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </Table>
+      )}
 
       {/* Add Flight Modal */}
       <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>Schedule New Flight</Modal.Title>
+          <Modal.Title>Add New Flight</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form onSubmit={handleSubmit}>
             <div className="row g-3">
               <div className="col-md-6">
-                <Form.Label>Airline</Form.Label>
-                <Form.Select
-                  name="airline"
-                  value={formData.airline}
-                  onChange={handleChange}
-                  required
-                >
-                  <option value="">Select Airline</option>
-                  {airlines.map(airline => (
-                    <option key={airline.id} value={airline.id}>{airline.name}</option>
-                  ))}
-                </Form.Select>
-              </div>
-
-              <div className="col-md-6">
-                <Form.Label>Flight Number</Form.Label>
+                <Form.Label>Flight Number *</Form.Label>
                 <Form.Control
                   type="text"
                   name="flightNumber"
                   value={formData.flightNumber}
                   onChange={handleChange}
+                  placeholder="e.g. 6E-204"
                   required
                 />
               </div>
 
               <div className="col-md-6">
-                <Form.Label>Source</Form.Label>
+                <Form.Label>Airline *</Form.Label>
                 <Form.Select
-                  name="source"
-                  value={formData.source}
+                  name="airlineId"
+                  value={formData.airlineId}
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select Source</option>
-                  {airports.map(airport => (
-                    <option key={airport.code} value={airport.code}>
-                      {airport.name} ({airport.code})
+                  <option value="">-- Select Airline --</option>
+                  {airlines.map((airline) => (
+                    <option key={airline.id} value={airline.id}>
+                      {airline.name} ({airline.code})
                     </option>
                   ))}
                 </Form.Select>
               </div>
 
               <div className="col-md-6">
-                <Form.Label>Destination</Form.Label>
+                <Form.Label>Origin Airport *</Form.Label>
                 <Form.Select
-                  name="destination"
-                  value={formData.destination}
+                  name="originAirportId"
+                  value={formData.originAirportId}
                   onChange={handleChange}
                   required
                 >
-                  <option value="">Select Destination</option>
-                  {airports
-                    .filter(airport => airport.code !== formData.source)
-                    .map(airport => (
-                      <option key={airport.code} value={airport.code}>
-                        {airport.name} ({airport.code})
-                      </option>
-                    ))}
+                  <option value="">-- Select Origin --</option>
+                  {airports.map((airport) => (
+                    <option key={`origin-${airport.id}`} value={airport.id}>
+                      {airport.city} ({airport.code})
+                    </option>
+                  ))}
                 </Form.Select>
               </div>
 
               <div className="col-md-6">
-                <Form.Label>Departure Date & Time</Form.Label>
-                <Form.Control
-                  type="datetime-local"
-                  name="departureDateTime"
-                  value={formData.departureDateTime}
+                <Form.Label>Destination Airport *</Form.Label>
+                <Form.Select
+                  name="destinationAirportId"
+                  value={formData.destinationAirportId}
                   onChange={handleChange}
                   required
-                />
+                  disabled={!formData.originAirportId}
+                >
+                  <option value="">-- Select Destination --</option>
+                  {filteredDestinations.map((airport) => (
+                    <option key={`dest-${airport.id}`} value={airport.id}>
+                      {airport.city} ({airport.code})
+                    </option>
+                  ))}
+                </Form.Select>
               </div>
 
               <div className="col-md-6">
-                <Form.Label>Arrival Date & Time</Form.Label>
+                <Form.Label>Duration (minutes) *</Form.Label>
                 <Form.Control
-                  type="datetime-local"
-                  name="arrivalDateTime"
-                  value={formData.arrivalDateTime}
+                  type="number"
+                  name="durationMinutes"
+                  value={formData.durationMinutes}
                   onChange={handleChange}
+                  placeholder="e.g. 135"
+                  min="1"
                   required
                 />
               </div>
 
-              <div className="col-12">
-                <Form.Check
-                  type="checkbox"
-                  label="Economy Class"
-                  name="hasEconomy"
-                  checked={formData.hasEconomy}
-                  onChange={handleChange}
-                />
-                {formData.hasEconomy && (
-                  <div className="row mt-2">
-                    <div className="col-md-6">
-                      <Form.Label>Number of Seats</Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="economySeats"
-                        value={formData.economySeats}
-                        onChange={handleChange}
-                        min="1"
-                        required
-                      />
-                    </div>
-                    <div className="col-md-6">
-                      <Form.Label>Seat Cost (₹)</Form.Label>
-                      <Form.Control
-                        type="number"
-                        name="economyCost"
-                        value={formData.economyCost}
-                        onChange={handleChange}
-                        min="0"
-                        step="100"
-                        required
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Similar sections for Business and First Class */}
-
-              <div className="col-12 mt-3">
-                <Button variant="primary" type="submit">
-                  Schedule Flight
+              <div className="col-12 mt-3 d-flex gap-2">
+                <Button variant="primary" type="submit" disabled={submitting}>
+                  {submitting ? "Adding..." : "Add Flight"}
+                </Button>
+                <Button
+                  variant="secondary"
+                  onClick={() => setShowModal(false)}
+                  disabled={submitting}
+                >
+                  Cancel
                 </Button>
               </div>
             </div>

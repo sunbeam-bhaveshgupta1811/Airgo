@@ -48,18 +48,19 @@ public class SeatAssignmentServiceImpl implements SeatAssignmentService {
             return;
         }
 
-        List<String> occupiedSeats = getOccupiedSeats(booking);
-        List<String> availableSeats = generateAvailableEconomySeats(occupiedSeats);
+        Set<String> occupiedSeats = new HashSet<>(getOccupiedSeats(booking));
+        List<String> availableSeats = generateAvailableSeats(occupiedSeats);
 
-        for (int i = 0; i < passengers.size(); i++) {
-            Passenger passenger = passengers.get(i);
+        int seatIndex = 0;
+        for (Passenger passenger : passengers) {
             if (passenger.getSeatNumber() != null && !passenger.getSeatNumber().isBlank()) {
                 continue;
             }
-            if (i < availableSeats.size()) {
-                passenger.setSeatNumber(availableSeats.get(i));
+            if (seatIndex < availableSeats.size()) {
+                passenger.setSeatNumber(availableSeats.get(seatIndex++));
             } else {
-                passenger.setSeatNumber("STANDBY-" + (i + 1));
+                passenger.setSeatNumber("STANDBY-" + (seatIndex + 1));
+                seatIndex++;
                 log.warn("No seat available for passenger {} in booking {}",
                         passenger.getId(), booking.getBookingReference());
             }
@@ -84,7 +85,7 @@ public class SeatAssignmentServiceImpl implements SeatAssignmentService {
                     "Invalid seat format: " + seat + ". Use format like 12A (rows 1-40, columns A-F)");
         }
 
-        List<String> occupied = getOccupiedSeats(passenger.getBooking());
+        Set<String> occupied = new HashSet<>(getOccupiedSeats(passenger.getBooking()));
         if (occupied.contains(seat)
                 && !seat.equals(passenger.getSeatNumber())) {
             throw new BadRequestException("Seat " + seat + " is already occupied");
@@ -185,9 +186,9 @@ public class SeatAssignmentServiceImpl implements SeatAssignmentService {
                 booking.getFlightSchedule().getId());
     }
 
-    private List<String> generateAvailableEconomySeats(List<String> occupied) {
+    private List<String> generateAvailableSeats(Set<String> occupied) {
         List<String> available = new ArrayList<>();
-        for (int row = ECONOMY_START; row <= ECONOMY_END; row++) {
+        for (int row = BUSINESS_START; row <= ECONOMY_END; row++) {
             for (String col : COLUMNS) {
                 String seat = row + col;
                 if (!occupied.contains(seat)) {

@@ -9,6 +9,7 @@ const getAuthHeaders = () => {
     },
   }
 }
+
 export const fetchAllAirlines = async () => {
   try {
     const response = await axios.get(
@@ -17,37 +18,28 @@ export const fetchAllAirlines = async () => {
     )
     return response.data?.data || []
   } catch (error) {
-    console.error('Error fetching airlines:', error)
-    return []
+    const msg = error.response?.data?.message || 'Failed to fetch airlines'
+    throw new Error(msg)
   }
 }
+
 export const fetchActiveAirlines = async () => {
   try {
     const response = await axios.get(`${config.serverURL}/api/airlines`)
     return response.data?.data || []
   } catch (error) {
-    console.error('Error fetching active airlines:', error)
-    return []
+    const msg = error.response?.data?.message || 'Failed to fetch active airlines'
+    throw new Error(msg)
   }
 }
-export const addAirline = async (airlineData, noOfFlights = 0) => {
-  const normalizedAirline = typeof airlineData === 'string'
-    ? {
-        name: airlineData,
-        code: airlineData.trim().slice(0, 3).toUpperCase(),
-        country: 'India',
-        noOfFlights
-      }
-    : airlineData
 
+export const addAirline = async (airlineData) => {
   const payload = {
-    name: normalizedAirline.name,
-    code: normalizedAirline.code,
-    country: normalizedAirline.country,
-    noOfFlights: normalizedAirline.noOfFlights || 0,
-    contactEmail: normalizedAirline.contactEmail || '',
-    contactPhone: normalizedAirline.contactPhone || '',
-    logoUrl: normalizedAirline.logoUrl || ''
+    name: airlineData.name,
+    code: airlineData.code,
+    country: airlineData.country,
+    contactEmail: airlineData.contactEmail || '',
+    contactPhone: airlineData.contactPhone || '',
   }
 
   try {
@@ -58,10 +50,11 @@ export const addAirline = async (airlineData, noOfFlights = 0) => {
     )
     return response.data
   } catch (error) {
-    console.error('Error adding airline:', error)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to add airline'
+    throw new Error(msg)
   }
 }
+
 export const updateAirline = async (id, airlineData) => {
   const payload = {
     name: airlineData.name,
@@ -69,7 +62,6 @@ export const updateAirline = async (id, airlineData) => {
     country: airlineData.country,
     contactEmail: airlineData.contactEmail || '',
     contactPhone: airlineData.contactPhone || '',
-    logoUrl: airlineData.logoUrl || ''
   }
 
   try {
@@ -80,8 +72,8 @@ export const updateAirline = async (id, airlineData) => {
     )
     return response.data
   } catch (error) {
-    console.error('Error updating airline:', error)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to update airline'
+    throw new Error(msg)
   }
 }
 
@@ -94,8 +86,8 @@ export const deactivateAirline = async (id) => {
     )
     return response.data
   } catch (error) {
-    console.error('Error deactivating airline:', error)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to deactivate airline'
+    throw new Error(msg)
   }
 }
 
@@ -108,7 +100,7 @@ export const reactivateAirline = async (id) => {
     )
     return response.data
   } catch (error) {
-    console.error('Error reactivating airline:', error)
-    throw error
+    const msg = error.response?.data?.message || 'Failed to reactivate airline'
+    throw new Error(msg)
   }
 }

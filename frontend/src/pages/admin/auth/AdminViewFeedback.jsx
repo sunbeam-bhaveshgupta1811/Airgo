@@ -1,58 +1,42 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { config } from "../../../../config";
 import "bootstrap/dist/css/bootstrap.min.css";
+
+const getAuthHeaders = () => ({
+  headers: {
+    Authorization: `Bearer ${sessionStorage.getItem("jwt")}`,
+  },
+});
 
 const AdminFeedbackTable = () => {
   const [feedbackList, setFeedbackList] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Simulate API call using useEffect
   useEffect(() => {
-    // Dummy data (simulating what backend would return)
-    const dummyFeedback = [
-      {
-        feedback_id: 1,
-        user_name: "John Doe",
-        booking_id: 101,
-        flight_name: "AI-202 Delhi → Mumbai",
-        rating: 5,
-        comments: "Excellent service!",
-        submitted_at: "2025-08-04T10:20:00"
-      },
-      {
-        feedback_id: 2,
-        user_name: "Alice Smith",
-        booking_id: 102,
-        flight_name: "AI-305 Bangalore → Dubai",
-        rating: 4,
-        comments: "Very good experience, but food can be improved.",
-        submitted_at: "2025-08-03T14:10:00"
-      },
-      {
-        feedback_id: 3,
-        user_name: "Michael Johnson",
-        booking_id: 103,
-        flight_name: "AI-101 New York → London",
-        rating: 3,
-        comments: "Average experience.",
-        submitted_at: "2025-08-02T09:30:00"
+    const fetchFeedback = async () => {
+      try {
+        const response = await axios.get(
+          `${config.serverURL}/admin/feedback`,
+          getAuthHeaders()
+        );
+        setFeedbackList(response.data || []);
+      } catch (err) {
+      } finally {
+        setLoading(false);
       }
-    ];
-
-    // Simulate API delay
-    setTimeout(() => {
-      setFeedbackList(dummyFeedback);
-      setLoading(false);
-    }, 1000); // 1 second delay
+    };
+    fetchFeedback();
   }, []);
 
   return (
     <div className="container mt-4">
-      <h2 className="text-center mb-3">All Customer Feedback (Dummy Data)</h2>
+      <h2 className="text-center mb-3">All Customer Feedback</h2>
 
       {loading ? (
         <div className="text-center">
           <div className="spinner-border text-primary"></div>
-          <p>Loading dummy data...</p>
+          <p>Loading feedback...</p>
         </div>
       ) : feedbackList.length === 0 ? (
         <div className="alert alert-info text-center">No feedback records found</div>
@@ -61,10 +45,9 @@ const AdminFeedbackTable = () => {
           <table className="table table-striped table-bordered shadow-sm">
             <thead className="table-dark">
               <tr>
-                <th>Feedback ID</th>
-                <th>User Name</th>
-                <th>Booking ID</th>
-                <th>Flight Name</th>
+                <th>ID</th>
+                <th>User</th>
+                <th>Booking Ref</th>
                 <th>Rating</th>
                 <th>Comments</th>
                 <th>Submitted At</th>
@@ -72,18 +55,17 @@ const AdminFeedbackTable = () => {
             </thead>
             <tbody>
               {feedbackList.map((fb) => (
-                <tr key={fb.feedback_id}>
-                  <td>{fb.feedback_id}</td>
-                  <td>{fb.user_name}</td>
-                  <td>{fb.booking_id}</td>
-                  <td>{fb.flight_name}</td>
+                <tr key={fb.id}>
+                  <td>{fb.id}</td>
+                  <td>{fb.userName || "N/A"}</td>
+                  <td>{fb.bookingReference || fb.bookingId}</td>
                   <td>
                     {[...Array(5)].map((_, i) => (
                       <span key={i} style={{ color: i < fb.rating ? "#FFD700" : "#ccc" }}>★</span>
                     ))}
                   </td>
                   <td>{fb.comments || "No comments"}</td>
-                  <td>{new Date(fb.submitted_at).toLocaleString()}</td>
+                  <td>{fb.createdAt ? new Date(fb.createdAt).toLocaleString() : "N/A"}</td>
                 </tr>
               ))}
             </tbody>

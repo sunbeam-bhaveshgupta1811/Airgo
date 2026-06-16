@@ -1,63 +1,82 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { config } from "../../../config";
 import "../../styles/PassengerList.css";
 import "bootstrap/dist/css/bootstrap.min.css";
 
+const getAuthHeaders = () => {
+  const token = sessionStorage.getItem("jwt");
+  return {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  };
+};
+
 const PassengersList = () => {
   const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("all");
-  const passengers = [
-    {
-      id: 1,
-      name: "John Doe",
-      mobile: "+1 555-123-4567",
-      dob: "1985-05-15",
-      gender: "Male",
-      booking: "FL-7890",
-    },
-    {
-      id: 2,
-      name: "Jane Smith",
-      mobile: "+1 555-987-6543",
-      dob: "1990-08-22",
-      gender: "Female",
-      booking: "FL-6543",
-    },
-    {
-      id: 3,
-      name: "Robert Johnson",
-      mobile: "+1 555-456-7890",
-      dob: "1978-11-30",
-      gender: "Male",
-      booking: "FL-3210",
-    },
-  ];
+  const [allPassengers, setAllPassengers] = useState([]);
+  const [passengers, setPassengers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleSearch = () => {
-    console.log("Searching for:", searchTerm);
-    // Filter logic would go here
+  const fetchPassengers = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(
+        `${config.serverURL}/admin/bookings`,
+        getAuthHeaders()
+      );
+      const bookings = response.data?.data || [];
+
+      // Flatten: extract each passenger from each booking
+      const passengerList = [];
+      bookings.forEach((booking) => {
+        if (booking.passengers && booking.passengers.length > 0) {
+          booking.passengers.forEach((p) => {
+            passengerList.push({
+              id: p.id,
+              name: `${p.firstName} ${p.lastName}`,
+              gender: p.gender,
+              dob: p.dateOfBirth,
+              seatNumber: p.seatNumber || "Not Assigned",
+              booking: booking.bookingReference,
+              flightNumber: booking.flightNumber,
+              status: booking.status,
+            });
+          });
+        }
+      });
+
+      setAllPassengers(passengerList);
+      setPassengers(passengerList);
+    } catch (error) {
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleFilterChange = (e) => {
-    setFilter(e.target.value);
-    console.log("Filter changed to:", e.target.value);
+  useEffect(() => {
+    fetchPassengers();
+  }, []);
+
+  const handleSearch = () => {
+    if (!searchTerm) {
+      setPassengers(allPassengers);
+      return;
+    }
+
+    const filtered = allPassengers.filter(
+      (p) =>
+        p.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.booking.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        p.flightNumber.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setPassengers(filtered);
   };
 
   return (
     <>
       <div className="passengers-card">
-        <div className="top-right-controls">
-          <select
-            value={filter}
-            onChange={handleFilterChange}
-            className="filter-dropdown"
-          >
-            <option value="all">All Passengers</option>
-            <option value="today">Today</option>
-            <option value="week">This Week</option>
-            <option value="month">This Month</option>
-          </select>
-        </div>
-
         {/* Heading */}
         <h1 className="passengers-heading">Passengers</h1>
 
@@ -65,7 +84,7 @@ const PassengersList = () => {
         <div className="search-container">
           <input
             type="text"
-            placeholder="Search passengers..."
+            placeholder="Search by name, booking ref, or flight..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="search-input"
@@ -77,15 +96,20 @@ const PassengersList = () => {
 
         {/* Passengers table */}
         <div className="table-container">
+          {loading && (
+            <div className="alert alert-info">Loading passengers...</div>
+          )}
           <table className="passengers-table">
             <thead>
               <tr>
                 <th>Sr.No</th>
                 <th>Name</th>
-                <th>Mobile No.</th>
-                <th>DOB</th>
                 <th>Gender</th>
-                <th>Booking</th>
+                <th>DOB</th>
+                <th>Seat</th>
+                <th>Flight</th>
+                <th>Booking Ref</th>
+                <th>Status</th>
               </tr>
             </thead>
             <tbody>
@@ -93,12 +117,21 @@ const PassengersList = () => {
                 <tr key={passenger.id}>
                   <td>{index + 1}</td>
                   <td>{passenger.name}</td>
-                  <td>{passenger.mobile}</td>
-                  <td>{passenger.dob}</td>
                   <td>{passenger.gender}</td>
+                  <td>{passenger.dob}</td>
+                  <td>{passenger.seatNumber}</td>
+                  <td>{passenger.flightNumber}</td>
                   <td>{passenger.booking}</td>
+                  <td>{passenger.status}</td>
                 </tr>
               ))}
+              {!loading && passengers.length === 0 && (
+                <tr>
+                  <td colSpan="8" style={{ textAlign: "center" }}>
+                    No passengers found
+                  </td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

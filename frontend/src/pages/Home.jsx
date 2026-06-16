@@ -3,11 +3,7 @@ import { Outlet, useLocation } from "react-router-dom";
 import { Container, Row, Col, Card, Button, Badge } from "react-bootstrap";
 import {
   FaPlane,
-  FaHotel,
-  FaCar,
-  FaUmbrella,
   FaStar,
-  FaArrowRight,
   FaGlobe,
   FaShieldAlt,
   FaClock,
@@ -26,25 +22,25 @@ function Home() {
     {
       icon: FaPlane,
       title: "Flight Booking",
-      description: "Compare and book flights from 500+ airlines worldwide",
+      description: "Search and book flights from multiple airlines easily",
       color: "#667eea",
     },
     {
-      icon: FaHotel,
-      title: "Hotel Reservations",
-      description: "Find perfect accommodations from budget to luxury",
+      icon: FaShieldAlt,
+      title: "Secure Payments",
+      description: "Pay safely with credit card, debit card, UPI, or net banking",
       color: "#f093fb",
     },
     {
-      icon: FaCar,
-      title: "Car Rentals",
-      description: "Rent cars from trusted providers at your destination",
+      icon: FaClock,
+      title: "Instant Confirmation",
+      description: "Get your e-ticket instantly after booking confirmation",
       color: "#4facfe",
     },
     {
-      icon: FaUmbrella,
-      title: "Travel Insurance",
-      description: "Protect your trip with comprehensive coverage",
+      icon: FaGlobe,
+      title: "Real-time Availability",
+      description: "Check live seat availability and updated flight schedules",
       color: "#43e97b",
     },
   ];
@@ -119,10 +115,10 @@ function Home() {
   ];
 
   const stats = [
-    { number: "10M+", label: "Happy Travelers" },
-    { number: "500+", label: "Airlines" },
-    { number: "1M+", label: "Hotels" },
-    { number: "24/7", label: "Support" },
+    { number: "1000+", label: "Flights Booked" },
+    { number: "50+", label: "Airlines" },
+    { number: "100+", label: "Destinations" },
+    { number: "24/7", label: "Customer Support" },
   ];
 
   return (
