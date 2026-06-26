@@ -1,11 +1,11 @@
 import React from 'react'
-import AdminNavbar from './../../components/AdminNavbar';
+import ManagerNavbar from '../../components/ManagerNavbar';
 import { Outlet } from 'react-router-dom';
 
-function AdminLayout() {
+function ManagerLayout() {
   return (
     <div style={{ minHeight: '100vh', background: '#f1f5f9' }}>
-      <AdminNavbar />
+      <ManagerNavbar />
       <main style={{ padding: '24px', maxWidth: 1400, margin: '0 auto' }}>
         <Outlet />
       </main>
@@ -13,4 +13,4 @@ function AdminLayout() {
   )
 }
 
-export default AdminLayout
+export default ManagerLayout
