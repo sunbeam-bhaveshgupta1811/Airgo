@@ -23,6 +23,7 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
     private final FlightScheduleDao scheduleDao;
     private final FlightDao flightDao;
     private final AirportDao airportDao;
+    private final KafkaProducerService kafkaProducerService;
 
     @Transactional
     public FlightScheduleResponseDto addSchedule(FlightScheduleRequestDto request) {
@@ -142,9 +143,35 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
                     "Invalid status. Allowed: SCHEDULED, DELAYED, CANCELLED, COMPLETED");
         }
 
+        String oldStatusStr = schedule.getStatus().name();
         schedule.setStatus(newStatus);
         FlightSchedule updated = scheduleDao.save(schedule);
         log.info("Schedule id {} status updated to {}", id, newStatus);
+
+        // Publish Kafka event for DELAYED or CANCELLED
+        if (newStatus == ScheduleStatus.DELAYED || newStatus == ScheduleStatus.CANCELLED) {
+            Flight f = updated.getFlight();
+            String adminEmail = org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication().getName();
+
+            com.airline.event.FlightStatusEvent event = com.airline.event.FlightStatusEvent.builder()
+                    .scheduleId(updated.getId())
+                    .flightNumber(f.getFlightNumber())
+                    .airlineName(f.getAirline().getName())
+                    .originCity(f.getOriginAirport().getCity())
+                    .originCode(f.getOriginAirport().getCode())
+                    .destinationCity(f.getDestinationAirport().getCity())
+                    .destinationCode(f.getDestinationAirport().getCode())
+                    .journeyDate(updated.getJourneyDate())
+                    .departureTime(updated.getDepartureTime())
+                    .oldStatus(oldStatusStr)
+                    .newStatus(newStatus.name())
+                    .changedBy(adminEmail)
+                    .timestamp(java.time.LocalDateTime.now())
+                    .build();
+            kafkaProducerService.publishFlightStatusEvent(event);
+        }
+
         return mapToResponse(updated);
     }
 

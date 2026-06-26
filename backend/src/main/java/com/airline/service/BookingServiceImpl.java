@@ -34,6 +34,7 @@ public class BookingServiceImpl implements BookingService{
     private final PaymentDao paymentDao;
     private final EmailService emailService;
     private final SeatBroadcastService seatBroadcastService;
+    private final KafkaProducerService kafkaProducerService;
 
     @Transactional
     public BookingResponseDto createBooking(BookingRequestDto request) {
@@ -85,6 +86,26 @@ public class BookingServiceImpl implements BookingService{
 
         Booking saved = bookingDao.save(booking);
         log.info("Booking created: {} by user {}", bookingRef, user.getEmail());
+
+        // Publish Kafka booking event
+        com.airline.event.BookingEvent bookingEvent = com.airline.event.BookingEvent.builder()
+                .bookingId(saved.getId())
+                .bookingReference(bookingRef)
+                .eventType("CREATED")
+                .userId(user.getId())
+                .userEmail(user.getEmail())
+                .userName(user.getFirstName() + " " + user.getLastName())
+                .flightNumber(schedule.getFlight().getFlightNumber())
+                .airlineName(schedule.getFlight().getAirline().getName())
+                .originCity(schedule.getFlight().getOriginAirport().getCity())
+                .destinationCity(schedule.getFlight().getDestinationAirport().getCity())
+                .journeyDate(schedule.getJourneyDate())
+                .departureTime(schedule.getDepartureTime())
+                .numberOfPassengers(request.getNumberOfPassengers())
+                .totalAmount(totalAmount)
+                .timestamp(java.time.LocalDateTime.now())
+                .build();
+        kafkaProducerService.publishBookingEvent(bookingEvent);
 
         return mapToResponse(saved);
     }
@@ -172,6 +193,26 @@ public class BookingServiceImpl implements BookingService{
         booking.setStatus(BookingStatus.CANCELLED);
         bookingDao.save(booking);
         seatBroadcastService.broadcastSeatUpdate(schedule.getId());
+
+        // Publish Kafka booking cancellation event
+        com.airline.event.BookingEvent bookingEvent = com.airline.event.BookingEvent.builder()
+                .bookingId(booking.getId())
+                .bookingReference(booking.getBookingReference())
+                .eventType("CANCELLED")
+                .userId(user.getId())
+                .userEmail(user.getEmail())
+                .userName(user.getFirstName() + " " + user.getLastName())
+                .flightNumber(booking.getFlightSchedule().getFlight().getFlightNumber())
+                .airlineName(booking.getFlightSchedule().getFlight().getAirline().getName())
+                .originCity(booking.getFlightSchedule().getFlight().getOriginAirport().getCity())
+                .destinationCity(booking.getFlightSchedule().getFlight().getDestinationAirport().getCity())
+                .journeyDate(booking.getFlightSchedule().getJourneyDate())
+                .departureTime(booking.getFlightSchedule().getDepartureTime())
+                .numberOfPassengers(booking.getNumberOfPassengers())
+                .totalAmount(booking.getTotalAmount())
+                .timestamp(java.time.LocalDateTime.now())
+                .build();
+        kafkaProducerService.publishBookingEvent(bookingEvent);
 
         Payment payment = paymentDao.findByBookingId(bookingId).orElse(null);
         emailService.sendBookingCancellationEmail(booking, payment);
