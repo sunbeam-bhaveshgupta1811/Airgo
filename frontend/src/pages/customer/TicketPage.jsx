@@ -10,6 +10,7 @@ import {
 } from 'react-icons/fa';
 import {
   getBookingById,
+  generateTicketPDF,
   sendBookingConfirmationEmail,
 } from '../../services/customer/ticketService';
 import '../../styles/TicketPage.css';
@@ -505,9 +506,20 @@ const TicketPage = () => {
       setPdfGenerating(true);
       setError('');
 
-      setError('PDF download feature will be available soon. Please use the print option for now.');
-    } catch {
-      setError('Failed to download ticket. Please try again.');
+      const blob = await generateTicketPDF(ticketData.bookingId);
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `ticket-${ticketData.pnr || ticketData.bookingId}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+      setSuccessMessage('Ticket downloaded successfully!');
+      setTimeout(() => setSuccessMessage(''), 3000);
+    } catch (err) {
+      setError(err.message || 'Failed to download ticket. Please try again.');
     } finally {
       setPdfGenerating(false);
     }

@@ -26,6 +26,7 @@ import AddAirline from "./pages/admin/AddAirline";
 import AddFlights from "./pages/admin/Addflight";
 import AddScheduleFlight from "./pages/admin/AddScheduleFlight";
 import FlightSearch from "./pages/customer/FlightSearch";
+import SeatSelection from "./pages/customer/SeatSelection";
 import AdminLayout from "./pages/admin/AdminLayout";
 import CustomerFeedback from "./pages/feedback/CustomerFeedback";
 import AdminLogin from "./pages/admin/auth/Login";
@@ -66,6 +67,14 @@ function App() {
             <Route index element={<FlightSearch />} />
             <Route path="flightlist" element={<FlightList />} />
             <Route path="flightsearch" element={<FlightSearch />} />
+            <Route
+              path="seatselection"
+              element={
+                <ProtectedRoute allowedRoles={["CUSTOMER", "USER"]}>
+                  <SeatSelection />
+                </ProtectedRoute>
+              }
+            />
             <Route
               path="passengerdetails"
               element={

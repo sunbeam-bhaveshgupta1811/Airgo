@@ -1,10 +1,15 @@
 package com.airline.controller;
 
+import com.airline.dao.BookingDao;
+import com.airline.dao.PaymentDao;
 import com.airline.dto.*;
+import com.airline.entity.Booking;
+import com.airline.entity.Payment;
 import com.airline.request.BookingRequestDto;
 import com.airline.request.PassengerRequestDto;
 import com.airline.response.BookingResponseDto;
 import com.airline.service.BookingService;
+import com.airline.util.TicketPdfGenerator;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -23,6 +28,9 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final BookingDao bookingDao;
+    private final PaymentDao paymentDao;
+    private final TicketPdfGenerator ticketPdfGenerator;
 
     @PostMapping("/bookings/create")
     public ResponseEntity<ApiResponse<BookingResponseDto>> createBooking(
@@ -64,6 +72,28 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.cancelBooking(id));
     }
 
+
+    @GetMapping("/bookings/{id}/pdf")
+    public ResponseEntity<byte[]> downloadTicketPdf(@PathVariable Long id) {
+        Booking booking = bookingDao.findById(id)
+                .orElseThrow(() -> new com.airline.exception.ResourceNotFoundException("Booking not found"));
+
+        // Ensure user can only download their own ticket (or admin)
+        String email = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication().getName();
+        if (!booking.getUser().getEmail().equals(email)) {
+            throw new com.airline.exception.BadRequestException("Not authorized to download this ticket");
+        }
+
+        Payment payment = paymentDao.findByBookingId(id).orElse(null);
+        byte[] pdfBytes = ticketPdfGenerator.generateTicket(booking, payment);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_PDF);
+        headers.setContentDispositionFormData("attachment", "ticket-" + booking.getBookingReference() + ".pdf");
+
+        return ResponseEntity.ok().headers(headers).body(pdfBytes);
+    }
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/bookings")
