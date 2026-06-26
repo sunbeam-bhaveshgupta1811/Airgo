@@ -16,4 +16,5 @@ public interface FlightScheduleService {
     FlightScheduleResponseDto getScheduleById(Long id);
     List<FlightScheduleResponseDto> getSchedulesByFlight(Long flightId);
     List<FlightScheduleResponseDto> searchFlights(FlightSearchRequestDto request);
+    com.airline.response.RoundTripSearchResponseDto searchRoundTrip(FlightSearchRequestDto request);
 }

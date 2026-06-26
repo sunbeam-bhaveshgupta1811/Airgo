@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaExchangeAlt, FaChevronDown } from 'react-icons/fa';
 import '../../styles/FlightSearch.css';
 import { useNavigate } from 'react-router-dom';
-import { searchFlights, fetchAirports } from '../../services/customer/flightSearchService';
+import { searchFlights, fetchAirports, searchRoundTripFlights } from '../../services/customer/flightSearchService';
 import { toast } from 'react-toastify';
 
 const FlightSearch = () => {
@@ -72,54 +72,83 @@ const FlightSearch = () => {
     setIsSearching(true);
 
     try {
-      const flights = await searchFlights(from, to, departureDate, passengerCount, {
-        travelClass,
-        minPrice: minPrice || undefined,
-        maxPrice: maxPrice || undefined,
-        sortBy,
-        tripType,
-        returnDate: tripType === 'ROUND_TRIP' ? returnDate : undefined
-      });
+      if (tripType === 'ROUND_TRIP') {
+        if (!returnDate) {
+          toast.error('Please select a return date for round trip.');
+          setIsSearching(false);
+          return;
+        }
 
-      if (!flights || flights.length === 0) {
-        toast.info('No flights found for your search criteria.');
-        return;
-      }
+        const result = await searchRoundTripFlights(from, to, departureDate, returnDate, passengerCount, {
+          travelClass, minPrice: minPrice || undefined, maxPrice: maxPrice || undefined, sortBy
+        });
 
-      const transformedFlights = flights.map((flight) => ({
-        id: flight.scheduleId || flight.id,
-        scheduleId: flight.scheduleId || flight.id,
-        flightNumber: flight.flightNo || flight.flightNumber,
-        airline: flight.airlineName,
-        source: flight.fromLocation || flight.originCity,
-        destination: flight.toLocation || flight.destinationCity,
-        departureTime: flight.departureTime,
-        arrivalTime: flight.arrivalTime,
-        duration: calculateDuration(flight.departureTime, flight.arrivalTime),
-        journeyDate: flight.journeyDate || departureDate,
-        prices: {
-          economy: flight.economyFare || flight.price,
-          business: flight.businessFare,
-          firstClass: flight.firstFare,
-        },
-        seatsAvailable: {
-          economy: flight.availableEconomySeats || flight.availableSeats,
-          business: flight.availableBusinessSeats,
-          firstClass: flight.availableFirstSeats,
-        },
-      }));
+        const transformFlights = (flights) => (flights || []).map((flight) => ({
+          id: flight.id,
+          scheduleId: flight.id,
+          flightNumber: flight.flightNumber,
+          airline: flight.airlineName,
+          source: flight.originCity,
+          destination: flight.destinationCity,
+          departureTime: flight.departureTime,
+          arrivalTime: flight.arrivalTime,
+          duration: flight.durationFormatted || calculateDuration(flight.departureTime, flight.arrivalTime),
+          journeyDate: flight.journeyDate || departureDate,
+          prices: { economy: flight.price },
+          seatsAvailable: { economy: flight.availableSeats },
+        }));
 
-      navigate('/customer/flightlist', {
-        state: {
-          flights: transformedFlights,
-          searchParams: {
-            from,
-            to,
-            departDate: departureDate,
-            passengers: passengerCount,
+        const outbound = transformFlights(result.outboundFlights);
+        const returnFlts = transformFlights(result.returnFlights);
+
+        if (outbound.length === 0 && returnFlts.length === 0) {
+          toast.info('No flights found for your round trip search.');
+          setIsSearching(false);
+          return;
+        }
+
+        navigate('/customer/flightlist', {
+          state: {
+            flights: outbound,
+            returnFlights: returnFlts,
+            isRoundTrip: true,
+            searchParams: { from, to, departDate: departureDate, returnDate, passengers: passengerCount },
           },
-        },
-      });
+        });
+      } else {
+        const flights = await searchFlights(from, to, departureDate, passengerCount, {
+          travelClass, minPrice: minPrice || undefined, maxPrice: maxPrice || undefined, sortBy,
+          tripType, returnDate: undefined
+        });
+
+        if (!flights || flights.length === 0) {
+          toast.info('No flights found for your search criteria.');
+          setIsSearching(false);
+          return;
+        }
+
+        const transformedFlights = flights.map((flight) => ({
+          id: flight.id,
+          scheduleId: flight.id,
+          flightNumber: flight.flightNumber,
+          airline: flight.airlineName,
+          source: flight.originCity,
+          destination: flight.destinationCity,
+          departureTime: flight.departureTime,
+          arrivalTime: flight.arrivalTime,
+          duration: flight.durationFormatted || calculateDuration(flight.departureTime, flight.arrivalTime),
+          journeyDate: flight.journeyDate || departureDate,
+          prices: { economy: flight.price },
+          seatsAvailable: { economy: flight.availableSeats },
+        }));
+
+        navigate('/customer/flightlist', {
+          state: {
+            flights: transformedFlights,
+            searchParams: { from, to, departDate: departureDate, passengers: passengerCount },
+          },
+        });
+      }
     } catch (error) {
       toast.error(error.message || 'Failed to fetch flights. Please try again.');
     } finally {
