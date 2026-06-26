@@ -50,7 +50,8 @@ public class SecurityConfig {
             "/payments/**",
             "/passengers/**",
             "/api/terminals/**",
-            "/api/gates/**"
+            "/api/gates/**",
+            "/api/notifications/**"
     };
     private static final String[] MANAGER_URLS = {
             "/manager/**"

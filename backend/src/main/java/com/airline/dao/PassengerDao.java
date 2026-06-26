@@ -17,4 +17,7 @@ public interface PassengerDao extends JpaRepository<Passenger, Long> {
 
     @Query(" SELECT p.seatNumber FROM Passenger p WHERE p.booking.flightSchedule.id = :scheduleId AND p.seatNumber IS NOT NULL AND p.booking.status != 'CANCELLED'")
     List<String> findOccupiedSeatsByScheduleId(@Param("scheduleId") Long scheduleId);
+
+    @Query("SELECT p FROM Passenger p JOIN FETCH p.booking b WHERE b.flightSchedule.id = :scheduleId AND b.status != 'CANCELLED'")
+    List<Passenger> findByScheduleId(@Param("scheduleId") Long scheduleId);
 }

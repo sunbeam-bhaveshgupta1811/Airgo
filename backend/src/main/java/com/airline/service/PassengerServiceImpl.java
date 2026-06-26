@@ -49,9 +49,7 @@ public class PassengerServiceImpl implements PassengerService {
 
     @Transactional(readOnly = true)
     public List<PassengerResponseDto> getAllPassengersForSchedule(Long scheduleId) {
-        return passengerDao.findAll().stream()
-                .filter(p -> p.getBooking().getFlightSchedule().getId().equals(scheduleId)
-                        && p.getBooking().getStatus() != BookingStatus.CANCELLED)
+        return passengerDao.findByScheduleId(scheduleId).stream()
                 .map(this::mapToResponse).collect(Collectors.toList());
     }
 
