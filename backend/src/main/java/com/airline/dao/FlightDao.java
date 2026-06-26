@@ -24,4 +24,7 @@ public interface FlightDao extends JpaRepository<Flight, Long> {
 
     @Query("SELECT f FROM Flight f WHERE f.originAirport.id = :originId AND f.destinationAirport.id = :destinationId AND f.status = :status")
     List<Flight> findActiveFlightsByRoute(@Param("originId") Long originId,@Param("destinationId") Long destinationId,@Param("status") FlightStatus status);
+
+    @Query("SELECT f FROM Flight f WHERE f.originAirport.id = :airportId OR f.destinationAirport.id = :airportId")
+    List<Flight> findByAirportId(@Param("airportId") Long airportId);
 }

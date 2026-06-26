@@ -224,6 +224,13 @@ public class BookingServiceImpl implements BookingService{
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<BookingResponseDto> getBookingsByAirport(Long airportId) {
+        return bookingDao.findByAirportIdWithDetails(airportId).stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
 
     private User getLoggedInUser() {
         String email = SecurityContextHolder.getContext()

@@ -63,4 +63,18 @@ public interface BookingDao extends JpaRepository<Booking, Long> {
             GROUP BY b.flightSchedule.flight.airline.name
             """)
     List<Object[]> getRevenueByAirline();
+
+    @Query("""
+            SELECT DISTINCT b FROM Booking b
+            JOIN FETCH b.user
+            JOIN FETCH b.flightSchedule fs
+            JOIN FETCH fs.flight f
+            JOIN FETCH f.airline
+            JOIN FETCH f.originAirport
+            JOIN FETCH f.destinationAirport
+            LEFT JOIN FETCH b.passengers
+            LEFT JOIN FETCH b.payment
+            WHERE f.originAirport.id = :airportId OR f.destinationAirport.id = :airportId
+            """)
+    List<Booking> findByAirportIdWithDetails(@Param("airportId") Long airportId);
 }

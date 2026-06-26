@@ -8,6 +8,7 @@ import com.airline.service.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
@@ -82,5 +83,17 @@ public class BookingController {
     @PatchMapping("/admin/bookings/{id}/cancel")
     public ResponseEntity<ApiResponse<Void>> adminCancelBooking(@PathVariable Long id) {
         return ResponseEntity.ok(bookingService.cancelBooking(id));
+    }
+
+    @PreAuthorize("hasRole('AIRPORT_MANAGER')")
+    @GetMapping("/manager/bookings")
+    public ResponseEntity<ApiResponse<List<BookingResponseDto>>> getBookingsByAirport(
+            HttpServletRequest httpRequest) {
+        Long airportId = (Long) httpRequest.getAttribute("airportId");
+        if (airportId == null) {
+            throw new com.airline.exception.BadRequestException("No airport assigned to this manager");
+        }
+        return ResponseEntity.ok(ApiResponse.success("Bookings fetched",
+                bookingService.getBookingsByAirport(airportId)));
     }
 }
