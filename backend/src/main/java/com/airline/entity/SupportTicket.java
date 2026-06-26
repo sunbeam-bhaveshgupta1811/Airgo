@@ -24,10 +24,12 @@ public class SupportTicket {
     @Enumerated(EnumType.STRING)
     private IssueTicket status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "booking_id")
     private Booking booking;
 
     private String adminResponse;

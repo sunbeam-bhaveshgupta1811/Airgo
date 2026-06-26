@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(grep -n \"findAll\\(\\)\\\\|findByStatus\\\\|findByAirlineId\\\\|findByFlightId\" \"c:\\\\Users\\\\Gupta Family\\\\Desktop\\\\Final Project\\\\Airline-Reservation-System\\\\backend/src/main/java/com/airline/service/\"*.java)",
+      "Bash(grep -n \"private User\" \"c:\\\\Users\\\\Gupta Family\\\\Desktop\\\\Final Project\\\\Airline-Reservation-System\\\\backend/src/main/java/com/airline/entity/\"*.java)"
+    ]
+  }
+}
