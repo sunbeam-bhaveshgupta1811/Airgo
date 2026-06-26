@@ -173,7 +173,7 @@ public class PaymentServiceImpl implements PaymentService {
     }
 
     @Transactional
-    public synchronized PaymentResponseDto refundPayment(Long paymentId) {
+    public PaymentResponseDto refundPayment(Long paymentId) {
         Payment payment = paymentDao.findById(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException(
                         "Payment not found with id: " + paymentId));

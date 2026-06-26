@@ -32,8 +32,8 @@ import CustomerFeedback from "./pages/feedback/CustomerFeedback";
 import AdminLogin from "./pages/admin/auth/Login";
 import AdminViewFeedbackTable from "./pages/admin/auth/AdminViewFeedback";
 import PerformanceChart from "./components/PerformanceChart";
-import BaseLogin from "./components/auth/BaseLogin";
 import FAQChatbot from './components/Faq';
+import SeatSelection from "./pages/customer/SeatSelection";
 import ManagerLayout from "./pages/manager/ManagerLayout";
 import ManagerDashboard from "./pages/manager/ManagerDashboard";
 import TerminalManagement from "./pages/manager/TerminalManagement";
@@ -45,7 +45,7 @@ function App() {
   return (
     <>
       <FAQChatbot />
-      
+
       <Routes>
         {/* Home Layout with nested routes */}
         <Route path="/" element={<Home />}>
@@ -61,7 +61,7 @@ function App() {
               </ProtectedRoute>
             }
           />
-          
+
           {/* Customer Routes nested under Home */}
           <Route path="customer">
             <Route index element={<FlightSearch />} />
@@ -117,7 +117,7 @@ function App() {
             />
           </Route>
         </Route>
-        
+
         {/* Authentication Routes - Outside Home layout */}
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -127,7 +127,7 @@ function App() {
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/managerlogin" element={<ManagerLogin />} />
         <Route path="/unauthorized" element={<Navigate to="/" replace />} />
-        
+
         {/* Admin Routes with separate AdminLayout */}
         <Route
           path="/admin"
@@ -152,8 +152,8 @@ function App() {
           <Route path="profile" element={<Profile />} />
           <Route path="performance" element={<PerformanceChart />} />
         </Route>
-        
-        {/* Manager Routes */}
+
+        {/* Manager Routes with separate ManagerLayout */}
         <Route
           path="/manager"
           element={
