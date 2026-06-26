@@ -1,16 +1,26 @@
 import axios from 'axios'
 import { config } from '../../../config'
 
-export const searchFlights = async (from, to, journeyDate, passengers = 1) => {
+export const searchFlights = async (from, to, journeyDate, passengers = 1, filters = {}) => {
   try {
+    const body = {
+      originCode: from,
+      destinationCode: to,
+      journeyDate: journeyDate,
+      passengers: passengers
+    }
+
+    // Add optional filters
+    if (filters.travelClass) body.travelClass = filters.travelClass
+    if (filters.minPrice) body.minPrice = parseFloat(filters.minPrice)
+    if (filters.maxPrice) body.maxPrice = parseFloat(filters.maxPrice)
+    if (filters.sortBy) body.sortBy = filters.sortBy
+    if (filters.tripType) body.tripType = filters.tripType
+    if (filters.returnDate) body.returnDate = filters.returnDate
+
     const response = await axios.post(
       `${config.serverURL}/api/flights/search`,
-      {
-        originCode: from,               
-        destinationCode: to,
-        journeyDate: journeyDate,      
-        passengers: passengers
-      }
+      body
     )
     return response.data?.data || []
 

@@ -14,4 +14,5 @@ public interface BookingService {
     BookingResponseDto getBookingById(Long id);
     BookingResponseDto getBookingByReference(String reference);
     List<BookingResponseDto> getAllBookings();
+    List<BookingResponseDto> getBookingsByAirport(Long airportId);
 }

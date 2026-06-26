@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class FlightController {
 
     private final FlightService flightService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/flights")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<FlightResponseDto>> addFlight(
@@ -29,6 +31,7 @@ public class FlightController {
                         flightService.addFlight(request)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/flights/{id}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<FlightResponseDto>> updateFlight(
@@ -38,18 +41,21 @@ public class FlightController {
                 flightService.updateFlight(id, request)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/flights/{id}/deactivate")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<Void>> deactivateFlight(@PathVariable Long id) {
         return ResponseEntity.ok(flightService.deactivateFlight(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/flights/{id}/reactivate")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<Void>> reactivateFlight(@PathVariable Long id) {
         return ResponseEntity.ok(flightService.reactivateFlight(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/flights")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<List<FlightResponseDto>>> getAllFlights() {
@@ -57,6 +63,7 @@ public class FlightController {
                 flightService.getAllFlights()));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/flights/airline/{airlineId}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<List<FlightResponseDto>>> getFlightsByAirline(

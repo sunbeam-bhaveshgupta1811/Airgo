@@ -33,6 +33,12 @@ import AdminViewFeedbackTable from "./pages/admin/auth/AdminViewFeedback";
 import PerformanceChart from "./components/PerformanceChart";
 import BaseLogin from "./components/auth/BaseLogin";
 import FAQChatbot from './components/Faq';
+import ManagerLayout from "./pages/manager/ManagerLayout";
+import ManagerDashboard from "./pages/manager/ManagerDashboard";
+import TerminalManagement from "./pages/manager/TerminalManagement";
+import GateManagement from "./pages/manager/GateManagement";
+import ManagerBookings from "./pages/manager/ManagerBookings";
+import ManagerLogin from "./pages/manager/auth/ManagerLogin";
 
 function App() {
   return (
@@ -110,6 +116,7 @@ function App() {
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/adminlogin" element={<AdminLogin />} />
+        <Route path="/managerlogin" element={<ManagerLogin />} />
         <Route path="/unauthorized" element={<Navigate to="/" replace />} />
         
         {/* Admin Routes with separate AdminLayout */}
@@ -137,6 +144,23 @@ function App() {
           <Route path="performance" element={<PerformanceChart />} />
         </Route>
         
+        {/* Manager Routes */}
+        <Route
+          path="/manager"
+          element={
+            <ProtectedRoute allowedRoles={["AIRPORT_MANAGER"]} redirectTo="/managerlogin">
+              <ManagerLayout />
+            </ProtectedRoute>
+          }
+        >
+          <Route index element={<ManagerDashboard />} />
+          <Route path="dashboard" element={<ManagerDashboard />} />
+          <Route path="terminals" element={<TerminalManagement />} />
+          <Route path="gates" element={<GateManagement />} />
+          <Route path="bookings" element={<ManagerBookings />} />
+          <Route path="profile" element={<Profile />} />
+        </Route>
+
         {/* Catch-all route - Redirect to home if no match */}
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

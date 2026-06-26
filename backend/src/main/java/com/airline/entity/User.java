@@ -45,6 +45,9 @@ public class User {
 	@Column(nullable = false)
 	private Role role;
 
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "airport_id")
+	private Airport airport;  // nullable - only set for AIRPORT_MANAGER
 
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdAt;
