@@ -40,6 +40,34 @@ export const fetchAirports = async () => {
   }
 }
 
+export const searchRoundTripFlights = async (from, to, journeyDate, returnDate, passengers = 1, filters = {}) => {
+  try {
+    const body = {
+      originCode: from,
+      destinationCode: to,
+      journeyDate: journeyDate,
+      passengers: passengers,
+      tripType: 'ROUND_TRIP',
+      returnDate: returnDate
+    }
+
+    if (filters.travelClass) body.travelClass = filters.travelClass
+    if (filters.minPrice) body.minPrice = parseFloat(filters.minPrice)
+    if (filters.maxPrice) body.maxPrice = parseFloat(filters.maxPrice)
+    if (filters.sortBy) body.sortBy = filters.sortBy
+
+    const response = await axios.post(
+      `${config.serverURL}/api/flights/search/roundtrip`,
+      body
+    )
+    return response.data?.data || { outboundFlights: [], returnFlights: [] }
+
+  } catch (error) {
+    const msg = error.response?.data?.message || 'Failed to search round trip flights'
+    throw new Error(msg)
+  }
+}
+
 export const getScheduleById = async (scheduleId) => {
   try {
     const response = await axios.get(

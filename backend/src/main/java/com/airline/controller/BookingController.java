@@ -28,13 +28,24 @@ import java.util.List;
 public class BookingController {
 
     private final BookingService bookingService;
+    private final com.airline.service.RateLimitService rateLimitService;
     private final BookingDao bookingDao;
     private final PaymentDao paymentDao;
     private final TicketPdfGenerator ticketPdfGenerator;
 
     @PostMapping("/bookings/create")
     public ResponseEntity<ApiResponse<BookingResponseDto>> createBooking(
-            @Valid @RequestBody BookingRequestDto request) {
+            @Valid @RequestBody BookingRequestDto request,
+            jakarta.servlet.http.HttpServletRequest httpRequest) {
+        String userId = String.valueOf(httpRequest.getAttribute("userId"));
+        if (userId == null || "null".equals(userId)) {
+            userId = org.springframework.security.core.context.SecurityContextHolder
+                    .getContext().getAuthentication().getName();
+        }
+        if (!rateLimitService.resolveBookingBucket(userId).tryConsume(1)) {
+            throw new com.airline.exception.RateLimitException(
+                    "Too many booking requests. Please try again after 1 minute.");
+        }
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("Booking created successfully",
                         bookingService.createBooking(request)));

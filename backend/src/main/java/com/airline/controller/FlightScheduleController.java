@@ -21,6 +21,7 @@ import java.util.List;
 public class FlightScheduleController {
 
     private final FlightScheduleService scheduleService;
+    private final com.airline.service.RateLimitService rateLimitService;
 
     @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/schedules")
@@ -87,9 +88,28 @@ public class FlightScheduleController {
 
     @PostMapping("/api/flights/search")
     public ResponseEntity<ApiResponse<List<FlightScheduleResponseDto>>> searchFlights(
-            @Valid @RequestBody FlightSearchRequestDto request) {
+            @Valid @RequestBody FlightSearchRequestDto request,
+            jakarta.servlet.http.HttpServletRequest httpRequest) {
+        String ip = httpRequest.getRemoteAddr();
+        if (!rateLimitService.resolveSearchBucket(ip).tryConsume(1)) {
+            throw new com.airline.exception.RateLimitException(
+                    "Too many search requests. Please try again after 1 minute.");
+        }
         return ResponseEntity.ok(ApiResponse.success("Flights found",
                 scheduleService.searchFlights(request)));
+    }
+
+    @PostMapping("/api/flights/search/roundtrip")
+    public ResponseEntity<ApiResponse<com.airline.response.RoundTripSearchResponseDto>> searchRoundTrip(
+            @Valid @RequestBody FlightSearchRequestDto request,
+            jakarta.servlet.http.HttpServletRequest httpRequest) {
+        String ip = httpRequest.getRemoteAddr();
+        if (!rateLimitService.resolveSearchBucket(ip).tryConsume(1)) {
+            throw new com.airline.exception.RateLimitException(
+                    "Too many search requests. Please try again after 1 minute.");
+        }
+        return ResponseEntity.ok(ApiResponse.success("Round trip flights found",
+                scheduleService.searchRoundTrip(request)));
     }
 
     @GetMapping("/api/flights/schedules/{id}")
