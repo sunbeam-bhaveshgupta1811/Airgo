@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { FaExchangeAlt, FaChevronDown } from 'react-icons/fa';
 import '../../styles/FlightSearch.css';
 import { useNavigate } from 'react-router-dom';
-import { searchFlights, fetchAirports } from '../../services/customer/flightSearchService';
+import { searchFlights, fetchAirports, searchRoundTripFlights } from '../../services/customer/flightSearchService';
 import { toast } from 'react-toastify';
 
 const FlightSearch = () => {
@@ -13,6 +13,12 @@ const FlightSearch = () => {
   const [departureDate, setDepartureDate] = useState('');
   const [passengerCount, setPassengerCount] = useState(1);
   const [isSearching, setIsSearching] = useState(false);
+  const [tripType, setTripType] = useState('ONE_WAY');
+  const [returnDate, setReturnDate] = useState('');
+  const [travelClass, setTravelClass] = useState('');
+  const [minPrice, setMinPrice] = useState('');
+  const [maxPrice, setMaxPrice] = useState('');
+  const [sortBy, setSortBy] = useState('CHEAPEST');
 
   useEffect(() => {
     const loadAirports = async () => {
@@ -66,47 +72,83 @@ const FlightSearch = () => {
     setIsSearching(true);
 
     try {
-      const flights = await searchFlights(from, to, departureDate, passengerCount);
+      if (tripType === 'ROUND_TRIP') {
+        if (!returnDate) {
+          toast.error('Please select a return date for round trip.');
+          setIsSearching(false);
+          return;
+        }
 
-      if (!flights || flights.length === 0) {
-        toast.info('No flights found for your search criteria.');
-        return;
-      }
+        const result = await searchRoundTripFlights(from, to, departureDate, returnDate, passengerCount, {
+          travelClass, minPrice: minPrice || undefined, maxPrice: maxPrice || undefined, sortBy
+        });
 
-      const transformedFlights = flights.map((flight) => ({
-        id: flight.scheduleId || flight.id,
-        scheduleId: flight.scheduleId || flight.id,
-        flightNumber: flight.flightNo || flight.flightNumber,
-        airline: flight.airlineName,
-        source: flight.fromLocation || flight.originCity,
-        destination: flight.toLocation || flight.destinationCity,
-        departureTime: flight.departureTime,
-        arrivalTime: flight.arrivalTime,
-        duration: calculateDuration(flight.departureTime, flight.arrivalTime),
-        journeyDate: flight.journeyDate || departureDate,
-        prices: {
-          economy: flight.economyFare || flight.price,
-          business: flight.businessFare,
-          firstClass: flight.firstFare,
-        },
-        seatsAvailable: {
-          economy: flight.availableEconomySeats || flight.availableSeats,
-          business: flight.availableBusinessSeats,
-          firstClass: flight.availableFirstSeats,
-        },
-      }));
+        const transformFlights = (flights) => (flights || []).map((flight) => ({
+          id: flight.id,
+          scheduleId: flight.id,
+          flightNumber: flight.flightNumber,
+          airline: flight.airlineName,
+          source: flight.originCity,
+          destination: flight.destinationCity,
+          departureTime: flight.departureTime,
+          arrivalTime: flight.arrivalTime,
+          duration: flight.durationFormatted || calculateDuration(flight.departureTime, flight.arrivalTime),
+          journeyDate: flight.journeyDate || departureDate,
+          prices: { economy: flight.price },
+          seatsAvailable: { economy: flight.availableSeats },
+        }));
 
-      navigate('/customer/flightlist', {
-        state: {
-          flights: transformedFlights,
-          searchParams: {
-            from,
-            to,
-            departDate: departureDate,
-            passengers: passengerCount,
+        const outbound = transformFlights(result.outboundFlights);
+        const returnFlts = transformFlights(result.returnFlights);
+
+        if (outbound.length === 0 && returnFlts.length === 0) {
+          toast.info('No flights found for your round trip search.');
+          setIsSearching(false);
+          return;
+        }
+
+        navigate('/customer/flightlist', {
+          state: {
+            flights: outbound,
+            returnFlights: returnFlts,
+            isRoundTrip: true,
+            searchParams: { from, to, departDate: departureDate, returnDate, passengers: passengerCount },
           },
-        },
-      });
+        });
+      } else {
+        const flights = await searchFlights(from, to, departureDate, passengerCount, {
+          travelClass, minPrice: minPrice || undefined, maxPrice: maxPrice || undefined, sortBy,
+          tripType, returnDate: undefined
+        });
+
+        if (!flights || flights.length === 0) {
+          toast.info('No flights found for your search criteria.');
+          setIsSearching(false);
+          return;
+        }
+
+        const transformedFlights = flights.map((flight) => ({
+          id: flight.id,
+          scheduleId: flight.id,
+          flightNumber: flight.flightNumber,
+          airline: flight.airlineName,
+          source: flight.originCity,
+          destination: flight.destinationCity,
+          departureTime: flight.departureTime,
+          arrivalTime: flight.arrivalTime,
+          duration: flight.durationFormatted || calculateDuration(flight.departureTime, flight.arrivalTime),
+          journeyDate: flight.journeyDate || departureDate,
+          prices: { economy: flight.price },
+          seatsAvailable: { economy: flight.availableSeats },
+        }));
+
+        navigate('/customer/flightlist', {
+          state: {
+            flights: transformedFlights,
+            searchParams: { from, to, departDate: departureDate, passengers: passengerCount },
+          },
+        });
+      }
     } catch (error) {
       toast.error(error.message || 'Failed to fetch flights. Please try again.');
     } finally {
@@ -214,6 +256,56 @@ const FlightSearch = () => {
                       {n} {n === 1 ? 'Traveller' : 'Travellers'}
                     </option>
                   ))}
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* Advanced Filters */}
+          <div className="mt-3 p-3" style={{ background: '#f8f9fa', borderRadius: '8px' }}>
+            <div className="d-flex justify-content-between align-items-center mb-2">
+              <strong style={{ fontSize: '14px' }}>Advanced Filters</strong>
+            </div>
+            <div className="row g-2">
+              <div className="col-md-2">
+                <label style={{ fontSize: '12px' }}>Trip Type</label>
+                <select className="form-select form-select-sm" value={tripType} onChange={(e) => setTripType(e.target.value)}>
+                  <option value="ONE_WAY">One Way</option>
+                  <option value="ROUND_TRIP">Round Trip</option>
+                </select>
+              </div>
+              {tripType === 'ROUND_TRIP' && (
+                <div className="col-md-2">
+                  <label style={{ fontSize: '12px' }}>Return Date</label>
+                  <input type="date" className="form-control form-control-sm" value={returnDate}
+                    onChange={(e) => setReturnDate(e.target.value)} min={departureDate || new Date().toISOString().split('T')[0]} />
+                </div>
+              )}
+              <div className="col-md-2">
+                <label style={{ fontSize: '12px' }}>Class</label>
+                <select className="form-select form-select-sm" value={travelClass} onChange={(e) => setTravelClass(e.target.value)}>
+                  <option value="">All Classes</option>
+                  <option value="ECONOMY">Economy</option>
+                  <option value="BUSINESS">Business</option>
+                  <option value="FIRST_CLASS">First Class</option>
+                </select>
+              </div>
+              <div className="col-md-2">
+                <label style={{ fontSize: '12px' }}>Min Price (₹)</label>
+                <input type="number" className="form-control form-control-sm" placeholder="Min" value={minPrice}
+                  onChange={(e) => setMinPrice(e.target.value)} />
+              </div>
+              <div className="col-md-2">
+                <label style={{ fontSize: '12px' }}>Max Price (₹)</label>
+                <input type="number" className="form-control form-control-sm" placeholder="Max" value={maxPrice}
+                  onChange={(e) => setMaxPrice(e.target.value)} />
+              </div>
+              <div className="col-md-2">
+                <label style={{ fontSize: '12px' }}>Sort By</label>
+                <select className="form-select form-select-sm" value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
+                  <option value="CHEAPEST">Cheapest</option>
+                  <option value="FASTEST">Fastest</option>
+                  <option value="EARLIEST">Earliest</option>
                 </select>
               </div>
             </div>

@@ -19,6 +19,21 @@ public class SeatAssignmentController {
 
     private final SeatAssignmentService seatAssignmentService;
 
+    @GetMapping("/api/seats/map/{scheduleId}")
+    public ResponseEntity<ApiResponse<SeatMapResponse>> getPublicSeatMap(
+            @PathVariable Long scheduleId) {
+        return ResponseEntity.ok(ApiResponse.success("Seat map fetched",
+                seatAssignmentService.getSeatMap(scheduleId)));
+    }
+
+    @PostMapping("/api/seats/select")
+    public ResponseEntity<ApiResponse<SeatAssignmentResponse>> selectSeat(
+            @RequestParam Long passengerId,
+            @RequestParam String seat) {
+        SeatAssignmentResponse response = seatAssignmentService.assignSeatToPassenger(passengerId, seat);
+        return ResponseEntity.ok(ApiResponse.success("Seat selected", response));
+    }
+
     @GetMapping("user/bookings/{bookingId}/seats")
     public ResponseEntity<ApiResponse<List<SeatAssignmentResponse>>> getMySeatAssignments(
             @PathVariable Long bookingId) {

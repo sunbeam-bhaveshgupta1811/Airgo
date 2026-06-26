@@ -30,6 +30,8 @@ public class PaymentServiceImpl implements PaymentService {
     private final FlightScheduleDao scheduleDao;
     private final SeatAssignmentService seatAssignmentService;
     private final EmailService emailService;
+    private final SeatBroadcastService seatBroadcastService;
+    private final KafkaProducerService kafkaProducerService;
 
     @Transactional
     public PaymentResponseDto makePayment(PaymentRequestDto request) {
@@ -95,6 +97,7 @@ public class PaymentServiceImpl implements PaymentService {
             bookingDao.save(booking);
 
             seatAssignmentService.assignSeats(booking);
+            seatBroadcastService.broadcastSeatUpdate(booking.getFlightSchedule().getId());
 
             emailService.sendBookingConfirmationEmail(booking, saved);
 
@@ -108,11 +111,29 @@ public class PaymentServiceImpl implements PaymentService {
 
             booking.setStatus(BookingStatus.CANCELLED);
             bookingDao.save(booking);
+            seatBroadcastService.broadcastSeatUpdate(booking.getFlightSchedule().getId());
 
 //            emailService.sendPaymentFailedEmail(booking, saved);
 
             log.warn("Payment FAILED for booking {}", booking.getBookingReference());
         }
+
+        // Publish Kafka payment event
+        com.airline.event.PaymentEvent paymentEvent = com.airline.event.PaymentEvent.builder()
+                .paymentId(saved.getId())
+                .transactionId(transactionId)
+                .bookingId(booking.getId())
+                .bookingReference(booking.getBookingReference())
+                .eventType(paymentStatus.name())
+                .userEmail(user.getEmail())
+                .userName(user.getFirstName() + " " + user.getLastName())
+                .flightNumber(booking.getFlightSchedule().getFlight().getFlightNumber())
+                .amount(booking.getTotalAmount())
+                .paymentMethod(paymentMethod.name())
+                .failureReason(paymentStatus == PaymentStatus.FAILED ? "Payment declined by gateway" : null)
+                .timestamp(java.time.LocalDateTime.now())
+                .build();
+        kafkaProducerService.publishPaymentEvent(paymentEvent);
 
         return mapToResponse(saved);
     }
@@ -181,6 +202,22 @@ public class PaymentServiceImpl implements PaymentService {
                 schedule.getAvailableSeats() + booking.getNumberOfPassengers());
         scheduleDao.save(schedule);
         emailService.sendBookingCancellationEmail(booking, payment);
+
+        // Publish Kafka refund event
+        com.airline.event.PaymentEvent refundEvent = com.airline.event.PaymentEvent.builder()
+                .paymentId(payment.getId())
+                .transactionId(payment.getTransactionId())
+                .bookingId(booking.getId())
+                .bookingReference(booking.getBookingReference())
+                .eventType("REFUNDED")
+                .userEmail(booking.getUser().getEmail())
+                .userName(booking.getUser().getFirstName() + " " + booking.getUser().getLastName())
+                .flightNumber(booking.getFlightSchedule().getFlight().getFlightNumber())
+                .amount(payment.getAmount())
+                .paymentMethod(payment.getPaymentMethod().name())
+                .timestamp(java.time.LocalDateTime.now())
+                .build();
+        kafkaProducerService.publishPaymentEvent(refundEvent);
 
         log.info("Payment {} refunded for booking {}",
                 payment.getTransactionId(), booking.getBookingReference());

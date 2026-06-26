@@ -57,7 +57,7 @@ public class JwtUtil {
         return claimsResolver.apply(claims);
     }
 
-    private Claims extractAllClaims(String token) {
+    public Claims extractAllClaims(String token) {
         return Jwts.parser()
                 .setSigningKey(getSigningKey())
                 .build()
@@ -72,5 +72,14 @@ public class JwtUtil {
 
     private boolean isTokenExpired(String token) {
         return extractExpiration(token).before(new Date());
+    }
+
+    public Long extractAirportId(String token) {
+        Claims claims = extractAllClaims(token);
+        Object airportId = claims.get("airportId");
+        if (airportId == null) return null;
+        if (airportId instanceof Integer) return ((Integer) airportId).longValue();
+        if (airportId instanceof Long) return (Long) airportId;
+        return Long.valueOf(airportId.toString());
     }
 }

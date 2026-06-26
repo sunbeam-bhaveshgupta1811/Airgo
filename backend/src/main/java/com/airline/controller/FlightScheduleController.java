@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,7 +21,9 @@ import java.util.List;
 public class FlightScheduleController {
 
     private final FlightScheduleService scheduleService;
+    private final com.airline.service.RateLimitService rateLimitService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/schedules")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<FlightScheduleResponseDto>> addSchedule(
@@ -30,6 +33,7 @@ public class FlightScheduleController {
                         scheduleService.addSchedule(request)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/schedules/{id}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<FlightScheduleResponseDto>> updateSchedule(
@@ -39,12 +43,14 @@ public class FlightScheduleController {
                 scheduleService.updateSchedule(id, request)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/schedules/{id}/cancel")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<Void>> cancelSchedule(@PathVariable Long id) {
         return ResponseEntity.ok(scheduleService.cancelSchedule(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/schedules/{id}/status")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<FlightScheduleResponseDto>> updateStatus(
@@ -54,6 +60,7 @@ public class FlightScheduleController {
                 scheduleService.updateScheduleStatus(id, status)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/schedules")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<List<FlightScheduleResponseDto>>> getAllSchedules() {
@@ -61,6 +68,7 @@ public class FlightScheduleController {
                 scheduleService.getAllSchedules()));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/schedules/flight/{flightId}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<List<FlightScheduleResponseDto>>> getByFlight(
@@ -69,6 +77,7 @@ public class FlightScheduleController {
                 scheduleService.getSchedulesByFlight(flightId)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/schedules/{id}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<FlightScheduleResponseDto>> getScheduleById(
@@ -79,9 +88,28 @@ public class FlightScheduleController {
 
     @PostMapping("/api/flights/search")
     public ResponseEntity<ApiResponse<List<FlightScheduleResponseDto>>> searchFlights(
-            @Valid @RequestBody FlightSearchRequestDto request) {
+            @Valid @RequestBody FlightSearchRequestDto request,
+            jakarta.servlet.http.HttpServletRequest httpRequest) {
+        String ip = httpRequest.getRemoteAddr();
+        if (!rateLimitService.resolveSearchBucket(ip).tryConsume(1)) {
+            throw new com.airline.exception.RateLimitException(
+                    "Too many search requests. Please try again after 1 minute.");
+        }
         return ResponseEntity.ok(ApiResponse.success("Flights found",
                 scheduleService.searchFlights(request)));
+    }
+
+    @PostMapping("/api/flights/search/roundtrip")
+    public ResponseEntity<ApiResponse<com.airline.response.RoundTripSearchResponseDto>> searchRoundTrip(
+            @Valid @RequestBody FlightSearchRequestDto request,
+            jakarta.servlet.http.HttpServletRequest httpRequest) {
+        String ip = httpRequest.getRemoteAddr();
+        if (!rateLimitService.resolveSearchBucket(ip).tryConsume(1)) {
+            throw new com.airline.exception.RateLimitException(
+                    "Too many search requests. Please try again after 1 minute.");
+        }
+        return ResponseEntity.ok(ApiResponse.success("Round trip flights found",
+                scheduleService.searchRoundTrip(request)));
     }
 
     @GetMapping("/api/flights/schedules/{id}")

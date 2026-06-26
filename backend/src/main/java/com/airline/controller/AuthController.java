@@ -15,9 +15,17 @@ import org.springframework.web.bind.annotation.*;
 public class AuthController {
 
     private final AuthService authService;
+    private final com.airline.service.RateLimitService rateLimitService;
 
     @PostMapping("/login")
-    public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody LoginRequest request) {
+    public ResponseEntity<ApiResponse<AuthResponse>> login(
+            @Valid @RequestBody LoginRequest request,
+            jakarta.servlet.http.HttpServletRequest httpRequest) {
+        String ip = httpRequest.getRemoteAddr();
+        if (!rateLimitService.resolveLoginBucket(ip).tryConsume(1)) {
+            throw new com.airline.exception.RateLimitException(
+                    "Too many login attempts. Please try again after 1 minute.");
+        }
         return ResponseEntity.ok(authService.login(request));
     }
 

@@ -9,6 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,6 +26,7 @@ public class AirportController {
                 airportService.getActiveAirports()));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/airports")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<AirportResponseDto>> addAirport(
@@ -34,6 +36,7 @@ public class AirportController {
                         airportService.addAirport(request)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/airports/{id}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<AirportResponseDto>> updateAirport(
@@ -42,18 +45,21 @@ public class AirportController {
                 airportService.updateAirport(id, request)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/airports/{id}/deactivate")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<Void>> deactivateAirport(@PathVariable Long id) {
         return ResponseEntity.ok(airportService.deactivateAirport(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/airports/{id}/reactivate")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<Void>> reactivateAirport(@PathVariable Long id) {
         return ResponseEntity.ok(airportService.reactivateAirport(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/airports")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<List<AirportResponseDto>>> getAllAirports() {
@@ -61,6 +67,7 @@ public class AirportController {
                 airportService.getAllAirports()));
     }
 
+    @PreAuthorize("hasAnyRole('ADMIN', 'AIRPORT_MANAGER')")
     @GetMapping("/admin/airports/{id}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<AirportResponseDto>> getAirportById(@PathVariable Long id) {

@@ -56,6 +56,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                         );
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
+
+                // Extract airportId for manager-level data isolation
+                Long airportId = jwtUtil.extractAirportId(jwt);
+                if (airportId != null) {
+                    request.setAttribute("airportId", airportId);
+                }
             }
         }
 

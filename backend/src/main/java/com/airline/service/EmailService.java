@@ -178,6 +178,16 @@ public class EmailService {
 
 
     @Async
+    public void sendFlightStatusNotification(String toEmail, String subject, String htmlContent) {
+        try {
+            sendHtmlEmail(toEmail, subject, htmlContent);
+            log.info("Flight status notification email sent to {}", toEmail);
+        } catch (Exception e) {
+            log.error("Failed to send flight status notification to {}: {}", toEmail, e.getMessage());
+        }
+    }
+
+    @Async
     public void sendBookingConfirmationEmail(Booking booking, Payment payment) {
         try {
             String toEmail = booking.getUser().getEmail();

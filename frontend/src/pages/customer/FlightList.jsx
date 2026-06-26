@@ -9,6 +9,8 @@ const FlightList = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const flights = useMemo(() => location.state?.flights || [], [location.state]);
+  const returnFlights = useMemo(() => location.state?.returnFlights || [], [location.state]);
+  const isRoundTrip = location.state?.isRoundTrip || false;
   const searchParams = location.state?.searchParams || {};
 
   // State for filters and sorting
@@ -109,7 +111,7 @@ const FlightList = () => {
     sessionStorage.setItem('flightBookingData', JSON.stringify(bookingData));
 
     // Navigate to passenger details
-    navigate('/customer/passengerdetails', { state: { bookingData } });
+    navigate('/customer/seatselection', { state: { bookingData } });
   };
 
   const handleFilterChange = (type, value) => {
@@ -181,9 +183,10 @@ const FlightList = () => {
           Back to Search
         </button>
         <div className="text-center">
-          <h2>Available Flights</h2>
+          <h2>Available Flights {isRoundTrip && <span className="badge bg-primary ms-2 fs-6">Round Trip</span>}</h2>
           <small className="text-muted">
             {searchParams.from} → {searchParams.to} | {searchParams.departDate}
+            {isRoundTrip && searchParams.returnDate && ` | Return: ${searchParams.returnDate}`}
             {searchParams.passengers && ` | ${searchParams.passengers} passenger(s)`}
           </small>
         </div>
@@ -382,6 +385,89 @@ const FlightList = () => {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Return Flights for Round Trip */}
+      {isRoundTrip && returnFlights.length > 0 && (
+        <>
+          <div className="text-center my-4">
+            <h3 className="text-primary">
+              <FaPlane style={{ transform: 'rotate(180deg)' }} className="me-2" />
+              Return Flights — {searchParams.to} → {searchParams.from}
+            </h3>
+            <small className="text-muted">{searchParams.returnDate}</small>
+          </div>
+          <div className="compact-flights-container">
+            {returnFlights.map((flight, index) => (
+              <div key={`return-${flight.id}-${index}`} className="compact-flight-card card mb-4 shadow-sm">
+                <div className="compact-flight-header card-header d-flex align-items-center justify-content-between">
+                  <div className="d-flex align-items-center">
+                    <FaPlane className="compact-flight-icon me-2 text-primary" />
+                    <span className="compact-flight-number fw-bold me-3">{flight.flightNumber}</span>
+                    <span className="compact-airline text-muted">{flight.airline}</span>
+                  </div>
+                  <span className="badge bg-info">Return</span>
+                </div>
+                <div className="compact-route-info card-body">
+                  <div className="row align-items-center">
+                    <div className="col-md-4">
+                      <div className="compact-route-section text-center">
+                        <span className="compact-city fw-bold d-block">{flight.source}</span>
+                        <span className="compact-time text-primary fs-5">{flight.departureTime}</span>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="compact-route-separator text-center">
+                        <div className="compact-duration mb-2">
+                          <FaClock className="compact-duration-icon me-1" />
+                          <span className="fw-semibold">{flight.duration}</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="col-md-4">
+                      <div className="compact-route-section text-center">
+                        <span className="compact-city fw-bold d-block">{flight.destination}</span>
+                        <span className="compact-time text-primary fs-5">{flight.arrivalTime}</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div className="compact-class-options card-footer bg-light">
+                  {Object.entries(flight.prices).map(([type, price]) => (
+                    <div key={type} className="compact-class-option border rounded p-3 mb-2">
+                      <div className="d-flex justify-content-between align-items-center">
+                        <div className="compact-class-info d-flex align-items-center">
+                          <FaChair className={`compact-class-icon me-2 ${getClassIcon(type)}`} />
+                          <div>
+                            <span className="compact-class-name fw-bold d-block">{formatClassType(type)}</span>
+                            <span className="compact-price text-success fw-bold fs-5">₹{price?.toLocaleString()}</span>
+                            <small className={`d-block ${(flight.seatsAvailable?.[type] ?? 0) < 10 ? 'text-danger' : 'text-muted'}`}>
+                              {flight.seatsAvailable?.[type] ?? 0} seats available
+                            </small>
+                          </div>
+                        </div>
+                        <button
+                          className={`compact-select-btn btn ${(flight.seatsAvailable?.[type] ?? 0) <= 0 ? 'btn-secondary' : 'btn-primary'}`}
+                          onClick={() => handleSelect(flight, type)}
+                          disabled={(flight.seatsAvailable?.[type] ?? 0) <= 0}
+                        >
+                          {(flight.seatsAvailable?.[type] ?? 0) <= 0 ? 'Sold Out' : 'Select Flight'}
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+        </>
+      )}
+
+      {isRoundTrip && returnFlights.length === 0 && (
+        <div className="alert alert-warning text-center mt-4">
+          <h5>No return flights found</h5>
+          <p>Try adjusting your return date.</p>
         </div>
       )}
 
