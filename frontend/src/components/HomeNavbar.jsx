@@ -122,6 +122,11 @@ const HomeNavbar = () => {
                         Admin Sign in
                       </Link>
                     </li>
+                    <li>
+                      <Link className="dropdown-item" to="/managerlogin">
+                        Manager Sign in
+                      </Link>
+                    </li>
                   </ul>
                 </div>
                 <Link

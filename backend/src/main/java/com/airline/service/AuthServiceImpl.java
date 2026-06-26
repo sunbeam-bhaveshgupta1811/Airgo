@@ -94,10 +94,13 @@ public class AuthServiceImpl implements AuthService {
 		userDao.save(user);
 
 		UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-		String jwtToken = jwtUtil.generateToken(userDetails, Map.of(
-				"userId", user.getId(),
-				"role", user.getRole().name()
-		));
+		Map<String, Object> verifyClaims = new java.util.HashMap<>();
+		verifyClaims.put("userId", user.getId());
+		verifyClaims.put("role", user.getRole().name());
+		if (user.getAirport() != null) {
+			verifyClaims.put("airportId", user.getAirport().getId());
+		}
+		String jwtToken = jwtUtil.generateToken(userDetails, verifyClaims);
 
 		log.info("Email verified for user: {}", user.getEmail());
 
@@ -109,6 +112,7 @@ public class AuthServiceImpl implements AuthService {
 				.firstName(user.getFirstName())
 				.lastName(user.getLastName())
 				.role(user.getRole().name())
+				.airportId(user.getAirport() != null ? user.getAirport().getId() : null)
 				.message("Email verified successfully! You are now logged in.")
 				.build();
 
@@ -163,11 +167,14 @@ public class AuthServiceImpl implements AuthService {
 		}
 
 		UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
-		String token = jwtUtil.generateToken(userDetails, Map.of(
-				"userId", user.getId(),
-				"role",   user.getRole().name(),
-				"name",   user.getFirstName() + " " + user.getLastName()
-		));
+		Map<String, Object> claims = new java.util.HashMap<>();
+		claims.put("userId", user.getId());
+		claims.put("role", user.getRole().name());
+		claims.put("name", user.getFirstName() + " " + user.getLastName());
+		if (user.getAirport() != null) {
+			claims.put("airportId", user.getAirport().getId());
+		}
+		String token = jwtUtil.generateToken(userDetails, claims);
 
 		log.info("User logged in: {}", user.getEmail());
 
@@ -179,6 +186,7 @@ public class AuthServiceImpl implements AuthService {
 				.firstName(user.getFirstName())
 				.lastName(user.getLastName())
 				.role(user.getRole().name())
+				.airportId(user.getAirport() != null ? user.getAirport().getId() : null)
 				.message("Login successful! Welcome back, " + user.getFirstName() + ".")
 				.build();
 

@@ -46,7 +46,12 @@ public class SecurityConfig {
             "/user/**",
             "/bookings/**",
             "/payments/**",
-            "/passengers/**"
+            "/passengers/**",
+            "/api/terminals/**",
+            "/api/gates/**"
+    };
+    private static final String[] MANAGER_URLS = {
+            "/manager/**"
     };
     private static final String[] ADMIN_URLS = {
             "/admin/**"
@@ -59,6 +64,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(PUBLIC_URLS).permitAll()
+                        .requestMatchers(MANAGER_URLS).hasAnyRole("ADMIN", "AIRPORT_MANAGER")
                         .requestMatchers(ADMIN_URLS).hasRole("ADMIN")
                         .requestMatchers(AUTHENTICATED_URLS).authenticated()
                         .anyRequest().authenticated()

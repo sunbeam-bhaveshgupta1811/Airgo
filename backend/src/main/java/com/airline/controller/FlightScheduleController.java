@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class FlightScheduleController {
 
     private final FlightScheduleService scheduleService;
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/admin/schedules")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<FlightScheduleResponseDto>> addSchedule(
@@ -30,6 +32,7 @@ public class FlightScheduleController {
                         scheduleService.addSchedule(request)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/admin/schedules/{id}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<FlightScheduleResponseDto>> updateSchedule(
@@ -39,12 +42,14 @@ public class FlightScheduleController {
                 scheduleService.updateSchedule(id, request)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/schedules/{id}/cancel")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<Void>> cancelSchedule(@PathVariable Long id) {
         return ResponseEntity.ok(scheduleService.cancelSchedule(id));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PatchMapping("/admin/schedules/{id}/status")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<FlightScheduleResponseDto>> updateStatus(
@@ -54,6 +59,7 @@ public class FlightScheduleController {
                 scheduleService.updateScheduleStatus(id, status)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/schedules")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<List<FlightScheduleResponseDto>>> getAllSchedules() {
@@ -61,6 +67,7 @@ public class FlightScheduleController {
                 scheduleService.getAllSchedules()));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/schedules/flight/{flightId}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<List<FlightScheduleResponseDto>>> getByFlight(
@@ -69,6 +76,7 @@ public class FlightScheduleController {
                 scheduleService.getSchedulesByFlight(flightId)));
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/schedules/{id}")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<ApiResponse<FlightScheduleResponseDto>> getScheduleById(

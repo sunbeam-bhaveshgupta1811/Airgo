@@ -189,9 +189,51 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
                 request.getPassengers()
         );
 
-        return results.stream()
+        // Apply price filters
+        java.util.stream.Stream<FlightSchedule> stream = results.stream();
+
+        if (request.getMinPrice() != null) {
+            stream = stream.filter(fs -> fs.getPrice().compareTo(request.getMinPrice()) >= 0);
+        }
+        if (request.getMaxPrice() != null) {
+            stream = stream.filter(fs -> fs.getPrice().compareTo(request.getMaxPrice()) <= 0);
+        }
+
+        List<FlightScheduleResponseDto> dtos = stream
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+
+        // Apply sorting
+        String sortBy = request.getSortBy() != null ? request.getSortBy().toUpperCase() : "CHEAPEST";
+        switch (sortBy) {
+            case "FASTEST":
+                dtos.sort(java.util.Comparator.comparingInt(d -> parseDurationMinutes(d.getDurationFormatted())));
+                break;
+            case "EARLIEST":
+                dtos.sort(java.util.Comparator.comparing(FlightScheduleResponseDto::getDepartureTime));
+                break;
+            case "CHEAPEST":
+            default:
+                dtos.sort(java.util.Comparator.comparing(FlightScheduleResponseDto::getPrice));
+                break;
+        }
+
+        return dtos;
+    }
+
+    private int parseDurationMinutes(String duration) {
+        if (duration == null || duration.isEmpty()) return Integer.MAX_VALUE;
+        try {
+            String[] parts = duration.split("h");
+            int hours = Integer.parseInt(parts[0].trim());
+            int minutes = 0;
+            if (parts.length > 1) {
+                minutes = Integer.parseInt(parts[1].replace("m", "").trim());
+            }
+            return hours * 60 + minutes;
+        } catch (Exception e) {
+            return Integer.MAX_VALUE;
+        }
     }
 
 
