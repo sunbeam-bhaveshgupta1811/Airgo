@@ -33,6 +33,7 @@ public class BookingServiceImpl implements BookingService{
     private final PassengerDao passengerDao;
     private final PaymentDao paymentDao;
     private final EmailService emailService;
+    private final SeatBroadcastService seatBroadcastService;
 
     @Transactional
     public BookingResponseDto createBooking(BookingRequestDto request) {
@@ -170,6 +171,7 @@ public class BookingServiceImpl implements BookingService{
 
         booking.setStatus(BookingStatus.CANCELLED);
         bookingDao.save(booking);
+        seatBroadcastService.broadcastSeatUpdate(schedule.getId());
 
         Payment payment = paymentDao.findByBookingId(bookingId).orElse(null);
         emailService.sendBookingCancellationEmail(booking, payment);

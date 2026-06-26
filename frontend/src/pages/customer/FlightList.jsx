@@ -109,7 +109,7 @@ const FlightList = () => {
     sessionStorage.setItem('flightBookingData', JSON.stringify(bookingData));
 
     // Navigate to passenger details
-    navigate('/customer/passengerdetails', { state: { bookingData } });
+    navigate('/customer/seatselection', { state: { bookingData } });
   };
 
   const handleFilterChange = (type, value) => {
