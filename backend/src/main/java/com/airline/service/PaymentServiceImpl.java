@@ -30,6 +30,7 @@ public class PaymentServiceImpl implements PaymentService {
     private final FlightScheduleDao scheduleDao;
     private final SeatAssignmentService seatAssignmentService;
     private final EmailService emailService;
+    private final SeatBroadcastService seatBroadcastService;
 
     @Transactional
     public PaymentResponseDto makePayment(PaymentRequestDto request) {
@@ -95,6 +96,7 @@ public class PaymentServiceImpl implements PaymentService {
             bookingDao.save(booking);
 
             seatAssignmentService.assignSeats(booking);
+            seatBroadcastService.broadcastSeatUpdate(booking.getFlightSchedule().getId());
 
             emailService.sendBookingConfirmationEmail(booking, saved);
 
@@ -108,6 +110,7 @@ public class PaymentServiceImpl implements PaymentService {
 
             booking.setStatus(BookingStatus.CANCELLED);
             bookingDao.save(booking);
+            seatBroadcastService.broadcastSeatUpdate(booking.getFlightSchedule().getId());
 
 //            emailService.sendPaymentFailedEmail(booking, saved);
 
