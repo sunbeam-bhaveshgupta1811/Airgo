@@ -118,6 +118,10 @@ public class EmailService {
     }
 
     private void sendHtmlEmail(String to, String subject, String htmlBody) throws MessagingException {
+        if (fromEmail == null || fromEmail.isBlank() || "placeholder".equals(fromEmail)) {
+            log.warn("Email not configured (EMAIL_USERNAME not set). Skipping email to: {}", to);
+            return;
+        }
         MimeMessage message = mailSender.createMimeMessage();
         MimeMessageHelper helper = new MimeMessageHelper(message, true, "UTF-8");
         helper.setFrom(fromEmail);

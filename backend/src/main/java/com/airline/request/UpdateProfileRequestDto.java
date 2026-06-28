@@ -16,4 +16,7 @@ public class UpdateProfileRequestDto {
     private String lastName;
 
     private String phone;
+
+    private String title;
+    private String dob;  // String so we can parse "yyyy-MM-dd"
 }

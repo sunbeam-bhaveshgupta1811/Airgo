@@ -102,10 +102,31 @@ public class AuthServiceImpl implements AuthService {
 		}
 
 		user.setEmailVerified(true);
-		user.setEnabled(true);
 		user.setVerificationToken(null);
 		user.setVerificationTokenExpiry(null);
+
+		// Only auto-enable if NOT an airport manager pending approval
+		if (user.getRole() == Role.AIRPORT_MANAGER && user.getApprovalStatus() == ApprovalStatus.PENDING) {
+			user.setEnabled(false); // Keep disabled until admin approves
+		} else {
+			user.setEnabled(true);
+		}
+
 		userDao.save(user);
+
+		// Don't auto-login managers pending approval
+		if (user.getRole() == Role.AIRPORT_MANAGER && user.getApprovalStatus() == ApprovalStatus.PENDING) {
+			log.info("Email verified for manager: {} - awaiting admin approval", user.getEmail());
+			AuthResponse pendingResponse = AuthResponse.builder()
+					.email(user.getEmail())
+					.firstName(user.getFirstName())
+					.lastName(user.getLastName())
+					.role(user.getRole().name())
+					.approvalStatus("PENDING")
+					.message("Email verified successfully! Your account is pending admin approval.")
+					.build();
+			return ApiResponse.success("Email verified. Awaiting admin approval.", pendingResponse);
+		}
 
 		UserDetails userDetails = userDetailsService.loadUserByUsername(user.getEmail());
 		Map<String, Object> verifyClaims = new java.util.HashMap<>();
@@ -273,6 +294,8 @@ public class AuthServiceImpl implements AuthService {
 			throw new UserAlreadyExistsException("Email is already registered: " + request.getEmail());
 		}
 
+		String verificationToken = UUID.randomUUID().toString();
+
 		User admin = User.builder()
 				.firstName(request.getFirstName())
 				.lastName(request.getLastName())
@@ -280,14 +303,17 @@ public class AuthServiceImpl implements AuthService {
 				.password(passwordEncoder.encode(request.getPassword()))
 				.phone(request.getPhone())
 				.role(Role.ADMIN)
-				.enabled(true)
-				.emailVerified(true)
+				.enabled(false)
+				.emailVerified(false)
+				.verificationToken(verificationToken)
+				.verificationTokenExpiry(LocalDateTime.now().plusHours(24))
 				.build();
 
 		userDao.save(admin);
-		log.info("Admin account created: {}", admin.getEmail());
+		emailService.sendVerificationEmail(admin.getEmail(), admin.getFirstName(), verificationToken);
+		log.info("Admin account created: {} - verification email sent", admin.getEmail());
 
-		return ApiResponse.success("Admin account created successfully!", null);
+		return ApiResponse.success("Admin account created! Please check your email to verify your account.", null);
 	}
 
 	@Transactional(readOnly = true)

@@ -38,6 +38,8 @@ import ManagerDashboard from "./pages/manager/ManagerDashboard";
 import TerminalManagement from "./pages/manager/TerminalManagement";
 import GateManagement from "./pages/manager/GateManagement";
 import ManagerBookings from "./pages/manager/ManagerBookings";
+import ManagerAirlines from "./pages/manager/ManagerAirlines";
+import ManagerFlights from "./pages/manager/ManagerFlights";
 import ManagerLogin from "./pages/manager/auth/ManagerLogin";
 import AuthPage from "./pages/auth/AuthPage";
 import UserRegister from "./pages/auth/UserRegister";
@@ -171,6 +173,8 @@ function App() {
         >
           <Route index element={<ManagerDashboard />} />
           <Route path="dashboard" element={<ManagerDashboard />} />
+          <Route path="airlines" element={<ManagerAirlines />} />
+          <Route path="flights" element={<ManagerFlights />} />
           <Route path="terminals" element={<TerminalManagement />} />
           <Route path="gates" element={<GateManagement />} />
           <Route path="bookings" element={<ManagerBookings />} />

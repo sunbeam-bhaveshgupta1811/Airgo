@@ -31,6 +31,8 @@ function ManagerNavbar() {
           <ul className="navbar-nav me-auto ms-4">
             {[
               { to: "/manager/dashboard", label: "Dashboard" },
+              { to: "/manager/airlines", label: "Airlines" },
+              { to: "/manager/flights", label: "Flights" },
               { to: "/manager/terminals", label: "Terminals" },
               { to: "/manager/gates", label: "Gates" },
               { to: "/manager/bookings", label: "Bookings" },

@@ -31,7 +31,9 @@ public class PaymentServiceImpl implements PaymentService {
     private final SeatAssignmentService seatAssignmentService;
     private final EmailService emailService;
     private final SeatBroadcastService seatBroadcastService;
-    private final KafkaProducerService kafkaProducerService;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private KafkaProducerService kafkaProducerService;
 
     @Transactional
     public PaymentResponseDto makePayment(PaymentRequestDto request) {
@@ -133,7 +135,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .failureReason(paymentStatus == PaymentStatus.FAILED ? "Payment declined by gateway" : null)
                 .timestamp(java.time.LocalDateTime.now())
                 .build();
-        kafkaProducerService.publishPaymentEvent(paymentEvent);
+        if (kafkaProducerService != null) kafkaProducerService.publishPaymentEvent(paymentEvent);
 
         return mapToResponse(saved);
     }
@@ -217,7 +219,7 @@ public class PaymentServiceImpl implements PaymentService {
                 .paymentMethod(payment.getPaymentMethod().name())
                 .timestamp(java.time.LocalDateTime.now())
                 .build();
-        kafkaProducerService.publishPaymentEvent(refundEvent);
+        if (kafkaProducerService != null) kafkaProducerService.publishPaymentEvent(refundEvent);
 
         log.info("Payment {} refunded for booking {}",
                 payment.getTransactionId(), booking.getBookingReference());
