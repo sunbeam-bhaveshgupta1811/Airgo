@@ -110,6 +110,9 @@ public class User {
 	@Column(nullable = false)
 	private boolean enabled = false;
 
+	@Enumerated(EnumType.STRING)
+	private ApprovalStatus approvalStatus;  // null for USER/ADMIN, PENDING/APPROVED/REJECTED for AIRPORT_MANAGER
+
 	@PrePersist
 	protected void onCreate() {
 		createdAt = LocalDateTime.now();

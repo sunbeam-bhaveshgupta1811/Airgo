@@ -22,6 +22,7 @@ function AdminNavbar() {
     { to: "/admin/flightmanagement", label: "Flights" },
     { to: "/admin/scheduleflight", label: "Schedules" },
     { to: "/admin/passengerslist", label: "Passengers" },
+    { to: "/admin/managerapproval", label: "Managers" },
     { to: "/admin/viewfeedback", label: "Feedback" },
   ];
 

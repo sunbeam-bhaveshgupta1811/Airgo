@@ -57,4 +57,14 @@ public class AuthController {
         return ResponseEntity.ok(authService.resendVerificationEmail(email));
     }
 
+    @PostMapping("/create-admin")
+    public ResponseEntity<ApiResponse<Void>> createAdmin(@Valid @RequestBody SignupRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(authService.createAdmin(request));
+    }
+
+    @GetMapping("/admin-exists")
+    public ResponseEntity<ApiResponse<Boolean>> adminExists() {
+        return ResponseEntity.ok(authService.adminExists());
+    }
+
 }
