@@ -100,41 +100,19 @@ const HomeNavbar = () => {
               </div>
             ) : (
               <>
-                <div className="dropdown">
-                  <button
-                    className="btn btn-link fw-semibold navbar-link-main dropdown-toggle"
-                    type="button"
-                    id="signinDropdown"
-                    data-bs-toggle="dropdown"
-                    aria-expanded="false"
-                    style={{ color: "#111", textDecoration: "none" }}
-                  >
-                    <FaUser className="me-1" /> Sign in
-                  </button>
-                  <ul className="dropdown-menu" aria-labelledby="signinDropdown">
-                    <li>
-                      <Link className="dropdown-item" to="/login">
-                        User Sign in
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/adminlogin">
-                        Admin Sign in
-                      </Link>
-                    </li>
-                    <li>
-                      <Link className="dropdown-item" to="/managerlogin">
-                        Manager Sign in
-                      </Link>
-                    </li>
-                  </ul>
-                </div>
                 <Link
-                  to="/register"
+                  to="/adminlogin"
+                  className="btn btn-outline-dark fw-semibold"
+                  style={{ borderRadius: 10, padding: "8px 22px", fontSize: "1rem" }}
+                >
+                  Admin
+                </Link>
+                <Link
+                  to="/auth"
                   className="btn btn-primary fw-semibold"
                   style={{ borderRadius: 10, fontWeight: 600, padding: "8px 22px", fontSize: "1rem", boxShadow: "0 2px 8px rgba(30, 64, 175, 0.07)" }}
                 >
-                  Sign up
+                  Login
                 </Link>
               </>
             )}

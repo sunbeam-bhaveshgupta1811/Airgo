@@ -10,4 +10,6 @@ public interface AuthService {
     ApiResponse<AuthResponse> login(LoginRequest request);
     ApiResponse<Void> resetPassword(ResetPasswordRequest request);
     ApiResponse<Void> forgotPassword(ForgotPasswordRequest request);
+    ApiResponse<Void> createAdmin(SignupRequest request);
+    ApiResponse<Boolean> adminExists();
 }

@@ -35,7 +35,7 @@ public class Notification {
     @Column(nullable = false)
     private boolean sent = false;
 
-    @Column(nullable = false)
+    @Column(name = "is_read", nullable = false)
     private boolean read = false;
 
     private String referenceId;  // bookingRef or scheduleId

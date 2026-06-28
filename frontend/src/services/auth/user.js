@@ -1,10 +1,10 @@
 import axios from 'axios'
 import { config } from '../../../config'
 
-export async function registerUser(title, firstName, lastName, email, phone, password) {
+export async function registerUser(title, firstName, lastName, email, phone, password, role = 'USER') {
   try {
     const url = `${config.serverURL}/api/auth/signup`
-    const body = { title, firstName, lastName, email, phone, password, confirmPassword: password }
+    const body = { title, firstName, lastName, email, phone, password, confirmPassword: password, role }
     const response = await axios.post(url, body)
 
     if (response.status !== 200 && response.status !== 201) {

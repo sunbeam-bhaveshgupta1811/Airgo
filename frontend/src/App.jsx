@@ -39,6 +39,10 @@ import TerminalManagement from "./pages/manager/TerminalManagement";
 import GateManagement from "./pages/manager/GateManagement";
 import ManagerBookings from "./pages/manager/ManagerBookings";
 import ManagerLogin from "./pages/manager/auth/ManagerLogin";
+import AuthPage from "./pages/auth/AuthPage";
+import UserRegister from "./pages/auth/UserRegister";
+import ManagerRegister from "./pages/auth/ManagerRegister";
+import ManagerApproval from "./pages/admin/ManagerApproval";
 
 function App() {
   return (
@@ -125,6 +129,9 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmailPage />} />
         <Route path="/adminlogin" element={<AdminLogin />} />
         <Route path="/managerlogin" element={<ManagerLogin />} />
+        <Route path="/auth" element={<AuthPage />} />
+        <Route path="/register/user" element={<UserRegister />} />
+        <Route path="/register/manager" element={<ManagerRegister />} />
         <Route path="/unauthorized" element={<Navigate to="/" replace />} />
 
         {/* Admin Routes with separate AdminLayout */}
@@ -146,6 +153,7 @@ function App() {
           <Route path="addscheduleflight" element={<AddScheduleFlight />} />
           <Route path="addflight" element={<AddFlights />} />
           <Route path="passengerslist" element={<PassengersList />} />
+          <Route path="managerapproval" element={<ManagerApproval />} />
           <Route path="viewfeedback" element={<AdminViewFeedbackTable />} />
           <Route path="feedback" element={<Navigate to="/admin/viewfeedback" replace />} />
           <Route path="profile" element={<Profile />} />

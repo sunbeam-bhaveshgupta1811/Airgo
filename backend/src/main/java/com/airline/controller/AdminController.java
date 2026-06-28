@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import com.airline.entity.User;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +26,7 @@ import java.util.Map;
 public class AdminController {
 
     private final UserService userService;
+    private final com.airline.dao.UserDao userDao;
     private final AirlineDao airlineDao;
     private final FlightDao flightDao;
     private final BookingDao bookingDao;
@@ -114,4 +116,62 @@ public class AdminController {
 //
 //
 //
+
+    @GetMapping("/managers")
+    public ResponseEntity<ApiResponse<List<Map<String, Object>>>> getAllManagers() {
+        List<User> managers = userDao.findByRole(com.airline.entity.Role.AIRPORT_MANAGER);
+        List<Map<String, Object>> result = managers.stream().map(m -> {
+            Map<String, Object> map = new LinkedHashMap<>();
+            map.put("id", m.getId());
+            map.put("firstName", m.getFirstName());
+            map.put("lastName", m.getLastName());
+            map.put("email", m.getEmail());
+            map.put("phone", m.getPhone());
+            map.put("approvalStatus", m.getApprovalStatus() != null ? m.getApprovalStatus().name() : "PENDING");
+            map.put("enabled", m.isEnabled());
+            map.put("emailVerified", m.isEmailVerified());
+            map.put("airportId", m.getAirport() != null ? m.getAirport().getId() : null);
+            map.put("createdAt", m.getCreatedAt());
+            return map;
+        }).toList();
+        return ResponseEntity.ok(ApiResponse.success("Managers fetched", result));
+    }
+
+    @PatchMapping("/managers/{id}/approve")
+    public ResponseEntity<ApiResponse<Void>> approveManager(@PathVariable Long id) {
+        User manager = userDao.findById(id)
+                .orElseThrow(() -> new com.airline.exception.ResourceNotFoundException("Manager not found"));
+        if (manager.getRole() != com.airline.entity.Role.AIRPORT_MANAGER) {
+            throw new com.airline.exception.BadRequestException("User is not an Airport Manager");
+        }
+        manager.setApprovalStatus(com.airline.entity.ApprovalStatus.APPROVED);
+        manager.setEnabled(true);
+        userDao.save(manager);
+        return ResponseEntity.ok(ApiResponse.success("Manager approved successfully", null));
+    }
+
+    @PatchMapping("/managers/{id}/reject")
+    public ResponseEntity<ApiResponse<Void>> rejectManager(@PathVariable Long id) {
+        User manager = userDao.findById(id)
+                .orElseThrow(() -> new com.airline.exception.ResourceNotFoundException("Manager not found"));
+        if (manager.getRole() != com.airline.entity.Role.AIRPORT_MANAGER) {
+            throw new com.airline.exception.BadRequestException("User is not an Airport Manager");
+        }
+        manager.setApprovalStatus(com.airline.entity.ApprovalStatus.REJECTED);
+        manager.setEnabled(false);
+        userDao.save(manager);
+        return ResponseEntity.ok(ApiResponse.success("Manager rejected", null));
+    }
+
+    @DeleteMapping("/managers/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteManager(@PathVariable Long id) {
+        User manager = userDao.findById(id)
+                .orElseThrow(() -> new com.airline.exception.ResourceNotFoundException("Manager not found"));
+        if (manager.getRole() != com.airline.entity.Role.AIRPORT_MANAGER) {
+            throw new com.airline.exception.BadRequestException("User is not an Airport Manager");
+        }
+        userDao.delete(manager);
+        return ResponseEntity.ok(ApiResponse.success("Manager deleted", null));
+    }
+
 }
