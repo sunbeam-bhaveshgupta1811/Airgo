@@ -2,7 +2,6 @@ package com.airline.service;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
-import io.github.bucket4j.Refill;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +13,6 @@ import java.util.concurrent.ConcurrentHashMap;
 @Slf4j
 public class RateLimitService {
 
-    // In-memory buckets (for production, use Redis-backed Bucket4j)
     private final Map<String, Bucket> buckets = new ConcurrentHashMap<>();
 
     /**
@@ -23,7 +21,7 @@ public class RateLimitService {
     public Bucket resolveSearchBucket(String ip) {
         return buckets.computeIfAbsent("search:" + ip, key ->
                 Bucket.builder()
-                        .addLimit(Bandwidth.classic(30, Refill.greedy(30, Duration.ofMinutes(1))))
+                        .addLimit(Bandwidth.builder().capacity(30).refillGreedy(30, Duration.ofMinutes(1)).build())
                         .build());
     }
 
@@ -33,7 +31,7 @@ public class RateLimitService {
     public Bucket resolveBookingBucket(String userId) {
         return buckets.computeIfAbsent("booking:" + userId, key ->
                 Bucket.builder()
-                        .addLimit(Bandwidth.classic(5, Refill.greedy(5, Duration.ofMinutes(1))))
+                        .addLimit(Bandwidth.builder().capacity(5).refillGreedy(5, Duration.ofMinutes(1)).build())
                         .build());
     }
 
@@ -43,7 +41,7 @@ public class RateLimitService {
     public Bucket resolveLoginBucket(String ip) {
         return buckets.computeIfAbsent("login:" + ip, key ->
                 Bucket.builder()
-                        .addLimit(Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(1))))
+                        .addLimit(Bandwidth.builder().capacity(10).refillGreedy(10, Duration.ofMinutes(1)).build())
                         .build());
     }
 }

@@ -31,4 +31,6 @@ public class SignupRequest {
 
 	@Pattern(regexp = "^(\\+91)?[6-9][0-9]{9}$", message = "Please provide a valid phone number")
 	private String phone;
+
+	private String role;  // Optional: "USER" (default) or "AIRPORT_MANAGER"
 }

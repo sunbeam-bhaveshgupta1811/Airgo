@@ -3,6 +3,7 @@ package com.airline.service;
 import com.airline.dao.UserDao;
 import com.airline.dto.ApiResponse;
 import com.airline.dto.auth.*;
+import com.airline.entity.ApprovalStatus;
 import com.airline.entity.Role;
 import com.airline.entity.User;
 import com.airline.exception.BadRequestException;
@@ -55,13 +56,22 @@ public class AuthServiceImpl implements AuthService {
 		}
 		String verificationToken = UUID.randomUUID().toString();
 
+		Role userRole = Role.USER;
+		ApprovalStatus approvalStatus = null;
+
+		if (request.getRole() != null && "AIRPORT_MANAGER".equalsIgnoreCase(request.getRole())) {
+			userRole = Role.AIRPORT_MANAGER;
+			approvalStatus = ApprovalStatus.PENDING;
+		}
+
 		User user = User.builder()
 				.firstName(request.getFirstName())
 				.lastName(request.getLastName())
 				.email(request.getEmail().toLowerCase().trim())
 				.password(passwordEncoder.encode(request.getPassword()))
 				.phone(request.getPhone())
-				.role(Role.USER)
+				.role(userRole)
+				.approvalStatus(approvalStatus)
 				.enabled(false)
 				.emailVerified(false)
 				.verificationToken(verificationToken)
@@ -71,10 +81,14 @@ public class AuthServiceImpl implements AuthService {
 
 		userDao.save(user);
 
+		String successMessage = userRole == Role.AIRPORT_MANAGER
+				? "Registration successful! Please verify your email. After verification, your account will need Admin approval before you can log in."
+				: "Registration successful! Please check your email to verify your account.";
+
 		emailService.sendVerificationEmail(user.getEmail(), user.getFirstName(), verificationToken);
 		log.info("New user registered: {} - verification email sent", user.getEmail());
 
-		return ApiResponse.success("Registration successful! Please check your email to verify your account.", null);
+		return ApiResponse.success(successMessage, null);
 	}
 
 	@Transactional
@@ -151,6 +165,16 @@ public class AuthServiceImpl implements AuthService {
 
 		if (!user.isEnabled()) {
 			throw new BadRequestException("Your account has been disabled. Please contact support.");
+		}
+
+		// Check approval status for Airport Managers
+		if (user.getRole() == Role.AIRPORT_MANAGER) {
+			if (user.getApprovalStatus() == null || user.getApprovalStatus() == ApprovalStatus.PENDING) {
+				throw new BadRequestException("Your account is pending Admin approval. Please wait until your account has been approved.");
+			}
+			if (user.getApprovalStatus() == ApprovalStatus.REJECTED) {
+				throw new BadRequestException("Your account has been rejected by the Admin. Please contact support.");
+			}
 		}
 
 		try {
@@ -232,5 +256,43 @@ public class AuthServiceImpl implements AuthService {
 		log.info("Password reset successful for user: {}", user.getEmail());
 
 		return ApiResponse.success("Password reset successful! You can now log in with your new password.", null);
+	}
+
+	@Transactional
+	public ApiResponse<Void> createAdmin(SignupRequest request) {
+		// Only allow one admin
+		if (userDao.existsByRole(Role.ADMIN)) {
+			throw new BadRequestException("Admin account already exists. Only one Admin is allowed.");
+		}
+
+		if (!request.getPassword().equals(request.getConfirmPassword())) {
+			throw new BadRequestException("Passwords do not match");
+		}
+
+		if (userDao.existsByEmail(request.getEmail())) {
+			throw new UserAlreadyExistsException("Email is already registered: " + request.getEmail());
+		}
+
+		User admin = User.builder()
+				.firstName(request.getFirstName())
+				.lastName(request.getLastName())
+				.email(request.getEmail().toLowerCase().trim())
+				.password(passwordEncoder.encode(request.getPassword()))
+				.phone(request.getPhone())
+				.role(Role.ADMIN)
+				.enabled(true)
+				.emailVerified(true)
+				.build();
+
+		userDao.save(admin);
+		log.info("Admin account created: {}", admin.getEmail());
+
+		return ApiResponse.success("Admin account created successfully!", null);
+	}
+
+	@Transactional(readOnly = true)
+	public ApiResponse<Boolean> adminExists() {
+		boolean exists = userDao.existsByRole(Role.ADMIN);
+		return ApiResponse.success("Admin existence checked", exists);
 	}
 }
