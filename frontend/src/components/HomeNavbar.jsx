@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { FaUser, FaSignOutAlt, FaTicketAlt, FaUserCircle } from "react-icons/fa";
+import { FaUser, FaSignOutAlt, FaTicketAlt, FaUserCircle, FaTachometerAlt, FaPlane, FaBuilding, FaCalendarAlt, FaUsers, FaComments } from "react-icons/fa";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 const HomeNavbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [userName, setUserName] = useState("");
+  const [userRole, setUserRole] = useState("");
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -18,8 +19,10 @@ const HomeNavbar = () => {
   useEffect(() => {
     const loggedIn = sessionStorage.getItem("isLoggedIn") === "true";
     const name = sessionStorage.getItem("name") || "";
+    const role = (sessionStorage.getItem("userType") || "").toUpperCase();
     setIsLoggedIn(loggedIn);
     setUserName(name);
+    setUserRole(role);
   }, []);
 
   const handleLogout = () => {
@@ -79,22 +82,39 @@ const HomeNavbar = () => {
                 >
                   <FaUserCircle className="me-1" /> {userName || "My Account"}
                 </button>
-                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
-                  <li>
-                    <Link className="dropdown-item" to="/profile">
-                      <FaUser className="me-2" /> Profile
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/customer/mybookings">
-                      <FaTicketAlt className="me-2" /> My Bookings
-                    </Link>
-                  </li>
-                  <li>
-                    <Link className="dropdown-item" to="/customer/feedback">
-                      <FaTicketAlt className="me-2" /> My Feedback
-                    </Link>
-                  </li>
+                <ul className="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown" style={{ minWidth: 220 }}>
+                  {/* Admin menu */}
+                  {userRole === 'ADMIN' && (<>
+                    <li><Link className="dropdown-item" to="/admin/dashboard"><FaTachometerAlt className="me-2" /> Dashboard</Link></li>
+                    <li><Link className="dropdown-item" to="/admin/airports"><FaBuilding className="me-2" /> Airports</Link></li>
+                    <li><Link className="dropdown-item" to="/admin/airlinemanagement"><FaPlane className="me-2" /> Airlines</Link></li>
+                    <li><Link className="dropdown-item" to="/admin/flights"><FaPlane className="me-2" /> Flights</Link></li>
+                    <li><Link className="dropdown-item" to="/admin/schedules"><FaCalendarAlt className="me-2" /> Schedules</Link></li>
+                    <li><Link className="dropdown-item" to="/admin/bookings"><FaTicketAlt className="me-2" /> Bookings</Link></li>
+                    <li><Link className="dropdown-item" to="/admin/managerapproval"><FaUsers className="me-2" /> Managers</Link></li>
+                    <li><Link className="dropdown-item" to="/admin/viewfeedback"><FaComments className="me-2" /> Feedback</Link></li>
+                    <li><Link className="dropdown-item" to="/admin/profile"><FaUser className="me-2" /> Profile</Link></li>
+                  </>)}
+
+                  {/* Airport Manager menu */}
+                  {userRole === 'AIRPORT_MANAGER' && (<>
+                    <li><Link className="dropdown-item" to="/manager/dashboard"><FaTachometerAlt className="me-2" /> Dashboard</Link></li>
+                    <li><Link className="dropdown-item" to="/manager/airlines"><FaPlane className="me-2" /> Airlines</Link></li>
+                    <li><Link className="dropdown-item" to="/manager/flights"><FaPlane className="me-2" /> Flights</Link></li>
+                    <li><Link className="dropdown-item" to="/manager/schedules"><FaCalendarAlt className="me-2" /> Schedules</Link></li>
+                    <li><Link className="dropdown-item" to="/manager/terminals"><FaBuilding className="me-2" /> Terminals</Link></li>
+                    <li><Link className="dropdown-item" to="/manager/bookings"><FaTicketAlt className="me-2" /> Bookings</Link></li>
+                    <li><Link className="dropdown-item" to="/manager/passengers"><FaUsers className="me-2" /> Passengers</Link></li>
+                    <li><Link className="dropdown-item" to="/manager/profile"><FaUser className="me-2" /> Profile</Link></li>
+                  </>)}
+
+                  {/* User menu */}
+                  {(userRole === 'USER' || userRole === 'CUSTOMER' || (!userRole && isLoggedIn)) && (<>
+                    <li><Link className="dropdown-item" to="/profile"><FaUser className="me-2" /> Profile</Link></li>
+                    <li><Link className="dropdown-item" to="/customer/mybookings"><FaTicketAlt className="me-2" /> My Bookings</Link></li>
+                    <li><Link className="dropdown-item" to="/customer/feedback"><FaComments className="me-2" /> My Feedback</Link></li>
+                  </>)}
+
                   <li><hr className="dropdown-divider" /></li>
                   <li>
                     <button className="dropdown-item text-danger" onClick={handleLogout}>

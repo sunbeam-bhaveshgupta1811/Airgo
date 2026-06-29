@@ -32,6 +32,7 @@ public class BookingController {
     private final BookingDao bookingDao;
     private final PaymentDao paymentDao;
     private final TicketPdfGenerator ticketPdfGenerator;
+    private final com.airline.service.EmailService emailService;
 
     @PostMapping("/bookings/create")
     public ResponseEntity<ApiResponse<BookingResponseDto>> createBooking(
@@ -104,6 +105,23 @@ public class BookingController {
         headers.setContentDispositionFormData("attachment", "ticket-" + booking.getBookingReference() + ".pdf");
 
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
+    }
+
+    @PostMapping("/bookings/{id}/email")
+    public ResponseEntity<ApiResponse<Void>> emailTicket(@PathVariable Long id) {
+        Booking booking = bookingDao.findById(id)
+                .orElseThrow(() -> new com.airline.exception.ResourceNotFoundException("Booking not found"));
+
+        String userEmail = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication().getName();
+        if (!booking.getUser().getEmail().equals(userEmail)) {
+            throw new com.airline.exception.BadRequestException("Not authorized");
+        }
+
+        Payment payment = paymentDao.findByBookingId(id).orElse(null);
+        emailService.sendBookingConfirmationEmail(booking, payment);
+
+        return ResponseEntity.ok(ApiResponse.success("Ticket emailed successfully", null));
     }
 
     @PreAuthorize("hasRole('ADMIN')")

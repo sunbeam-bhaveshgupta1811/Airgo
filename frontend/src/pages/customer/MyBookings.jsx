@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { FaSearch, FaDownload, FaTimes, FaPlane, FaTicketAlt } from 'react-icons/fa';
+import { FaSearch, FaDownload, FaTimes, FaPlane, FaTicketAlt, FaCreditCard } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { config } from '../../../config';
+import { useNavigate } from 'react-router-dom';
 
 const getAuthHeaders = () => ({ headers: { Authorization: `Bearer ${sessionStorage.getItem('jwt')}` } });
 
 const MyBookings = () => {
+  const navigate = useNavigate();
   const [bookings, setBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [filter, setFilter] = useState('ALL');
+  const [payingId, setPayingId] = useState(null);
 
   const fetchBookings = async () => {
     try {
@@ -27,6 +30,28 @@ const MyBookings = () => {
       await axios.patch(`${config.serverURL}/bookings/${id}/cancel`, {}, getAuthHeaders());
       toast.success('Booking cancelled'); fetchBookings();
     } catch (e) { toast.error(e.response?.data?.message || 'Failed to cancel'); }
+  };
+
+  const handlePayNow = async (bookingId) => {
+    setPayingId(bookingId);
+    try {
+      const res = await axios.post(`${config.serverURL}/payments`, {
+        bookingId,
+        paymentMethod: 'CREDIT_CARD'
+      }, getAuthHeaders());
+      const payment = res.data?.data;
+      if (payment?.status === 'SUCCESS') {
+        toast.success('Payment successful! Booking confirmed.');
+        fetchBookings();
+      } else {
+        toast.error('Payment was declined. Please try again.');
+        fetchBookings();
+      }
+    } catch (e) {
+      toast.error(e.response?.data?.message || 'Payment failed. Please try again.');
+    } finally {
+      setPayingId(null);
+    }
   };
 
   const handleDownload = async (id, ref) => {
@@ -119,8 +144,19 @@ const MyBookings = () => {
                       </>
                     )}
                     {b.status === 'PENDING' && (
-                      <button className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1" style={{ borderRadius: 6 }}
-                        onClick={() => handleCancel(b.id)}><FaTimes size={12} /> Cancel</button>
+                      <>
+                        <button className="btn btn-sm btn-success d-flex align-items-center gap-1" style={{ borderRadius: 6 }}
+                          disabled={payingId === b.id}
+                          onClick={() => handlePayNow(b.id)}>
+                          <FaCreditCard size={12} /> {payingId === b.id ? 'Processing...' : 'Pay Now'}
+                        </button>
+                        <button className="btn btn-sm btn-outline-danger d-flex align-items-center gap-1" style={{ borderRadius: 6 }}
+                          onClick={() => handleCancel(b.id)}><FaTimes size={12} /> Cancel</button>
+                      </>
+                    )}
+                    {b.status === 'COMPLETED' && (
+                      <button className="btn btn-sm btn-outline-primary d-flex align-items-center gap-1" style={{ borderRadius: 6 }}
+                        onClick={() => handleDownload(b.id, b.bookingReference)}><FaDownload size={12} /> Download Ticket</button>
                     )}
                   </div>
                 </div>

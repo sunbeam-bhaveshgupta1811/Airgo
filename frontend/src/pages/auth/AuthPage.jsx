@@ -38,8 +38,18 @@ const AuthPage = () => {
         if (data.airportId) sessionStorage.setItem('airportId', data.airportId);
 
         toast.success(`Welcome, ${data.firstName}!`);
-        if (data.role === 'AIRPORT_MANAGER') navigate('/manager/dashboard');
-        else navigate('/');
+
+        // Check for pending booking redirect (user selected flight before login)
+        const pendingRedirect = sessionStorage.getItem('pendingBookingRedirect');
+        if (pendingRedirect && data.role === 'USER') {
+          sessionStorage.removeItem('pendingBookingRedirect');
+          const bookingData = JSON.parse(sessionStorage.getItem('flightBookingData') || 'null');
+          navigate(pendingRedirect, { state: { bookingData } });
+        } else if (data.role === 'AIRPORT_MANAGER') {
+          navigate('/manager/dashboard');
+        } else {
+          navigate('/');
+        }
       } else {
         toast.error(result.message || 'Login failed');
       }

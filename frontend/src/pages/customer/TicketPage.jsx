@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import HomeNavbar from '../../components/HomeNavbar';
+// HomeNavbar removed — already rendered by Home layout
 import {
   FaPlane, FaCheckCircle, FaUser, FaTicketAlt,
   FaMapMarkerAlt, FaRupeeSign, FaDownload, FaEnvelope,
@@ -547,9 +547,13 @@ const TicketPage = () => {
   };
 
   const handleBackToHome = () => {
-    // Clear any remaining session data
     sessionStorage.removeItem('bookingConfirmation');
-    navigate('/');
+    navigate('/', { replace: true });
+  };
+
+  const handleGoToBookings = () => {
+    sessionStorage.removeItem('bookingConfirmation');
+    navigate('/customer/mybookings', { replace: true });
   };
 
   // Auto-hide error messages after 5 seconds
@@ -578,7 +582,7 @@ const TicketPage = () => {
   if (error && !ticketData) {
     return (
       <div className="ticket-page">
-        <HomeNavbar />
+        {/* navbar provided by layout */}
         <div className="ticket-container">
           <div className="error-container">
             <h2>Unable to Load Ticket</h2>
@@ -596,7 +600,7 @@ const TicketPage = () => {
   if (!ticketData) {
     return (
       <div className="ticket-page">
-        <HomeNavbar />
+        {/* navbar provided by layout */}
         <div className="ticket-container">
           <div className="error-container">
             <h2>No Ticket Data Found</h2>
@@ -870,10 +874,15 @@ const TicketPage = () => {
         </div>
 
         <div className="ticket-footer">
-          <p>Thank you for choosing our airline service. Have a pleasant journey!</p>
-          <button className="back-home-btn" onClick={handleBackToHome}>
-            Back to Dashboard
-          </button>
+          <p>Thank you for choosing Airgo. Have a pleasant journey!</p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="back-home-btn" onClick={handleGoToBookings}>
+              My Bookings
+            </button>
+            <button className="back-home-btn" onClick={handleBackToHome} style={{ background: '#64748b' }}>
+              Back to Home
+            </button>
+          </div>
         </div>
       </div>
     </div>
