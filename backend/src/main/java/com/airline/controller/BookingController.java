@@ -32,6 +32,7 @@ public class BookingController {
     private final BookingDao bookingDao;
     private final PaymentDao paymentDao;
     private final TicketPdfGenerator ticketPdfGenerator;
+    private final com.airline.service.EmailService emailService;
 
     @PostMapping("/bookings/create")
     public ResponseEntity<ApiResponse<BookingResponseDto>> createBooking(
@@ -106,6 +107,23 @@ public class BookingController {
         return ResponseEntity.ok().headers(headers).body(pdfBytes);
     }
 
+    @PostMapping("/bookings/{id}/email")
+    public ResponseEntity<ApiResponse<Void>> emailTicket(@PathVariable Long id) {
+        Booking booking = bookingDao.findById(id)
+                .orElseThrow(() -> new com.airline.exception.ResourceNotFoundException("Booking not found"));
+
+        String userEmail = org.springframework.security.core.context.SecurityContextHolder
+                .getContext().getAuthentication().getName();
+        if (!booking.getUser().getEmail().equals(userEmail)) {
+            throw new com.airline.exception.BadRequestException("Not authorized");
+        }
+
+        Payment payment = paymentDao.findByBookingId(id).orElse(null);
+        emailService.sendBookingConfirmationEmail(booking, payment);
+
+        return ResponseEntity.ok(ApiResponse.success("Ticket emailed successfully", null));
+    }
+
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/admin/bookings")
     public ResponseEntity<ApiResponse<List<BookingResponseDto>>> getAllBookings() {
@@ -132,7 +150,7 @@ public class BookingController {
             HttpServletRequest httpRequest) {
         Long airportId = (Long) httpRequest.getAttribute("airportId");
         if (airportId == null) {
-            throw new com.airline.exception.BadRequestException("No airport assigned to this manager");
+            return ResponseEntity.ok(ApiResponse.success("No airport assigned", java.util.List.of()));
         }
         return ResponseEntity.ok(ApiResponse.success("Bookings fetched",
                 bookingService.getBookingsByAirport(airportId)));

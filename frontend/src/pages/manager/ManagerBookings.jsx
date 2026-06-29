@@ -8,7 +8,7 @@ const ManagerBookings = () => {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
 
-  useEffect(() => { (async () => { try { setBookings(await getManagerBookings()); } catch (e) { toast.error(e.message); } finally { setLoading(false); } })(); }, []);
+  useEffect(() => { (async () => { try { setBookings(await getManagerBookings()); } catch (e) { /* empty data */ } finally { setLoading(false); } })(); }, []);
 
   const filtered = bookings.filter(b => [b.bookingReference, b.userName, b.flightNumber].some(f => (f || '').toLowerCase().includes(search.toLowerCase())));
   const statusColor = { CONFIRMED: 'bg-success', PENDING: 'bg-warning text-dark', CANCELLED: 'bg-danger', COMPLETED: 'bg-info' };

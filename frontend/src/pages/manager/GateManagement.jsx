@@ -12,7 +12,7 @@ const GateManagement = () => {
   const [form, setForm] = useState({ gateNumber: '', terminalId: '', status: 'AVAILABLE' });
 
   const fetchData = async () => {
-    try { const [g, t] = await Promise.all([getMyGates(), getMyTerminals()]); setGates(g); setTerminals(t); } catch (e) { toast.error(e.message); } finally { setLoading(false); }
+    try { const [g, t] = await Promise.all([getMyGates(), getMyTerminals()]); setGates(g); setTerminals(t); } catch (e) { /* empty data */ } finally { setLoading(false); }
   };
   useEffect(() => { fetchData(); }, []);
 

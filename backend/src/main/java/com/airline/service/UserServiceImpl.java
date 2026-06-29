@@ -33,6 +33,7 @@ public class UserServiceImpl implements UserService{
 
     private final UserDao userDao;
     private final PasswordEncoder passwordEncoder;
+    private final CloudinaryService cloudinaryService;
 
     @Transactional(readOnly = true)
     public UserProfileResponseDto getMyProfile() {
@@ -75,6 +76,12 @@ public class UserServiceImpl implements UserService{
         if (request.getPhone() != null) {
             user.setPhone(request.getPhone().trim());
         }
+        if (request.getTitle() != null) {
+            user.setTitle(request.getTitle().trim());
+        }
+        if (request.getDob() != null && !request.getDob().isBlank()) {
+            user.setDob(java.time.LocalDate.parse(request.getDob()));
+        }
 
         User saved = userDao.save(user);
         log.info("Profile updated for user: {}", email);
@@ -108,6 +115,34 @@ public class UserServiceImpl implements UserService{
         return ApiResponse.success("Password changed successfully", null);
     }
 
+    @Transactional
+    public UserProfileResponseDto uploadProfileImage(org.springframework.web.multipart.MultipartFile file) {
+        String email = SecurityContextHolder.getContext()
+                .getAuthentication().getName();
+
+        User user = userDao.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+
+        try {
+            // Delete old image if exists
+            if (user.getProfileImageUrl() != null && !user.getProfileImageUrl().isBlank()) {
+                cloudinaryService.deleteImage(user.getProfileImageUrl());
+            }
+
+            String imageUrl = cloudinaryService.uploadImage(file, "airgo/profiles");
+            user.setProfileImageUrl(imageUrl);
+            User saved = userDao.save(user);
+
+            log.info("Profile image uploaded for user: {}", email);
+            return mapToProfileResponse(saved);
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException(e.getMessage());
+        } catch (Exception e) {
+            log.error("Failed to upload profile image: {}", e.getMessage());
+            throw new BadRequestException("Failed to upload image. Please try again.");
+        }
+    }
+
     private UserProfileResponseDto mapToProfileResponse(User user) {
         return UserProfileResponseDto.builder()
                 .id(user.getId())
@@ -118,6 +153,9 @@ public class UserServiceImpl implements UserService{
                 .role(user.getRole().name())
                 .emailVerified(user.isEmailVerified())
                 .createdAt(user.getCreatedAt())
+                .title(user.getTitle())
+                .dob(user.getDob())
+                .profileImageUrl(user.getProfileImageUrl())
                 .build();
     }
 

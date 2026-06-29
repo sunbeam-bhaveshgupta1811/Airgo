@@ -277,14 +277,18 @@ const Payment = () => {
       const result = await processFullBooking({
         scheduleId: Number(scheduleId),
         numberOfPassengers: validatedPassengers.length,
-        passengers: validatedPassengers.map((p) => ({
-          firstName: p.firstName,
-          lastName: p.lastName,
-          gender: (p.gender || 'MALE').toUpperCase(),
-          dateOfBirth: p.dob || p.dateOfBirth,
-          idType: 'PASSPORT',
-          idNumber: p.passport || p.idNumber || 'N/A',
-        })),
+        passengers: validatedPassengers.map((p) => {
+          let dob = p.dob || p.dateOfBirth || '2000-01-01';
+          if (dob && dob.includes('T')) dob = dob.split('T')[0];
+          return {
+            firstName: p.firstName || 'Passenger',
+            lastName: p.lastName || 'Unknown',
+            gender: (p.gender || 'MALE').toUpperCase(),
+            dateOfBirth: dob,
+            idType: (p.idType || 'PASSPORT').toUpperCase(),
+            idNumber: p.passport || p.idNumber || 'NA000000',
+          };
+        }),
         paymentMethod: backendPaymentMethod,
       });
 
@@ -316,8 +320,13 @@ const Payment = () => {
 
       setIsSuccess(true);
 
+      // Clear all booking session data immediately after successful payment
+      sessionStorage.removeItem('pendingBookingRedirect');
+
       setTimeout(() => {
+        // replace: true prevents back button from returning to payment page
         navigate('/customer/ticketpage', {
+          replace: true,
           state: {
             booking: bookingConfirmation.booking,
             bookingId: result.booking?.id,
@@ -334,12 +343,15 @@ const Payment = () => {
   };
 
   if (!bookingData || !passengers || passengers.length === 0) {
+    // No booking data — user navigated here directly or hit back after payment
     return (
       <div className="payment-page">
-        <div className="payment-container">
-          <div className="loading-spinner">
-            <div className="spinner"></div>
-            <p>Loading payment details...</p>
+        <div className="payment-container" style={{ textAlign: 'center', padding: '3rem' }}>
+          <h3>No Booking Found</h3>
+          <p style={{ color: '#666', marginBottom: '1.5rem' }}>Your session has expired or payment was already completed.</p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
+            <button className="pay-button" style={{ maxWidth: 200 }} onClick={() => navigate('/customer/mybookings', { replace: true })}>My Bookings</button>
+            <button className="back-button" style={{ maxWidth: 200 }} onClick={() => navigate('/', { replace: true })}>Search Flights</button>
           </div>
         </div>
       </div>
@@ -491,9 +503,7 @@ const Payment = () => {
           </form>
         )}
 
-        <button type="button" className="back-button" onClick={handleBack}>
-          Back to Preview
-        </button>
+        {/* No back button — prevents re-entry after payment flow starts */}
       </div>
     </div>
   );

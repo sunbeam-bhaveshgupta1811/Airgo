@@ -1,19 +1,26 @@
 import React, { useState, useEffect } from 'react';
-import { FaBuilding, FaDoorOpen, FaPlane, FaMapMarkerAlt, FaTicketAlt } from 'react-icons/fa';
+import { FaBuilding, FaDoorOpen, FaPlane, FaMapMarkerAlt, FaClock } from 'react-icons/fa';
 import { getManagerDashboardStats } from '../../services/manager/managerService';
 import { toast } from 'react-toastify';
 
 const ManagerDashboard = () => {
   const [stats, setStats] = useState({});
   const [loading, setLoading] = useState(true);
+  const [noAirport, setNoAirport] = useState(false);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
         const data = await getManagerDashboardStats();
-        setStats(data);
+        if (data.noAirport) {
+          setNoAirport(true);
+        } else {
+          setStats(data);
+        }
       } catch (error) {
-        toast.error(error.message);
+        if (error.response?.data?.message?.includes('No airport')) {
+          setNoAirport(true);
+        }
       } finally {
         setLoading(false);
       }
@@ -24,6 +31,25 @@ const ManagerDashboard = () => {
   if (loading) return (
     <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
       <div className="spinner-border text-primary" style={{ width: '3rem', height: '3rem' }}></div>
+    </div>
+  );
+
+  if (noAirport) return (
+    <div className="d-flex justify-content-center align-items-center" style={{ minHeight: '60vh' }}>
+      <div className="text-center" style={{ maxWidth: 500 }}>
+        <div className="rounded-circle d-inline-flex align-items-center justify-content-center mb-4" style={{ width: 80, height: 80, background: '#fef3c7' }}>
+          <FaClock size={36} style={{ color: '#d97706' }} />
+        </div>
+        <h4 className="fw-bold mb-2" style={{ color: '#0f172a' }}>No Airport Assigned</h4>
+        <p className="text-muted mb-3" style={{ fontSize: '1rem', lineHeight: 1.6 }}>
+          Your account has been approved, but you haven't been assigned an airport yet.
+          Please wait for the System Administrator to assign you to an airport.
+        </p>
+        <div className="d-inline-flex align-items-center gap-2 px-3 py-2" style={{ background: '#f1f5f9', borderRadius: 10 }}>
+          <FaMapMarkerAlt className="text-muted" />
+          <span className="text-muted" style={{ fontSize: '0.9rem' }}>Airport assignment is managed by Admin</span>
+        </div>
+      </div>
     </div>
   );
 

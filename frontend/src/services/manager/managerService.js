@@ -69,3 +69,37 @@ export const getManagerBookings = async () => {
   const response = await axios.get(`${config.serverURL}/manager/bookings`, getAuthHeaders())
   return response.data?.data || []
 }
+
+// ===== AIRLINE MANAGEMENT =====
+
+export const getManagerAirlines = async () => {
+  const response = await axios.get(`${config.serverURL}/manager/airlines`, getAuthHeaders())
+  return response.data?.data || []
+}
+
+// ===== FLIGHT MANAGEMENT =====
+
+export const getManagerFlights = async () => {
+  const response = await axios.get(`${config.serverURL}/manager/flights`, getAuthHeaders())
+  return response.data?.data || []
+}
+
+export const addManagerFlight = async (data) => {
+  const response = await axios.post(`${config.serverURL}/manager/flights`, data, getAuthHeaders())
+  return response.data?.data || null
+}
+
+export const updateManagerFlight = async (id, data) => {
+  const response = await axios.put(`${config.serverURL}/manager/flights/${id}`, data, getAuthHeaders())
+  return response.data?.data || null
+}
+
+export const deactivateManagerFlight = async (id) => {
+  const response = await axios.patch(`${config.serverURL}/manager/flights/${id}/deactivate`, {}, getAuthHeaders())
+  return response.data
+}
+
+export const reactivateManagerFlight = async (id) => {
+  const response = await axios.patch(`${config.serverURL}/manager/flights/${id}/reactivate`, {}, getAuthHeaders())
+  return response.data
+}

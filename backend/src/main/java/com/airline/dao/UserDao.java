@@ -23,6 +23,7 @@ public interface UserDao extends JpaRepository<User, Long>{
 	List<User> findByRole(Role role);
 	List<User> findByRoleAndApprovalStatus(Role role, ApprovalStatus approvalStatus);
 	long countByRole(Role role);
+	Optional<User> findByAirportId(Long airportId);
 
 
 //	Optional<ScheduleFlight> findBySourceAndDestinationAndDeparture(String source,String destination,String departure);

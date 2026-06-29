@@ -30,6 +30,8 @@ public class AdminController {
     private final AirlineDao airlineDao;
     private final FlightDao flightDao;
     private final BookingDao bookingDao;
+    private final com.airline.dao.AirportDao airportDao;
+    private final com.airline.dao.FlightScheduleDao scheduleDao;
 
     @GetMapping("/users")
     public ResponseEntity<ApiResponse<List<UserProfileResponseDto>>> getAllUsers() {
@@ -131,6 +133,7 @@ public class AdminController {
             map.put("enabled", m.isEnabled());
             map.put("emailVerified", m.isEmailVerified());
             map.put("airportId", m.getAirport() != null ? m.getAirport().getId() : null);
+            map.put("airportName", m.getAirport() != null ? m.getAirport().getName() : null);
             map.put("createdAt", m.getCreatedAt());
             return map;
         }).toList();
@@ -172,6 +175,113 @@ public class AdminController {
         }
         userDao.delete(manager);
         return ResponseEntity.ok(ApiResponse.success("Manager deleted", null));
+    }
+
+    @PatchMapping("/airports/{airportId}/assign-manager/{managerId}")
+    public ResponseEntity<ApiResponse<Void>> assignManagerToAirport(
+            @PathVariable Long airportId, @PathVariable Long managerId) {
+        com.airline.entity.Airport airport = airportDao.findById(airportId)
+                .orElseThrow(() -> new com.airline.exception.ResourceNotFoundException("Airport not found"));
+        User manager = userDao.findById(managerId)
+                .orElseThrow(() -> new com.airline.exception.ResourceNotFoundException("Manager not found"));
+
+        if (manager.getRole() != com.airline.entity.Role.AIRPORT_MANAGER) {
+            throw new com.airline.exception.BadRequestException("User is not an Airport Manager");
+        }
+        if (manager.getApprovalStatus() != com.airline.entity.ApprovalStatus.APPROVED) {
+            throw new com.airline.exception.BadRequestException("Manager must be approved before assignment");
+        }
+
+        // Check if airport already has a manager
+        userDao.findByAirportId(airportId).ifPresent(existing -> {
+            if (!existing.getId().equals(managerId)) {
+                existing.setAirport(null);
+                userDao.save(existing);
+            }
+        });
+
+        // Check if manager already assigned to another airport
+        if (manager.getAirport() != null && !manager.getAirport().getId().equals(airportId)) {
+            throw new com.airline.exception.BadRequestException(
+                    "Manager is already assigned to " + manager.getAirport().getName() + ". Unassign first.");
+        }
+
+        manager.setAirport(airport);
+        userDao.save(manager);
+        return ResponseEntity.ok(ApiResponse.success(
+                "Manager " + manager.getFirstName() + " assigned to " + airport.getName(), null));
+    }
+
+    @PatchMapping("/airports/{airportId}/unassign-manager")
+    public ResponseEntity<ApiResponse<Void>> unassignManagerFromAirport(@PathVariable Long airportId) {
+        userDao.findByAirportId(airportId).ifPresent(manager -> {
+            manager.setAirport(null);
+            userDao.save(manager);
+        });
+        return ResponseEntity.ok(ApiResponse.success("Manager unassigned from airport", null));
+    }
+
+    @GetMapping("/airports/{id}/history")
+    public ResponseEntity<ApiResponse<Map<String, Object>>> getAirportHistory(@PathVariable Long id) {
+        com.airline.entity.Airport airport = airportDao.findById(id)
+                .orElseThrow(() -> new com.airline.exception.ResourceNotFoundException("Airport not found"));
+
+        Map<String, Object> history = new LinkedHashMap<>();
+        history.put("airport", com.airline.response.AirportResponseDto.builder()
+                .id(airport.getId()).code(airport.getCode()).name(airport.getName())
+                .city(airport.getCity()).country(airport.getCountry()).timezone(airport.getTimezone())
+                .active(airport.isActive()).build());
+
+        // Assigned manager
+        userDao.findByAirportId(id).ifPresentOrElse(
+                m -> {
+                    Map<String, Object> mgr = new LinkedHashMap<>();
+                    mgr.put("id", m.getId());
+                    mgr.put("name", m.getFirstName() + " " + m.getLastName());
+                    mgr.put("email", m.getEmail());
+                    history.put("manager", mgr);
+                },
+                () -> history.put("manager", null)
+        );
+
+        // Flights at this airport
+        List<com.airline.entity.Flight> flights = flightDao.findByAirportId(id);
+        history.put("totalFlights", flights.size());
+        history.put("flights", flights.stream().map(f -> {
+            Map<String, Object> fm = new LinkedHashMap<>();
+            fm.put("id", f.getId());
+            fm.put("flightNumber", f.getFlightNumber());
+            fm.put("airline", f.getAirline().getName());
+            fm.put("origin", f.getOriginAirport().getCode());
+            fm.put("destination", f.getDestinationAirport().getCode());
+            fm.put("status", f.getStatus().name());
+            return fm;
+        }).toList());
+
+        // Bookings at this airport
+        List<com.airline.entity.Booking> bookings = bookingDao.findByAirportIdWithDetails(id);
+        history.put("totalBookings", bookings.size());
+        java.math.BigDecimal totalRevenue = bookings.stream()
+                .filter(b -> b.getStatus() == com.airline.entity.BookingStatus.CONFIRMED)
+                .map(com.airline.entity.Booking::getTotalAmount)
+                .reduce(java.math.BigDecimal.ZERO, java.math.BigDecimal::add);
+        history.put("totalRevenue", totalRevenue);
+
+        // Recent bookings (last 20)
+        history.put("recentBookings", bookings.stream().limit(20).map(b -> {
+            Map<String, Object> bm = new LinkedHashMap<>();
+            bm.put("id", b.getId());
+            bm.put("reference", b.getBookingReference());
+            bm.put("passenger", b.getUser().getFirstName() + " " + b.getUser().getLastName());
+            bm.put("flight", b.getFlightSchedule().getFlight().getFlightNumber());
+            bm.put("date", b.getFlightSchedule().getJourneyDate());
+            bm.put("amount", b.getTotalAmount());
+            bm.put("status", b.getStatus().name());
+            bm.put("createdAt", b.getCreatedAt());
+            return bm;
+        }).toList());
+
+        return ResponseEntity.ok(ApiResponse.success("Airport history fetched", history));
     }
 
 }

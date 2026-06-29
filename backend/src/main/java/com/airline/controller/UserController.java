@@ -38,6 +38,15 @@ public class UserController {
         );
     }
 
+    @PostMapping("/profile/image")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> uploadProfileImage(
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        return ResponseEntity.ok(
+                ApiResponse.success("Profile image uploaded successfully", userService.uploadProfileImage(file))
+        );
+    }
+
     @PutMapping("/change-password")
     @PreAuthorize("isAuthenticated()")
     public ResponseEntity<ApiResponse<Void>> changePassword(
