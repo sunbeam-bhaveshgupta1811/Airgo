@@ -34,7 +34,9 @@ public class BookingServiceImpl implements BookingService{
     private final PaymentDao paymentDao;
     private final EmailService emailService;
     private final SeatBroadcastService seatBroadcastService;
-    private final KafkaProducerService kafkaProducerService;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private KafkaProducerService kafkaProducerService;
 
     @Transactional
     public BookingResponseDto createBooking(BookingRequestDto request) {
@@ -105,7 +107,7 @@ public class BookingServiceImpl implements BookingService{
                 .totalAmount(totalAmount)
                 .timestamp(java.time.LocalDateTime.now())
                 .build();
-        kafkaProducerService.publishBookingEvent(bookingEvent);
+        if (kafkaProducerService != null) kafkaProducerService.publishBookingEvent(bookingEvent);
 
         return mapToResponse(saved);
     }
@@ -212,7 +214,7 @@ public class BookingServiceImpl implements BookingService{
                 .totalAmount(booking.getTotalAmount())
                 .timestamp(java.time.LocalDateTime.now())
                 .build();
-        kafkaProducerService.publishBookingEvent(bookingEvent);
+        if (kafkaProducerService != null) kafkaProducerService.publishBookingEvent(bookingEvent);
 
         Payment payment = paymentDao.findByBookingId(bookingId).orElse(null);
         emailService.sendBookingCancellationEmail(booking, payment);

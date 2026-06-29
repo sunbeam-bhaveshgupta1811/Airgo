@@ -13,8 +13,8 @@ import About from "./components/About";
 import ContactUs from "./components/ContactUs";
 import FlightList from "./pages/customer/FlightList";
 import AirlineManagement from "./pages/admin/AirlineManagement";
-import FlightManagement from "./pages/admin/FlightManagement";
-import ScheduleFight from "./pages/admin/ScheduleFight";
+import AdminAllFlights from "./pages/admin/AdminAllFlights";
+import AdminAllSchedules from "./pages/admin/AdminAllSchedules";
 import PassengersList from "./pages/admin/PassengersList";
 import { ToastContainer } from "react-toastify";
 import Profile from "./components/Profile";
@@ -23,8 +23,6 @@ import BookingPreview from "./pages/customer/BookingPreview";
 import Payment from "./pages/customer/Payment";
 import TicketPage from "./pages/customer/TicketPage";
 import AddAirline from "./pages/admin/AddAirline";
-import AddFlights from "./pages/admin/Addflight";
-import AddScheduleFlight from "./pages/admin/AddScheduleFlight";
 import FlightSearch from "./pages/customer/FlightSearch";
 import AdminLayout from "./pages/admin/AdminLayout";
 import CustomerFeedback from "./pages/feedback/CustomerFeedback";
@@ -38,11 +36,19 @@ import ManagerDashboard from "./pages/manager/ManagerDashboard";
 import TerminalManagement from "./pages/manager/TerminalManagement";
 import GateManagement from "./pages/manager/GateManagement";
 import ManagerBookings from "./pages/manager/ManagerBookings";
+import ManagerAirlines from "./pages/manager/ManagerAirlines";
+import ManagerFlights from "./pages/manager/ManagerFlights";
 import ManagerLogin from "./pages/manager/auth/ManagerLogin";
+import ManagerSchedules from "./pages/manager/ManagerSchedules";
+import AirportManagement from "./pages/admin/AirportManagement";
 import AuthPage from "./pages/auth/AuthPage";
 import UserRegister from "./pages/auth/UserRegister";
 import ManagerRegister from "./pages/auth/ManagerRegister";
 import ManagerApproval from "./pages/admin/ManagerApproval";
+import AirportHistory from "./pages/admin/AirportHistory";
+import ManagerPassengers from "./pages/manager/ManagerPassengers";
+import MyBookings from "./pages/customer/MyBookings";
+import BookingManagement from "./pages/admin/BookingManagement";
 
 function App() {
   return (
@@ -118,6 +124,14 @@ function App() {
                 </ProtectedRoute>
               }
             />
+            <Route
+              path="mybookings"
+              element={
+                <ProtectedRoute allowedRoles={["CUSTOMER", "USER"]}>
+                  <MyBookings />
+                </ProtectedRoute>
+              }
+            />
           </Route>
         </Route>
 
@@ -145,14 +159,15 @@ function App() {
         >
           <Route index element={<AdminDashboard />} />
           <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="airports" element={<AirportManagement />} />
+          <Route path="airports/:id/history" element={<AirportHistory />} />
           <Route path="admindashboard" element={<Navigate to="/admin/dashboard" replace />} />
           <Route path="addairline" element={<AddAirline />} />
           <Route path="airlinemanagement" element={<AirlineManagement />} />
-          <Route path="flightmanagement" element={<FlightManagement />} />
-          <Route path="scheduleflight" element={<ScheduleFight />} />
-          <Route path="addscheduleflight" element={<AddScheduleFlight />} />
-          <Route path="addflight" element={<AddFlights />} />
+          <Route path="flights" element={<AdminAllFlights />} />
+          <Route path="schedules" element={<AdminAllSchedules />} />
           <Route path="passengerslist" element={<PassengersList />} />
+          <Route path="bookings" element={<BookingManagement />} />
           <Route path="managerapproval" element={<ManagerApproval />} />
           <Route path="viewfeedback" element={<AdminViewFeedbackTable />} />
           <Route path="feedback" element={<Navigate to="/admin/viewfeedback" replace />} />
@@ -171,9 +186,13 @@ function App() {
         >
           <Route index element={<ManagerDashboard />} />
           <Route path="dashboard" element={<ManagerDashboard />} />
+          <Route path="airlines" element={<ManagerAirlines />} />
+          <Route path="flights" element={<ManagerFlights />} />
+          <Route path="schedules" element={<ManagerSchedules />} />
           <Route path="terminals" element={<TerminalManagement />} />
           <Route path="gates" element={<GateManagement />} />
           <Route path="bookings" element={<ManagerBookings />} />
+          <Route path="passengers" element={<ManagerPassengers />} />
           <Route path="profile" element={<Profile />} />
         </Route>
 

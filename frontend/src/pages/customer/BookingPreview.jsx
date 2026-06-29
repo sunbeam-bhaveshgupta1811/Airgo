@@ -127,12 +127,13 @@ const BookingPreview = () => {
     // Save final booking data to session storage
     saveFinalBookingToStorage();
     
-    // Navigate to payment page
-    navigate('/customer/payment', { 
-      state: { 
+    // Navigate to payment page — replace so back button doesn't return here after payment
+    navigate('/customer/payment', {
+      replace: true,
+      state: {
         bookingDetails: bookingData,
-        totalPrice 
-      } 
+        totalPrice
+      }
     });
   };
 

@@ -11,6 +11,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import org.springframework.web.method.annotation.HandlerMethodValidationException;
 
 import com.airline.dto.ApiResponse;
 
@@ -44,6 +45,26 @@ public class GlobalExceptionHandler {
                         fe -> fe.getDefaultMessage() != null ? fe.getDefaultMessage() : "Invalid value",
                         (existing, replacement) -> existing
                 ));
+    }
+
+    @ExceptionHandler(HandlerMethodValidationException.class)
+    public ResponseEntity<ApiResponse<String>> handleHandlerMethodValidation(
+            HandlerMethodValidationException ex) {
+        StringBuilder errors = new StringBuilder();
+        ex.getAllErrors().forEach(error -> {
+            if (error instanceof FieldError fe) {
+                errors.append(fe.getField()).append(": ").append(fe.getDefaultMessage()).append("; ");
+            } else {
+                errors.append(error.getDefaultMessage()).append("; ");
+            }
+        });
+        String message = errors.length() > 0 ? errors.toString().trim() : "Validation failed";
+        log.warn("Validation failure: {}", message);
+        return ResponseEntity.badRequest()
+                .body(ApiResponse.<String>builder()
+                        .success(false)
+                        .message(message)
+                        .build());
     }
 
     @ExceptionHandler(ValidationException.class)

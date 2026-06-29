@@ -1,5 +1,7 @@
 package com.airline.security;
 
+import com.airline.dao.UserDao;
+import com.airline.entity.User;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -21,6 +23,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final UserDetailsService userDetailsService;
+    private final UserDao userDao;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -57,11 +60,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 authToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(authToken);
 
-                // Extract airportId for manager-level data isolation
-                Long airportId = jwtUtil.extractAirportId(jwt);
-                if (airportId != null) {
-                    request.setAttribute("airportId", airportId);
-                }
+                // Fetch airportId from DB (not JWT) so it reflects admin assignments in real-time
+                userDao.findByEmail(userEmail).ifPresent(user -> {
+                    if (user.getAirport() != null) {
+                        request.setAttribute("airportId", user.getAirport().getId());
+                    }
+                });
             }
         }
 

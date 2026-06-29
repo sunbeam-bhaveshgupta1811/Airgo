@@ -20,4 +20,7 @@ public class UserProfileResponseDto {
 	private String role;
 	private boolean emailVerified;
 	private LocalDateTime createdAt;
+	private String title;
+	private java.time.LocalDate dob;
+	private String profileImageUrl;
 }

@@ -41,6 +41,14 @@ public class User {
 	@Column(unique = true)
 	private String phone;
 
+	private String title;  // Mr., Mrs., Ms., Dr., Prof.
+
+	@Column(name = "date_of_birth")
+	private java.time.LocalDate dob;
+
+	@Column(length = 500)
+	private String profileImageUrl;
+
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
 	private Role role;

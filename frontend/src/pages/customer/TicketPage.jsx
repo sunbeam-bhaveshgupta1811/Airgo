@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import HomeNavbar from '../../components/HomeNavbar';
+// HomeNavbar removed — already rendered by Home layout
 import {
   FaPlane, FaCheckCircle, FaUser, FaTicketAlt,
   FaMapMarkerAlt, FaRupeeSign, FaDownload, FaEnvelope,
@@ -33,26 +33,24 @@ const TicketPage = () => {
 
   useEffect(() => {
     const initializeTicketData = async () => {
-      
-      // Priority 1: Use booking data directly from payment flow
-      if (bookingData && Object.keys(bookingData).length > 0) {
-        const formattedData = formatTicketData(bookingData);
-        if (formattedData) {
-          setTicketData(formattedData);
-          setLoading(false);
-          // Store in session storage as backup
-          sessionStorage.setItem('bookingConfirmation', JSON.stringify({ booking: bookingData }));
-          return;
-        }
-      }
 
-      // Priority 2: If we have bookingId, fetch from API
+      // Priority 1: Always fetch from API if we have bookingId (most reliable)
       if (bookingId && bookingId !== 'N/A') {
         await fetchTicketFromAPI();
         return;
       }
 
-      // Priority 3: Try to get from session storage as fallback
+      // Priority 2: Use booking data from payment flow
+      if (bookingData && Object.keys(bookingData).length > 0) {
+        const formattedData = formatTicketData(bookingData);
+        if (formattedData) {
+          setTicketData(formattedData);
+          setLoading(false);
+          return;
+        }
+      }
+
+      // Priority 3: Try session storage fallback
       await tryFromSessionStorage();
     };
 
@@ -64,20 +62,40 @@ const TicketPage = () => {
       setLoading(true);
       setError('');
       const data = await getBookingById(bookingId);
-      
+
       if (data && Object.keys(data).length > 0) {
-        const formattedData = formatTicketData(data);
-        if (formattedData) {
-          setTicketData(formattedData);
-        } else {
-          throw new Error('Invalid booking data received');
-        }
+        // Map API response directly (flat structure from BookingResponseDto)
+        const mapped = {
+          bookingId: data.id,
+          bookingDate: data.createdAt || new Date().toISOString(),
+          pnr: data.bookingReference,
+          flightNumber: data.flightNumber || 'N/A',
+          airline: data.airlineName || 'N/A',
+          source: data.originCity || 'N/A',
+          destination: data.destinationCity || 'N/A',
+          departureDate: data.journeyDate || 'N/A',
+          departureTime: formatTime(data.departureTime),
+          arrivalDate: data.journeyDate || 'N/A',
+          arrivalTime: formatTime(data.arrivalTime),
+          passengers: (data.passengers || []).map(p => ({
+            name: `${p.firstName || ''} ${p.lastName || ''}`.trim(),
+            firstName: p.firstName, lastName: p.lastName,
+            gender: p.gender, seatNumber: p.seatNumber
+          })),
+          totalPassengers: data.numberOfPassengers || (data.passengers || []).length,
+          totalFare: parseFloat(data.totalAmount || 0),
+          paymentMethod: data.payment?.paymentMethod || 'N/A',
+          paymentStatus: data.payment?.status || 'N/A',
+          transactionId: data.payment?.transactionId || null,
+          classType: 'Economy',
+          bookingStatus: data.status || 'CONFIRMED',
+        };
+        setTicketData(mapped);
       } else {
         throw new Error('No booking data found');
       }
     } catch (error) {
       setError('Failed to load ticket data. Please try again.');
-      // Try fallback methods
       await tryFromSessionStorage();
     } finally {
       setLoading(false);
@@ -547,9 +565,13 @@ const TicketPage = () => {
   };
 
   const handleBackToHome = () => {
-    // Clear any remaining session data
     sessionStorage.removeItem('bookingConfirmation');
-    navigate('/');
+    navigate('/', { replace: true });
+  };
+
+  const handleGoToBookings = () => {
+    sessionStorage.removeItem('bookingConfirmation');
+    navigate('/customer/mybookings', { replace: true });
   };
 
   // Auto-hide error messages after 5 seconds
@@ -578,7 +600,7 @@ const TicketPage = () => {
   if (error && !ticketData) {
     return (
       <div className="ticket-page">
-        <HomeNavbar />
+        {/* navbar provided by layout */}
         <div className="ticket-container">
           <div className="error-container">
             <h2>Unable to Load Ticket</h2>
@@ -596,7 +618,7 @@ const TicketPage = () => {
   if (!ticketData) {
     return (
       <div className="ticket-page">
-        <HomeNavbar />
+        {/* navbar provided by layout */}
         <div className="ticket-container">
           <div className="error-container">
             <h2>No Ticket Data Found</h2>
@@ -870,10 +892,15 @@ const TicketPage = () => {
         </div>
 
         <div className="ticket-footer">
-          <p>Thank you for choosing our airline service. Have a pleasant journey!</p>
-          <button className="back-home-btn" onClick={handleBackToHome}>
-            Back to Dashboard
-          </button>
+          <p>Thank you for choosing Airgo. Have a pleasant journey!</p>
+          <div style={{ display: 'flex', gap: '12px', justifyContent: 'center', flexWrap: 'wrap' }}>
+            <button className="back-home-btn" onClick={handleGoToBookings}>
+              My Bookings
+            </button>
+            <button className="back-home-btn" onClick={handleBackToHome} style={{ background: '#64748b' }}>
+              Back to Home
+            </button>
+          </div>
         </div>
       </div>
     </div>

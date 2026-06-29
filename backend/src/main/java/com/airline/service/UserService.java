@@ -13,4 +13,5 @@ public interface UserService {
     List<UserProfileResponseDto> getAllUsers();
     ApiResponse<Void> changePassword(ChangePasswordRequest request);
     UserProfileResponseDto updateProfile(UpdateProfileRequestDto request);
+    UserProfileResponseDto uploadProfileImage(org.springframework.web.multipart.MultipartFile file);
 }

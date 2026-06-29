@@ -24,8 +24,10 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
     private final FlightScheduleDao scheduleDao;
     private final FlightDao flightDao;
     private final AirportDao airportDao;
-    private final KafkaProducerService kafkaProducerService;
     private final FlightSearchCacheService cacheService;
+
+    @org.springframework.beans.factory.annotation.Autowired(required = false)
+    private KafkaProducerService kafkaProducerService;
 
     @Transactional
     public FlightScheduleResponseDto addSchedule(FlightScheduleRequestDto request) {
@@ -173,7 +175,7 @@ public class FlightScheduleServiceImpl implements FlightScheduleService {
                     .changedBy(adminEmail)
                     .timestamp(java.time.LocalDateTime.now())
                     .build();
-            kafkaProducerService.publishFlightStatusEvent(event);
+            if (kafkaProducerService != null) kafkaProducerService.publishFlightStatusEvent(event);
         }
 
         return mapToResponse(updated);

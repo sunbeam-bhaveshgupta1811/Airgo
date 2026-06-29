@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 public class AirportServiceImpl implements AirportService{
 
     private final AirportDao airportDao;
+    private final com.airline.dao.UserDao userDao;
 
     @Transactional
     public AirportResponseDto addAirport(AirportRequestDto request) {
@@ -124,15 +125,23 @@ public class AirportServiceImpl implements AirportService{
 
 
     private AirportResponseDto mapToResponse(Airport airport) {
-        return AirportResponseDto.builder()
+        AirportResponseDto.AirportResponseDtoBuilder builder = AirportResponseDto.builder()
                 .id(airport.getId())
                 .code(airport.getCode())
                 .name(airport.getName())
                 .city(airport.getCity())
                 .country(airport.getCountry())
                 .timezone(airport.getTimezone())
-                .active(airport.isActive())
-                .build();
+                .active(airport.isActive());
+
+        // Find assigned manager for this airport
+        userDao.findByAirportId(airport.getId()).ifPresent(manager -> {
+            builder.managerId(manager.getId())
+                    .managerName(manager.getFirstName() + " " + manager.getLastName())
+                    .managerEmail(manager.getEmail());
+        });
+
+        return builder.build();
     }
 
 }

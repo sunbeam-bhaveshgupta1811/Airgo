@@ -34,3 +34,24 @@ export const updateProfileData = async (profileData) => {
         throw new Error(msg);
     }
 }
+
+export const uploadProfileImage = async (file) => {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await axios.post(
+            `${config.serverURL}/user/profile/image`,
+            formData,
+            {
+                headers: {
+                    Authorization: `Bearer ${sessionStorage.getItem('jwt')}`,
+                    'Content-Type': 'multipart/form-data',
+                }
+            }
+        );
+        return response.data?.data || null;
+    } catch (error) {
+        const msg = error.response?.data?.message || 'Failed to upload image';
+        throw new Error(msg);
+    }
+}

@@ -6,10 +6,12 @@ import com.airline.event.FlightStatusEvent;
 import com.airline.event.PaymentEvent;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
 @Service
+@ConditionalOnProperty(name = "app.kafka.enabled", havingValue = "true")
 @RequiredArgsConstructor
 @Slf4j
 public class KafkaProducerService {

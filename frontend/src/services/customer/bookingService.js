@@ -53,7 +53,7 @@ export const addPassengers = async (bookingId, passengers) => {
 export const makePayment = async (bookingId, paymentMethod = 'CREDIT_CARD') => {
   try {
     const response = await axios.post(
-      `${config.serverURL}/payments/pay`,
+      `${config.serverURL}/payments`,
       {
         bookingId,
         paymentMethod: paymentMethod.toUpperCase()
