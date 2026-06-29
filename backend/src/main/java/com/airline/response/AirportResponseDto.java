@@ -17,4 +17,7 @@ public class AirportResponseDto {
     private String timezone;
     private boolean active;
     private LocalDateTime updatedAt;
+    private Long managerId;
+    private String managerName;
+    private String managerEmail;
 }

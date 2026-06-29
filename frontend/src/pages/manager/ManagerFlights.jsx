@@ -17,7 +17,7 @@ const ManagerFlights = () => {
     try {
       const [f, a, ap] = await Promise.all([getManagerFlights(), getManagerAirlines(), fetchAirports()]);
       setFlights(f); setAirlines(a); setAirports(ap);
-    } catch (e) { toast.error(e.message); } finally { setLoading(false); }
+    } catch (e) { /* empty data */ } finally { setLoading(false); }
   };
   useEffect(() => { fetchData(); }, []);
 

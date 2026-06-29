@@ -77,16 +77,6 @@ export const getManagerAirlines = async () => {
   return response.data?.data || []
 }
 
-export const addManagerAirline = async (data) => {
-  const response = await axios.post(`${config.serverURL}/manager/airlines`, data, getAuthHeaders())
-  return response.data?.data || null
-}
-
-export const updateManagerAirline = async (id, data) => {
-  const response = await axios.put(`${config.serverURL}/manager/airlines/${id}`, data, getAuthHeaders())
-  return response.data?.data || null
-}
-
 // ===== FLIGHT MANAGEMENT =====
 
 export const getManagerFlights = async () => {

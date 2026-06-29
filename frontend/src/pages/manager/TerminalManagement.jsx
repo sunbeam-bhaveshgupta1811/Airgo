@@ -12,7 +12,7 @@ const TerminalManagement = () => {
   const airportId = sessionStorage.getItem('airportId');
 
   const fetchTerminals = async () => {
-    try { setTerminals(await getMyTerminals()); } catch (e) { toast.error(e.message); } finally { setLoading(false); }
+    try { setTerminals(await getMyTerminals()); } catch (e) { /* empty data */ } finally { setLoading(false); }
   };
   useEffect(() => { fetchTerminals(); }, []);
 

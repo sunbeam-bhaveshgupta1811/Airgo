@@ -132,7 +132,7 @@ public class BookingController {
             HttpServletRequest httpRequest) {
         Long airportId = (Long) httpRequest.getAttribute("airportId");
         if (airportId == null) {
-            throw new com.airline.exception.BadRequestException("No airport assigned to this manager");
+            return ResponseEntity.ok(ApiResponse.success("No airport assigned", java.util.List.of()));
         }
         return ResponseEntity.ok(ApiResponse.success("Bookings fetched",
                 bookingService.getBookingsByAirport(airportId)));

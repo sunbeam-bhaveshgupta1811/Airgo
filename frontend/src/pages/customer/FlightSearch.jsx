@@ -212,7 +212,7 @@ const FlightSearch = () => {
 
             {/* Departure Date */}
             <div className="search-field date-field">
-              <label>Departure <FaChevronDown className="dropdown-icon" /></label>
+              <label>Departure</label>
               <div className="date-input">
                 <input
                   type="date"
@@ -220,18 +220,8 @@ const FlightSearch = () => {
                   onChange={(e) => setDepartureDate(e.target.value)}
                   required
                   min={new Date().toISOString().split('T')[0]}
+                  style={{ width: '100%', border: 'none', outline: 'none', fontSize: '16px', background: 'transparent', cursor: 'pointer', padding: 0 }}
                 />
-                <div className="date-display">
-                  {departureDate ? (
-                    <>
-                      <span className="date-number">{formatDate(departureDate).day}</span>
-                      <span className="date-month">{formatDate(departureDate).month}'{formatDate(departureDate).year}</span>
-                      <span className="date-day">{formatDate(departureDate).dayName}</span>
-                    </>
-                  ) : (
-                    <span className="date-placeholder">Select date</span>
-                  )}
-                </div>
               </div>
             </div>
 
@@ -262,51 +252,51 @@ const FlightSearch = () => {
           </div>
 
           {/* Advanced Filters */}
-          <div className="mt-3 p-4" style={{ background: '#f8fafc', borderRadius: 12, border: '1px solid #e2e8f0' }}>
-            <p className="fw-bold mb-3" style={{ fontSize: '0.9rem', color: '#0f172a', letterSpacing: '0.3px' }}>Advanced Filters</p>
-            <div style={{ display: 'grid', gridTemplateColumns: tripType === 'ROUND_TRIP' ? 'repeat(6, 1fr)' : 'repeat(5, 1fr)', gap: 16 }}>
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b', marginBottom: 6, display: 'block' }}>Trip Type</label>
+          <div className="mt-3 p-4" style={{ background: '#fff', borderRadius: 14, border: '1.5px solid #e2e8f0', boxShadow: '0 1px 4px rgba(0,0,0,0.04)' }}>
+            <p className="fw-bold mb-3" style={{ fontSize: '0.95rem', color: '#0f172a' }}>Advanced Filters</p>
+            <div className="row g-3">
+              <div className="col-md-4">
+                <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#475569', marginBottom: 8, display: 'block' }}>Trip Type</label>
                 <select className="form-select" value={tripType} onChange={(e) => setTripType(e.target.value)}
-                  style={{ borderRadius: 10, padding: '10px 14px', border: '1.5px solid #e2e8f0', fontSize: '0.9rem', height: 44, background: '#fff' }}>
+                  style={{ borderRadius: 10, padding: '12px 16px', border: '1.5px solid #e2e8f0', fontSize: '0.95rem', height: 50, background: '#f8fafc' }}>
                   <option value="ONE_WAY">One Way</option>
                   <option value="ROUND_TRIP">Round Trip</option>
                 </select>
               </div>
               {tripType === 'ROUND_TRIP' && (
-                <div>
-                  <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b', marginBottom: 6, display: 'block' }}>Return Date</label>
+                <div className="col-md-4">
+                  <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#475569', marginBottom: 8, display: 'block' }}>Return Date</label>
                   <input type="date" className="form-control" value={returnDate}
                     onChange={(e) => setReturnDate(e.target.value)} min={departureDate || new Date().toISOString().split('T')[0]}
-                    style={{ borderRadius: 10, padding: '10px 14px', border: '1.5px solid #e2e8f0', fontSize: '0.9rem', height: 44 }} />
+                    style={{ borderRadius: 10, padding: '12px 16px', border: '1.5px solid #e2e8f0', fontSize: '0.95rem', height: 50 }} />
                 </div>
               )}
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b', marginBottom: 6, display: 'block' }}>Class</label>
+              <div className="col-md-4">
+                <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#475569', marginBottom: 8, display: 'block' }}>Class</label>
                 <select className="form-select" value={travelClass} onChange={(e) => setTravelClass(e.target.value)}
-                  style={{ borderRadius: 10, padding: '10px 14px', border: '1.5px solid #e2e8f0', fontSize: '0.9rem', height: 44, background: '#fff' }}>
+                  style={{ borderRadius: 10, padding: '12px 16px', border: '1.5px solid #e2e8f0', fontSize: '0.95rem', height: 50, background: '#f8fafc' }}>
                   <option value="">All Classes</option>
                   <option value="ECONOMY">Economy</option>
                   <option value="BUSINESS">Business</option>
                   <option value="FIRST_CLASS">First Class</option>
                 </select>
               </div>
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b', marginBottom: 6, display: 'block' }}>Min Price (₹)</label>
-                <input type="number" className="form-control" placeholder="e.g. 2000" value={minPrice}
+              <div className="col-md-4">
+                <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#475569', marginBottom: 8, display: 'block' }}>Min Price (₹)</label>
+                <input type="number" className="form-control" placeholder="2,000" value={minPrice}
                   onChange={(e) => setMinPrice(e.target.value)}
-                  style={{ borderRadius: 10, padding: '10px 14px', border: '1.5px solid #e2e8f0', fontSize: '0.9rem', height: 44 }} />
+                  style={{ borderRadius: 10, padding: '12px 16px', border: '1.5px solid #e2e8f0', fontSize: '0.95rem', height: 50 }} />
               </div>
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b', marginBottom: 6, display: 'block' }}>Max Price (₹)</label>
-                <input type="number" className="form-control" placeholder="e.g. 10000" value={maxPrice}
+              <div className="col-md-4">
+                <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#475569', marginBottom: 8, display: 'block' }}>Max Price (₹)</label>
+                <input type="number" className="form-control" placeholder="50,000" value={maxPrice}
                   onChange={(e) => setMaxPrice(e.target.value)}
-                  style={{ borderRadius: 10, padding: '10px 14px', border: '1.5px solid #e2e8f0', fontSize: '0.9rem', height: 44 }} />
+                  style={{ borderRadius: 10, padding: '12px 16px', border: '1.5px solid #e2e8f0', fontSize: '0.95rem', height: 50 }} />
               </div>
-              <div>
-                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: '#64748b', marginBottom: 6, display: 'block' }}>Sort By</label>
+              <div className="col-md-4">
+                <label style={{ fontSize: '0.82rem', fontWeight: 600, color: '#475569', marginBottom: 8, display: 'block' }}>Sort By</label>
                 <select className="form-select" value={sortBy} onChange={(e) => setSortBy(e.target.value)}
-                  style={{ borderRadius: 10, padding: '10px 14px', border: '1.5px solid #e2e8f0', fontSize: '0.9rem', height: 44, background: '#fff' }}>
+                  style={{ borderRadius: 10, padding: '12px 16px', border: '1.5px solid #e2e8f0', fontSize: '0.95rem', height: 50, background: '#f8fafc' }}>
                   <option value="CHEAPEST">Cheapest</option>
                   <option value="FASTEST">Fastest</option>
                   <option value="EARLIEST">Earliest</option>

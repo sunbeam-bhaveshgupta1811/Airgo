@@ -33,9 +33,11 @@ function ManagerNavbar() {
               { to: "/manager/dashboard", label: "Dashboard" },
               { to: "/manager/airlines", label: "Airlines" },
               { to: "/manager/flights", label: "Flights" },
+              { to: "/manager/schedules", label: "Schedules" },
               { to: "/manager/terminals", label: "Terminals" },
               { to: "/manager/gates", label: "Gates" },
               { to: "/manager/bookings", label: "Bookings" },
+              { to: "/manager/passengers", label: "Passengers" },
             ].map(item => (
               <li className="nav-item" key={item.to}>
                 <NavLink to={item.to} className={({ isActive }) => `nav-link px-3 ${isActive ? "active" : ""}`}

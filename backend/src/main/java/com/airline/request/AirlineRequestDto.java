@@ -26,6 +26,6 @@ public class AirlineRequestDto {
     @Email(message = "Please provide a valid contact email")
     private String contactEmail;
 
-    @Pattern(regexp = "^[+]?[0-9]{10,15}$", message = "Please provide a valid phone number")
+    @Pattern(regexp = "^$|^[+]?[0-9]{10,15}$", message = "Please provide a valid phone number")
     private String contactPhone;
 }

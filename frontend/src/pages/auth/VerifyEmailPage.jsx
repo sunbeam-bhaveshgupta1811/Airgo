@@ -11,6 +11,7 @@ function VerifyEmailPage() {
   const [status, setStatus] = useState('verifying')
   const [message, setMessage] = useState('')
   const [resendEmail, setResendEmail] = useState('')
+  const [redirectMsg, setRedirectMsg] = useState('Redirecting to login...')
   const [resending, setResending] = useState(false)
 
   const handleResend = async () => {
@@ -41,8 +42,30 @@ function VerifyEmailPage() {
       .then((res) => {
         if (res && res.success) {
           setStatus('success')
+
+          const role = res.data?.role;
+          const approvalStatus = res.data?.approvalStatus;
+          let redirectPath = '/auth';
+          let redirectMessage = 'Redirecting to login...';
+
+          if (role === 'ADMIN') {
+            redirectPath = '/adminlogin';
+            redirectMessage = 'Redirecting to Admin login...';
+          } else if (role === 'AIRPORT_MANAGER') {
+            redirectPath = '/auth';
+            if (approvalStatus === 'PENDING') {
+              redirectMessage = 'Your email is verified. Awaiting Admin approval before you can log in.';
+            } else {
+              redirectMessage = 'Redirecting to login...';
+            }
+          } else {
+            redirectPath = '/auth';
+            redirectMessage = 'Redirecting to login...';
+          }
+
           setMessage(res.message || 'Email verified successfully!')
-          setTimeout(() => navigate('/login?verified=true'), 2000)
+          setRedirectMsg(redirectMessage)
+          setTimeout(() => navigate(redirectPath), 3000)
         } else {
           setStatus('failed')
           setMessage(res?.message || 'Verification failed. The link may have expired.')
@@ -71,7 +94,7 @@ function VerifyEmailPage() {
             <div style={{ ...styles.icon, color: '#27ae60' }}>✓</div>
             <h3 style={styles.title}>Email Verified!</h3>
             <p style={styles.sub}>{message}</p>
-            <p style={styles.sub}>Redirecting to login...</p>
+            <p style={styles.sub}>{redirectMsg}</p>
           </>
         )}
 

@@ -18,10 +18,12 @@ function AdminNavbar() {
 
   const navItems = [
     { to: "/admin/dashboard", label: "Dashboard" },
+    { to: "/admin/airports", label: "Airports" },
     { to: "/admin/airlinemanagement", label: "Airlines" },
-    { to: "/admin/flightmanagement", label: "Flights" },
-    { to: "/admin/scheduleflight", label: "Schedules" },
+    { to: "/admin/flights", label: "Flights" },
+    { to: "/admin/schedules", label: "Schedules" },
     { to: "/admin/passengerslist", label: "Passengers" },
+    { to: "/admin/bookings", label: "Bookings" },
     { to: "/admin/managerapproval", label: "Managers" },
     { to: "/admin/viewfeedback", label: "Feedback" },
   ];

@@ -86,6 +86,11 @@ const HomeNavbar = () => {
                     </Link>
                   </li>
                   <li>
+                    <Link className="dropdown-item" to="/customer/mybookings">
+                      <FaTicketAlt className="me-2" /> My Bookings
+                    </Link>
+                  </li>
+                  <li>
                     <Link className="dropdown-item" to="/customer/feedback">
                       <FaTicketAlt className="me-2" /> My Feedback
                     </Link>
