@@ -14,7 +14,7 @@ Make sure these are installed before starting:
 |---|---|---|
 | Java | 17+ | https://adoptium.net |
 | Maven | 3.8+ | https://maven.apache.org |
-| MySQL | 8+ | https://dev.mysql.com |
+| PostgreSQL | 14+ | https://www.postgresql.org/download (or use `docker compose up -d`) |
 | Node.js | 18+ | https://nodejs.org |
 | npm | 9+ | comes with Node.js |
 
@@ -29,13 +29,35 @@ cd airline-reservation-system
 
 ---
 
-### Step 2 — Set Up MySQL Database
+### Step 2 — Set Up PostgreSQL Database
 
-Open MySQL Workbench or terminal and run:
+Easiest — start it with Docker from the repo root:
+
+```bash
+export DB_PASSWORD=your_password      # Windows: $env:DB_PASSWORD="your_password"
+docker compose up -d
+```
+
+That creates the `airgo` database and an `airgo` user automatically.
+
+Or, against an existing PostgreSQL install:
 
 ```sql
-CREATE DATABASE airline_db;
+CREATE USER airgo WITH PASSWORD 'your_password';
+CREATE DATABASE airgo OWNER airgo;
 ```
+
+> Use `OWNER airgo`, not `GRANT ALL PRIVILEGES ON DATABASE`. Since PostgreSQL 15
+> the `public` schema no longer grants `CREATE` to everyone, so a merely-privileged
+> user cannot create tables and Hibernate fails with
+> `ERROR: permission denied for schema public`. Making the user the database owner
+> avoids this. To fix an already-created database instead:
+> `ALTER DATABASE airgo OWNER TO airgo;` then, connected to it,
+> `GRANT ALL ON SCHEMA public TO airgo;`
+
+> Unlike the previous MySQL setup, the application **cannot create its own
+> database** — PostgreSQL has no equivalent of `createDatabaseIfNotExist=true`.
+> The database must exist before the backend starts.
 
 ---
 
@@ -45,9 +67,11 @@ Open `backend/src/main/resources/application.properties` and update these values
 
 ```properties
 # ── Database ──────────────────────────────────────────────────────
-spring.datasource.url=jdbc:mysql://localhost:3306/airline_db?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true
-spring.datasource.username=root
-spring.datasource.password=YOUR_MYSQL_PASSWORD
+# In production append ?sslmode=require — the PostgreSQL driver only *prefers*
+# TLS by default, unlike the useSSL=true the old MySQL URL carried.
+spring.datasource.url=jdbc:postgresql://localhost:5432/airgo
+spring.datasource.username=airgo
+spring.datasource.password=YOUR_POSTGRES_PASSWORD
 
 # ── JWT ───────────────────────────────────────────────────────────
 jwt.secret=YourSuperSecretKeyMustBeAtLeast32CharactersLong!
@@ -112,7 +136,7 @@ npm run dev
 
 ### Step 7 — Create Admin User
 
-Register a normal account through the app, then promote it to ADMIN in MySQL:
+Register a normal account through the app, then promote it to ADMIN in PostgreSQL:
 
 ```sql
 UPDATE users SET role = 'ADMIN' WHERE email = 'your_admin_email@gmail.com';
@@ -141,7 +165,7 @@ Now log in with that email at `/admin/login` to access the Admin Dashboard.
 | Spring Boot 3.5 | Framework |
 | Spring Security + JWT | Auth and authorization |
 | Spring Data JPA | Database ORM |
-| MySQL 8 | Relational database |
+| PostgreSQL 14+ | Relational database |
 | JavaMailSender | Email sending via Gmail SMTP |
 | Springdoc OpenAPI | Swagger documentation |
 | Lombok | Reduces boilerplate code |

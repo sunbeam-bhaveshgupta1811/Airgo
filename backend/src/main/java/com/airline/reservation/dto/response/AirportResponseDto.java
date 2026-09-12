@@ -1,0 +1,23 @@
+package com.airline.reservation.dto.response;
+
+import lombok.*;
+import java.time.LocalDateTime;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AirportResponseDto {
+
+    private Long id;
+    private String code;
+    private String name;
+    private String city;
+    private String country;
+    private String timezone;
+    private boolean active;
+    private LocalDateTime updatedAt;
+    private Long managerId;
+    private String managerName;
+    private String managerEmail;
+}

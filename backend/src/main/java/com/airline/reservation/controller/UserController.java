@@ -1,0 +1,57 @@
+package com.airline.reservation.controller;
+
+import com.airline.reservation.dto.ApiResponse;
+import com.airline.reservation.dto.request.ChangePasswordRequest;
+import com.airline.reservation.dto.request.UpdateProfileRequestDto;
+import com.airline.reservation.dto.response.UserProfileResponseDto;
+import com.airline.reservation.service.UserService;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
+
+
+@RestController
+@RequestMapping("/user")
+@RequiredArgsConstructor
+@SecurityRequirement(name = "bearerAuth")
+public class UserController {
+
+	private final UserService userService;
+
+    @GetMapping("/profile")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> getMyProfile() {
+        return ResponseEntity.ok(
+                ApiResponse.success("Profile fetched successfully", userService.getMyProfile())
+        );
+    }
+
+    @PutMapping("/profile")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> updateProfile(
+            @Valid @RequestBody UpdateProfileRequestDto request) {
+        return ResponseEntity.ok(
+                ApiResponse.success("Profile updated successfully", userService.updateProfile(request))
+        );
+    }
+
+    @PostMapping("/profile/image")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<UserProfileResponseDto>> uploadProfileImage(
+            @RequestParam("file") org.springframework.web.multipart.MultipartFile file) {
+        return ResponseEntity.ok(
+                ApiResponse.success("Profile image uploaded successfully", userService.uploadProfileImage(file))
+        );
+    }
+
+    @PutMapping("/change-password")
+    @PreAuthorize("isAuthenticated()")
+    public ResponseEntity<ApiResponse<Void>> changePassword(
+            @Valid @RequestBody ChangePasswordRequest request) {
+        return ResponseEntity.ok(userService.changePassword(request));
+    }
+
+}

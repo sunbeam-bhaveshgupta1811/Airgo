@@ -1,0 +1,21 @@
+package com.airline.reservation.dto.response;
+
+import lombok.*;
+
+@Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
+public class AuthResponse {
+
+	private String token;
+	private String tokenType = "Bearer";
+	private Long userId;
+	private String email;
+	private String firstName;
+	private String lastName;
+	private String role;
+	private Long airportId;  // null for USER/ADMIN, set for AIRPORT_MANAGER
+	private String approvalStatus;
+	private String message;
+}

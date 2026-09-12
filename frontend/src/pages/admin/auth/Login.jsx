@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { login } from '../../../services/auth/user';
 import { toast } from 'react-toastify';
@@ -10,19 +10,9 @@ const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
-  const [adminExists, setAdminExists] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
-  const [createForm, setCreateForm] = useState({ firstName: '', lastName: '', email: '', phone: '', password: '', confirmPassword: '' });
+  const [createForm, setCreateForm] = useState({ firstName: '', lastName: '', email: '', phone: '', password: '', confirmPassword: '', bootstrapSecret: '' });
   const navigate = useNavigate();
-
-  useEffect(() => {
-    (async () => {
-      try {
-        const res = await axios.get(`${config.serverURL}/api/auth/admin-exists`);
-        setAdminExists(res.data?.data === true);
-      } catch { setAdminExists(true); }
-    })();
-  }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -51,11 +41,11 @@ const AdminLogin = () => {
       const res = await axios.post(`${config.serverURL}/api/auth/create-admin`, {
         firstName: createForm.firstName, lastName: createForm.lastName,
         email: createForm.email, phone: createForm.phone,
-        password: createForm.password, confirmPassword: createForm.confirmPassword
+        password: createForm.password, confirmPassword: createForm.confirmPassword,
+        bootstrapSecret: createForm.bootstrapSecret
       });
       if (res.data?.success) {
-        toast.success('Admin account created! You can now log in.');
-        setAdminExists(true);
+        toast.success('Admin account created! Check your email to verify, then log in.');
         setShowCreate(false);
       } else { toast.error(res.data?.message || 'Failed'); }
     } catch (err) { toast.error(err.response?.data?.message || 'Failed to create admin'); } finally { setLoading(false); }
@@ -92,21 +82,29 @@ const AdminLogin = () => {
                 </button>
               </form>
 
-              {!adminExists && (
-                <div className="mt-4 text-center">
-                  <hr />
-                  <p className="text-muted" style={{ fontSize: '0.85rem' }}>No admin account exists yet.</p>
-                  <button className="btn btn-outline-primary w-100" style={{ borderRadius: 8 }}
-                    onClick={() => setShowCreate(true)}>
-                    Create Admin Account
-                  </button>
-                </div>
-              )}
+              {/* Offered unconditionally. It used to appear only when the backend confirmed
+                  no admin existed, but that probe publicly advertised the one moment the
+                  account could be claimed by anyone. Setup now requires the bootstrap secret. */}
+              <div className="mt-4 text-center">
+                <hr />
+                <button className="btn btn-link text-muted p-0" style={{ fontSize: '0.85rem' }}
+                  onClick={() => setShowCreate(true)}>
+                  First-time setup
+                </button>
+              </div>
             </>
           ) : (
             <>
-              <h6 className="fw-bold mb-3">Create Admin Account</h6>
+              <h6 className="fw-bold mb-1">First-time setup</h6>
+              <p className="text-muted mb-3" style={{ fontSize: '0.8rem' }}>
+                Creates the single administrator account. Requires the bootstrap secret
+                configured on the server (<code>ADMIN_BOOTSTRAP_SECRET</code>).
+              </p>
               <form onSubmit={handleCreateAdmin}>
+                <div className="mb-3">
+                  <input type="password" className="form-control" style={{ borderRadius: 8 }} placeholder="Bootstrap secret"
+                    value={createForm.bootstrapSecret} onChange={(e) => setCreateForm({ ...createForm, bootstrapSecret: e.target.value })} required />
+                </div>
                 <div className="row">
                   <div className="col-6 mb-3">
                     <input type="text" className="form-control" style={{ borderRadius: 8 }} placeholder="First Name"

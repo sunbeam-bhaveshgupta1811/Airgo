@@ -9,12 +9,12 @@
 		<version>3.5.3</version>
 		<relativePath />
 	</parent>
-	<groupId>com.example</groupId>
-	<artifactId>spring_boot_backend_template</artifactId>
+	<groupId>com.airline</groupId>
+	<artifactId>airline-reservation-system</artifactId>
 	<version>0.0.1</version>
-	<name>backend</name>
-	<description>Spring Boot Template project for developing REST APIs in a Full
-		Stack Application</description>
+	<name>airline-reservation-system</name>
+	<description>Airline Reservation System — flight search, seat inventory,
+		reservation lifecycle, payment and ticketing</description>
 	<url />
 	<licenses>
 		<license />
@@ -56,8 +56,8 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>com.mysql</groupId>
-			<artifactId>mysql-connector-j</artifactId>
+			<groupId>org.postgresql</groupId>
+			<artifactId>postgresql</artifactId>
 			<scope>runtime</scope>
 		</dependency>
 		<dependency>
@@ -69,6 +69,34 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- @WithMockUser and security-aware MockMvc assertions -->
+		<dependency>
+			<groupId>org.springframework.security</groupId>
+			<artifactId>spring-security-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!--
+			H2 backs the fast suite (*Test) so the regression net runs with no external
+			infrastructure. Real-PostgreSQL fidelity comes from the Testcontainers suite
+			(*IT) below. P22's concurrency tests MUST use the *IT path — H2 does not
+			reproduce PostgreSQL row-locking semantics.
+		-->
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<!-- Versions managed by spring-boot-dependencies -->
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
 		<!--swagger dependency for Spring Boot 3 -->
@@ -201,6 +229,68 @@
 						</exclude>
 					</excludes>
 				</configuration>
+			</plugin>
+
+			<!--
+				Surefire runs the fast suite (*Test) on every build: H2-backed, no
+				external infrastructure required.
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>**/*Test.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/*IT.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+			<!--
+				Failsafe runs the Testcontainers suite (*IT) against real PostgreSQL.
+				Requires a Docker daemon; bound to `mvn verify`, not `mvn test`, so a
+				machine without Docker can still run the fast suite.
+			-->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<includes>
+						<include>**/*IT.java</include>
+					</includes>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<!-- Coverage baseline; the P6 report is the reference point for P42. -->
+			<plugin>
+				<groupId>org.jacoco</groupId>
+				<artifactId>jacoco-maven-plugin</artifactId>
+				<version>0.8.12</version>
+				<executions>
+					<execution>
+						<id>prepare-agent</id>
+						<goals>
+							<goal>prepare-agent</goal>
+						</goals>
+					</execution>
+					<execution>
+						<id>report</id>
+						<phase>test</phase>
+						<goals>
+							<goal>report</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
